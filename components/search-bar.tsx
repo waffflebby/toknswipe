@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
 import { searchCoinsFromAPI } from "@/lib/api-client"
-import { useThemeStorage } from "@/hooks/useThemeStorage"
+import { addToPersonalList, isInPersonalList } from "@/lib/storage"
 
 interface SearchBarProps {
   coins: EnrichedCoin[]
@@ -25,7 +25,16 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
 
   const [searchResults, setSearchResults] = useState<EnrichedCoin[]>([])
   const [isSearching, setIsSearching] = useState(false)
-  const { addCoin, isCoinInTheme } = useThemeStorage()
+  const [personalCoinIds, setPersonalCoinIds] = useState<Set<string>>(new Set())
+
+  // Load personal coins on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const personalList = JSON.parse(localStorage.getItem("coinswipe_personal") || "[]")
+      const ids = new Set(personalList.map((coin: EnrichedCoin) => coin.mint))
+      setPersonalCoinIds(ids)
+    }
+  }, [])
 
   // Search via Moralis API
   useEffect(() => {
@@ -173,13 +182,14 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        addCoin("watchlist", coin.mint)
+                        addToPersonalList(coin)
+                        setPersonalCoinIds(prev => new Set([...prev, coin.mint]))
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
                         "h-3.5 w-3.5",
-                        isCoinInTheme("watchlist", coin.mint) 
+                        personalCoinIds.has(coin.mint) 
                           ? "fill-yellow-400 text-yellow-400" 
                           : "text-gray-400"
                       )} />
@@ -225,13 +235,14 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        addCoin("watchlist", coin.mint)
+                        addToPersonalList(coin)
+                        setPersonalCoinIds(prev => new Set([...prev, coin.mint]))
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
                         "h-3.5 w-3.5",
-                        isCoinInTheme("watchlist", coin.mint) 
+                        personalCoinIds.has(coin.mint) 
                           ? "fill-yellow-400 text-yellow-400" 
                           : "text-gray-400"
                       )} />
