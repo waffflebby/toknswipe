@@ -2,7 +2,10 @@ import type { EnrichedCoin } from "./types"
 import { detectThemes } from "./theme-detector"
 import { addCoinToTheme } from "./theme-service"
 
-const MORALIS_API_KEY = process.env.NEXT_PUBLIC_MORALIS_API_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjkwOWI1ZTU2LTg5ZTEtNGFkMy1iNzY3LWVkMTc2ZDg2OTg4MiIsIm9yZ0lkIjoiNDc2Mjg4IiwidXNlcklkIjoiNDkwMDA4IiwidHlwZSI6IlBST0pFQ1QiLCJ0eXBlSWQiOiI3YjFlZGNjOS05NjJlLTQ1MmUtYWFhMy0yM2VjNjVmYjU2ZjEiLCJpYXQiOjE3NjA5ODc2MjMsImV4cCI6NDkxNjc0NzYyM30.G5FMQktvACjnPVGyv_Mo9rACvSXcMO3rBtajsu9kEXE"
+const MORALIS_API_KEY = process.env.NEXT_PUBLIC_MORALIS_API_KEY!
+if (!process.env.NEXT_PUBLIC_MORALIS_API_KEY) {
+  throw new Error("NEXT_PUBLIC_MORALIS_API_KEY is required. Please set it in your environment variables.")
+}
 
 interface SearchResult {
   tokenAddress: string

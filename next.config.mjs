@@ -6,11 +6,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  experimental: {
-    serverActions: {
-      allowedOrigins: ['*'],
-    },
-  },
   async headers() {
     return [
       {
