@@ -146,26 +146,26 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                 {filteredCoins.map((coin) => (
                   <div
                     key={coin.id}
-                    className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-50 rounded-lg transition-all border border-transparent hover:border-gray-200 hover:shadow-sm"
+                    className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-lg transition-all border border-transparent hover:border-gray-200 dark:hover:border-neutral-700 hover:shadow-sm"
                   >
                     <img
                       src={coin.image}
                       alt={coin.symbol}
-                      className="h-7 w-7 rounded-full shrink-0 border border-gray-100 cursor-pointer"
+                      className="h-7 w-7 rounded-full shrink-0 border border-gray-100 dark:border-neutral-700 cursor-pointer"
                       onClick={() => handleSelectCoin(coin)}
                       onError={(e) => {
                         e.currentTarget.src = "/placeholder.svg?height=32&width=32"
                       }}
                     />
                     <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleSelectCoin(coin)}>
-                      <p className="text-xs font-bold text-gray-900">${coin.symbol}</p>
-                      <p className="text-[9px] text-gray-400 truncate">{coin.name}</p>
+                      <p className="text-xs font-bold text-gray-900 dark:text-white">${coin.symbol}</p>
+                      <p className="text-[9px] text-gray-400 dark:text-neutral-500 truncate">{coin.name}</p>
                     </div>
                     <div className="text-right shrink-0 cursor-pointer" onClick={() => handleSelectCoin(coin)}>
-                      <p className="text-xs font-semibold text-gray-900">{coin.price}</p>
+                      <p className="text-xs font-semibold text-gray-900 dark:text-white">{coin.price}</p>
                       <p className={cn(
                         "text-xs font-semibold",
-                        (coin.change24hNum ?? 0) >= 0 ? "text-green-600" : "text-red-600"
+                        (coin.change24hNum ?? 0) >= 0 ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"
                       )}>
                         {coin.change24h}
                       </p>
@@ -175,7 +175,7 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                         e.stopPropagation()
                         addCoin("trending", coin.mint)
                       }}
-                      className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 border border-gray-200 hover:border-yellow-300 transition-colors"
+                      className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
                         "h-3.5 w-3.5",
@@ -198,26 +198,26 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                 {searchResults.filter(r => !filteredCoins.some(c => c.mint === r.mint)).map((coin) => (
                   <div
                     key={coin.mint}
-                    className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-50 rounded-lg transition-all border border-transparent hover:border-gray-200 hover:shadow-sm"
+                    className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-lg transition-all border border-transparent hover:border-gray-200 dark:hover:border-neutral-700 hover:shadow-sm"
                   >
                     <img
                       src={coin.image}
                       alt={coin.symbol}
-                      className="h-7 w-7 rounded-full shrink-0 border border-gray-100 cursor-pointer"
+                      className="h-7 w-7 rounded-full shrink-0 border border-gray-100 dark:border-neutral-700 cursor-pointer"
                       onClick={() => handleSelectCoin(coin)}
                       onError={(e) => {
                         e.currentTarget.src = "/placeholder.svg?height=32&width=32"
                       }}
                     />
                     <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleSelectCoin(coin)}>
-                      <p className="text-xs font-bold text-gray-900">${coin.symbol}</p>
-                      <p className="text-[9px] text-gray-400 truncate">{coin.name}</p>
+                      <p className="text-xs font-bold text-gray-900 dark:text-white">${coin.symbol}</p>
+                      <p className="text-[9px] text-gray-400 dark:text-neutral-500 truncate">{coin.name}</p>
                     </div>
                     <div className="text-right shrink-0 cursor-pointer" onClick={() => handleSelectCoin(coin)}>
-                      <p className="text-xs font-semibold text-gray-900">{coin.price || "—"}</p>
+                      <p className="text-xs font-semibold text-gray-900 dark:text-white">{coin.price || "—"}</p>
                       <p className={cn(
                         "text-xs font-semibold",
-                        (coin.change24hNum ?? 0) >= 0 ? "text-green-600" : "text-red-600"
+                        (coin.change24hNum ?? 0) >= 0 ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"
                       )}>
                         {coin.change24h || "—"}
                       </p>
@@ -227,7 +227,7 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                         e.stopPropagation()
                         addCoin("trending", coin.mint)
                       }}
-                      className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 border border-gray-200 hover:border-yellow-300 transition-colors"
+                      className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
                         "h-3.5 w-3.5",
@@ -244,19 +244,19 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
 
           {/* Themes section - SECOND */}
           {filteredThemes.length > 0 && (
-            <div className="px-2.5 py-1.5 border-t border-gray-100 bg-gray-50/50">
-              <p className="text-[9px] font-bold text-gray-500 uppercase tracking-wider px-2 mb-1.5">🎯 Themes</p>
+            <div className="px-2.5 py-1.5 border-t border-gray-100 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50">
+              <p className="text-[9px] font-bold text-gray-500 dark:text-neutral-500 uppercase tracking-wider px-2 mb-1.5">🎯 Themes</p>
               <div className="space-y-0.5">
                 {filteredThemes.map((theme) => (
                   <button
                     key={theme.id}
                     onClick={() => handleSelectTheme(theme.id)}
-                    className="w-full flex items-center gap-2.5 px-2.5 py-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all text-left border border-transparent hover:border-gray-200"
+                    className="w-full flex items-center gap-2.5 px-2.5 py-1.5 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-sm rounded-lg transition-all text-left border border-transparent hover:border-gray-200 dark:hover:border-neutral-700"
                   >
                     <span className="text-lg">{theme.emoji}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-gray-900">{theme.name}</p>
-                      <p className="text-[9px] text-gray-500 truncate">{theme.keywords.slice(0, 4).join(" • ")}</p>
+                      <p className="text-xs font-bold text-gray-900 dark:text-white">{theme.name}</p>
+                      <p className="text-[9px] text-gray-500 dark:text-neutral-500 truncate">{theme.keywords.slice(0, 4).join(" • ")}</p>
                     </div>
                   </button>
                 ))}
