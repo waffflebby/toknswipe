@@ -152,13 +152,6 @@ export interface CoinTheme {
 
 export const COIN_THEMES: CoinTheme[] = [
   {
-    id: "watchlist",
-    name: "Watchlist",
-    emoji: "⭐",
-    description: "Your personal watchlist of saved coins",
-    keywords: [],
-  },
-  {
     id: "dogs",
     name: "Dogs",
     emoji: "🐕",
@@ -196,7 +189,7 @@ export const COIN_THEMES: CoinTheme[] = [
   {
     id: "celebrity",
     name: "Celebrity",
-    emoji: "🌟",
+    emoji: "⭐",
     description: "Celebrity and influencer tokens",
     keywords: ["elon", "musk", "celeb", "star", "vip"],
   },

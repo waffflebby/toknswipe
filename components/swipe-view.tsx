@@ -7,7 +7,7 @@ import { CoinInsightsSheet } from "@/components/coin-insights-sheet"
 import { AdvancedFilterModal } from "@/components/advanced-filter-modal"
 import { JackpotModal } from "@/components/jackpot-modal"
 import { Button } from "@/components/ui/button"
-import { X, Heart, RefreshCw, SlidersHorizontal, User, Bookmark, Zap, Dog, Cat, Bug, Bot, Vote, Star } from "lucide-react"
+import { X, Heart, RefreshCw, SlidersHorizontal, User, Bookmark, Zap, Dog, Cat, Bug, Bot, Vote } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PaywallModal } from "@/components/paywall-modal"
 import { fetchTrendingCoinsFromAPI, fetchNewCoinsFromAPI } from "@/lib/api-client"
@@ -405,14 +405,13 @@ export function SwipeView() {
                     : "bg-white/90 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-800 hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-700 hover:text-gray-900 dark:hover:text-white text-gray-700 dark:text-neutral-400 border-neutral-200/50 dark:border-neutral-800",
                 )}
               >
-                {theme.id === "watchlist" && <Star className="h-4 w-4" />}
                 {theme.id === "dogs" && <Dog className="h-4 w-4" />}
                 {theme.id === "cats" && <Cat className="h-4 w-4" />}
                 {theme.id === "frogs" && <Bug className="h-4 w-4" />}
                 {theme.id === "ai" && <Bot className="h-4 w-4" />}
                 {theme.id === "political" && <Vote className="h-4 w-4" />}
-                {theme.id === "celebrity" && <span className="text-base">🌟</span>}
-                {theme.id !== "watchlist" && theme.id !== "dogs" && theme.id !== "cats" && theme.id !== "frogs" && theme.id !== "ai" && theme.id !== "political" && theme.id !== "celebrity" && <span>{theme.emoji}</span>}
+                {theme.id === "celebrity" && <span className="text-base">⭐</span>}
+                {theme.id !== "dogs" && theme.id !== "cats" && theme.id !== "frogs" && theme.id !== "ai" && theme.id !== "political" && theme.id !== "celebrity" && <span>{theme.emoji}</span>}
               </Button>
             ))}
           </div>
