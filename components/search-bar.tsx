@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
 import { searchCoinsFromAPI } from "@/lib/api-client"
-import { addToPersonalList, isInPersonalList } from "@/lib/storage"
+import { addToPersonalList, removeFromPersonalList, isInPersonalList } from "@/lib/storage"
 
 interface SearchBarProps {
   coins: EnrichedCoin[]
@@ -78,9 +78,15 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
     ...filteredThemes.map(t => ({ ...t, isTheme: true }))
   ]
 
-  // Show dropdown when typing
+  // Show dropdown when typing and re-sync personal coins
   useEffect(() => {
     setShowDropdown(query.trim().length > 0)
+    if (query.trim().length > 0 && typeof window !== "undefined") {
+      // Re-sync personal coins whenever dropdown is shown
+      const personalList = JSON.parse(localStorage.getItem("coinswipe_personal") || "[]")
+      const ids = new Set(personalList.map((coin: EnrichedCoin) => coin.mint))
+      setPersonalCoinIds(ids)
+    }
   }, [query])
 
   // Click outside to close
@@ -182,8 +188,17 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        addToPersonalList(coin)
-                        setPersonalCoinIds(prev => new Set([...prev, coin.mint]))
+                        if (personalCoinIds.has(coin.mint)) {
+                          removeFromPersonalList(coin.id)
+                          setPersonalCoinIds(prev => {
+                            const newSet = new Set(prev)
+                            newSet.delete(coin.mint)
+                            return newSet
+                          })
+                        } else {
+                          addToPersonalList(coin)
+                          setPersonalCoinIds(prev => new Set([...prev, coin.mint]))
+                        }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
@@ -235,8 +250,17 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        addToPersonalList(coin)
-                        setPersonalCoinIds(prev => new Set([...prev, coin.mint]))
+                        if (personalCoinIds.has(coin.mint)) {
+                          removeFromPersonalList(coin.id)
+                          setPersonalCoinIds(prev => {
+                            const newSet = new Set(prev)
+                            newSet.delete(coin.mint)
+                            return newSet
+                          })
+                        } else {
+                          addToPersonalList(coin)
+                          setPersonalCoinIds(prev => new Set([...prev, coin.mint]))
+                        }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
