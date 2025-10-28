@@ -40,13 +40,13 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 ## Environment Variables
 
 ### Currently Used
-- `NEXT_PUBLIC_MORALIS_API_KEY`: Moralis API key for Solana blockchain data (has fallback value)
+- `MORALIS_API_KEY`: Moralis API key for Solana blockchain data (server-side only, required)
 - `NEXT_PUBLIC_API_URL`: Base URL for API calls (optional)
 - `NODE_ENV`: Environment (development/production)
 - `DEBUG`: Enable detailed logging (optional)
 
 ### Security Note
-**IMPORTANT**: The `NEXT_PUBLIC_MORALIS_API_KEY` environment variable is now required. The hardcoded fallback API key has been removed for security reasons. You must set this as a Replit secret before the app will run.
+**IMPORTANT**: The `MORALIS_API_KEY` environment variable is required and must be set as a Replit secret. This key is server-side only (no NEXT_PUBLIC_ prefix) to prevent exposure in client bundles. All Moralis API calls are routed through Next.js API routes to keep the key secure.
 
 ## Recent Changes (Migration)
 
@@ -56,7 +56,13 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 3. Set up Dev Server workflow running on port 5000
 4. Configured autoscale deployment for production
 5. Installed dependencies using `--legacy-peer-deps` (React 19 peer dependency conflicts)
-6. Successfully started application without errors
+6. **Security Improvements:**
+   - Removed hardcoded Moralis API key fallback
+   - Changed environment variable from `NEXT_PUBLIC_MORALIS_API_KEY` to `MORALIS_API_KEY` (server-side only)
+   - Created API routes for chart and holders data to prevent client-side API key exposure
+   - Updated all client components to use API routes instead of direct Moralis calls
+   - Removed wildcard server actions origins configuration
+7. Successfully started application without errors
 
 ## Deployment
 
