@@ -25,16 +25,6 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
 
   const [searchResults, setSearchResults] = useState<EnrichedCoin[]>([])
   const [isSearching, setIsSearching] = useState(false)
-  const [personalCoinIds, setPersonalCoinIds] = useState<Set<string>>(new Set())
-
-  // Load personal coins on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const personalList = JSON.parse(localStorage.getItem("coinswipe_personal") || "[]")
-      const ids = new Set(personalList.map((coin: EnrichedCoin) => coin.mint))
-      setPersonalCoinIds(ids)
-    }
-  }, [])
 
   // Search via Moralis API
   useEffect(() => {
@@ -78,15 +68,9 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
     ...filteredThemes.map(t => ({ ...t, isTheme: true }))
   ]
 
-  // Show dropdown when typing and re-sync personal coins
+  // Show dropdown when typing
   useEffect(() => {
     setShowDropdown(query.trim().length > 0)
-    if (query.trim().length > 0 && typeof window !== "undefined") {
-      // Re-sync personal coins whenever dropdown is shown
-      const personalList = JSON.parse(localStorage.getItem("coinswipe_personal") || "[]")
-      const ids = new Set(personalList.map((coin: EnrichedCoin) => coin.mint))
-      setPersonalCoinIds(ids)
-    }
   }, [query])
 
   // Click outside to close
@@ -188,23 +172,17 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        if (personalCoinIds.has(coin.mint)) {
+                        if (isInPersonalList(coin.id)) {
                           removeFromPersonalList(coin.id)
-                          setPersonalCoinIds(prev => {
-                            const newSet = new Set(prev)
-                            newSet.delete(coin.mint)
-                            return newSet
-                          })
                         } else {
                           addToPersonalList(coin)
-                          setPersonalCoinIds(prev => new Set([...prev, coin.mint]))
                         }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
                         "h-3.5 w-3.5",
-                        personalCoinIds.has(coin.mint) 
+                        isInPersonalList(coin.id)
                           ? "fill-yellow-400 text-yellow-400" 
                           : "text-gray-400"
                       )} />
@@ -250,23 +228,17 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        if (personalCoinIds.has(coin.mint)) {
+                        if (isInPersonalList(coin.id)) {
                           removeFromPersonalList(coin.id)
-                          setPersonalCoinIds(prev => {
-                            const newSet = new Set(prev)
-                            newSet.delete(coin.mint)
-                            return newSet
-                          })
                         } else {
                           addToPersonalList(coin)
-                          setPersonalCoinIds(prev => new Set([...prev, coin.mint]))
                         }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
                         "h-3.5 w-3.5",
-                        personalCoinIds.has(coin.mint) 
+                        isInPersonalList(coin.id)
                           ? "fill-yellow-400 text-yellow-400" 
                           : "text-gray-400"
                       )} />
