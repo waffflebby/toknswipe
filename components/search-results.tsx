@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { searchCoins } from "@/lib/search-service"
+import { searchCoinsFromAPI } from "@/lib/api-client"
 import { useThemeStorage } from "@/hooks/useThemeStorage"
 import type { EnrichedCoin } from "@/lib/types"
 import Image from "next/image"
@@ -27,8 +27,8 @@ export function SearchResults({ query, onSelectCoin }: SearchResultsProps) {
 
     const search = async () => {
       setLoading(true)
-      const coins = await searchCoins(query)
-      setResults(coins)
+      const result = await searchCoinsFromAPI(query)
+      setResults(result.tokens || [])
       setLoading(false)
     }
 

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
-import { searchCoins } from "@/lib/search-service"
+import { searchCoinsFromAPI } from "@/lib/api-client"
 
 interface SearchBarProps {
   coins: EnrichedCoin[]
@@ -34,8 +34,8 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
 
     const performSearch = async () => {
       setIsSearching(true)
-      const results = await searchCoins(query)
-      setSearchResults(results)
+      const results = await searchCoinsFromAPI(query)
+      setSearchResults(results.tokens || [])
       setIsSearching(false)
     }
 
