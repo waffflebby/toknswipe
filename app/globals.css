@@ -1,0 +1,324 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* More futuristic minimal palette with better contrast */
+  --background: oklch(1 0 0); /* Pure white */
+  --foreground: oklch(0.09 0 0); /* Deeper black for better readability */
+  --card: oklch(0.995 0 0); /* Subtle off-white for cards */
+  --card-foreground: oklch(0.09 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.09 0 0);
+  --primary: oklch(0.09 0 0); /* Deep black for primary */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.98 0 0); /* Very light gray */
+  --secondary-foreground: oklch(0.09 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.45 0 0); /* Better contrast for muted text */
+  --accent: oklch(0.96 0 0); /* Light gray for hover */
+  --accent-foreground: oklch(0.09 0 0);
+  --destructive: oklch(0.55 0.22 25); /* Vibrant red */
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.92 0 0); /* More visible border */
+  --input: oklch(0.98 0 0);
+  --ring: oklch(0.09 0 0);
+  --premium: oklch(0.65 0.15 85); /* Gold for premium */
+  --premium-foreground: oklch(0.09 0 0);
+  --radius: 1.5rem; /* Larger, more futuristic radius */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  /* Vercel-style dark mode - pure black with no fills, just borders */
+  --background: oklch(0 0 0); /* Pure black #000 */
+  --foreground: oklch(0.98 0 0); /* Pure white for main text */
+  --card: oklch(0 0 0); /* Pure black - no fill */
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.98 0 0); /* White */
+  --primary-foreground: oklch(0 0 0);
+  --secondary: oklch(0 0 0); /* Pure black - no fill */
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0 0 0);
+  --muted-foreground: oklch(0.5 0 0); /* Lighter gray text - more visible on black */
+  --accent: oklch(0 0 0);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.55 0.22 25); /* Red */
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.2 0 0); /* Subtle border only */
+  --input: oklch(0 0 0);
+  --ring: oklch(0.5 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.12 0 0);
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.98 0 0);
+  --sidebar-primary-foreground: oklch(0.1 0 0);
+  --sidebar-accent: oklch(0.18 0 0);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.22 0 0);
+  --sidebar-ring: oklch(0.5 0 0);
+}
+
+@theme inline {
+  /* Adding Geist font variables for Vercel aesthetic */
+  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", "Courier New", monospace;
+  /* Adding Roboto for numbers */
+  --font-roboto: "Roboto", system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Adding gradient background for better visual depth */
+    background: linear-gradient(135deg, oklch(0.98 0.01 280) 0%, oklch(1 0 0) 50%, oklch(0.98 0.01 140) 100%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior: none;
+    overflow: hidden;
+  }
+
+  /* Enhanced mobile-first optimizations */
+  html {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-y;
+    /* Lock viewport for mobile app feel */
+    overflow: hidden;
+    height: 100%;
+  }
+
+  /* Better typography hierarchy with smaller mobile-optimized sizes */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-sans tracking-tight;
+    font-feature-settings: "ss01" on, "ss02" on;
+  }
+
+  p {
+    @apply leading-snug;
+  }
+}
+
+@layer utilities {
+  .shadow-3xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Adding glassmorphism utilities */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .glass-dark {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Adding infinite marquee animation for floating banner text */
+  @keyframes marquee {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 15s linear infinite;
+  }
+
+  /* Adding utility class for Roboto numbers */
+  .font-numbers {
+    font-family: var(--font-roboto);
+    font-feature-settings: "tnum" on, "lnum" on;
+  }
+
+  /* Adding dopamine-triggering animations for swipe effects */
+  @keyframes particle {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--tx, 0), var(--ty, 0)) scale(0);
+      opacity: 0;
+    }
+  }
+
+  .animate-particle {
+    --tx: calc((random() - 0.5) * 300px);
+    --ty: calc((random() - 0.5) * 300px);
+    animation: particle 0.8s ease-out forwards;
+  }
+
+  @keyframes confetti {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.2);
+    }
+  }
+
+  .animate-confetti {
+    animation: confetti 0.6s ease-out;
+  }
+
+  @keyframes match-text {
+    0% {
+      transform: scale(0.5) rotate(-10deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.2) rotate(5deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  .animate-match-text {
+    animation: match-text 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      opacity: 0.3;
+      box-shadow: 0 0 40px rgba(34, 197, 94, 0.4);
+    }
+    50% {
+      opacity: 0.6;
+      box-shadow: 0 0 80px rgba(34, 197, 94, 0.6);
+    }
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 0.6s ease-in-out;
+  }
+
+  @keyframes pulse-scale {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .animate-pulse-scale {
+    animation: pulse-scale 0.4s ease-in-out 2;
+  }
+
+  @keyframes flash-fade {
+    0% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 0.2;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .animate-flash-fade {
+    animation: flash-fade 0.5s ease-out;
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0) rotate(0deg);
+    }
+    25% {
+      transform: translateX(-10px) rotate(-5deg);
+    }
+    75% {
+      transform: translateX(10px) rotate(5deg);
+    }
+  }
+
+  .animate-shake {
+    animation: shake 0.4s ease-in-out;
+  }
+}
