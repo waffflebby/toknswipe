@@ -1,6 +1,7 @@
 import type { EnrichedCoin, Badge } from "./types"
 
 const WATCHLIST_KEY = "coinswipe_watchlist"
+const PERSONAL_KEY = "coinswipe_personal"
 const BADGES_KEY = "coinswipe_badges"
 const SWIPE_PROGRESS_KEY = "coinswipe_swipe_progress"
 const TOTAL_SWIPES_KEY = "coinswipe_total_swipes"
@@ -53,6 +54,53 @@ export function removeFromWatchlist(coinId: string): void {
 export function isInWatchlist(coinId: string): boolean {
   const watchlist = getWatchlist()
   return watchlist.some((c) => c.id === coinId)
+}
+
+export function getPersonalList(): EnrichedCoin[] {
+  if (typeof window === "undefined") return []
+
+  try {
+    const stored = localStorage.getItem(PERSONAL_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch (error) {
+    console.error("Error loading personal list:", error)
+    return []
+  }
+}
+
+export function addToPersonalList(coin: EnrichedCoin): void {
+  if (typeof window === "undefined") return
+
+  try {
+    const personalList = getPersonalList()
+
+    // Check if coin already exists
+    const exists = personalList.some((c) => c.id === coin.id)
+    if (exists) return
+
+    // Add coin to beginning of array
+    const updated = [coin, ...personalList]
+    localStorage.setItem(PERSONAL_KEY, JSON.stringify(updated))
+  } catch (error) {
+    console.error("Error adding to personal list:", error)
+  }
+}
+
+export function removeFromPersonalList(coinId: string): void {
+  if (typeof window === "undefined") return
+
+  try {
+    const personalList = getPersonalList()
+    const updated = personalList.filter((c) => c.id !== coinId)
+    localStorage.setItem(PERSONAL_KEY, JSON.stringify(updated))
+  } catch (error) {
+    console.error("Error removing from personal list:", error)
+  }
+}
+
+export function isInPersonalList(coinId: string): boolean {
+  const personalList = getPersonalList()
+  return personalList.some((c) => c.id === coinId)
 }
 
 export function getBadges(): Badge[] {
