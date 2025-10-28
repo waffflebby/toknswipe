@@ -23,7 +23,7 @@ import {
   Copy,
 } from "lucide-react"
 import type { EnrichedCoin } from "@/lib/types"
-import { getWatchlist, removeFromWatchlist } from "@/lib/storage"
+import { getWatchlist, removeFromWatchlist, getPersonalList, removeFromPersonalList } from "@/lib/storage"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -62,6 +62,7 @@ function generateMockChartData(change24h: number): number[] {
 
 export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
   const [watchlistCoins, setWatchlistCoins] = useState<EnrichedCoin[]>([])
+  const [personalCoins, setPersonalCoins] = useState<EnrichedCoin[]>([])
   const [activeTab, setActiveTab] = useState("all")
   const [customLists, setCustomLists] = useState<string[]>([])
   const [fullscreenChart, setFullscreenChart] = useState<EnrichedCoin | null>(null)
@@ -72,6 +73,7 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
   useEffect(() => {
     if (open) {
       setWatchlistCoins(getWatchlist())
+      setPersonalCoins(getPersonalList())
       const savedLists = localStorage.getItem("customWatchlists")
       if (savedLists) {
         setCustomLists(JSON.parse(savedLists))
@@ -85,7 +87,9 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
 
   const handleRemove = (coinId: string) => {
     removeFromWatchlist(coinId)
+    removeFromPersonalList(coinId)
     setWatchlistCoins(getWatchlist())
+    setPersonalCoins(getPersonalList())
   }
 
   const handleCreateList = () => {
@@ -111,8 +115,18 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
   }
 
   const getCoinsForTab = (tab: string) => {
-    if (tab === "all") return watchlistCoins
+    if (tab === "all") {
+      // Combine both watchlist and personal, deduplicate by id
+      const combined = [...watchlistCoins, ...personalCoins]
+      const seen = new Set<string>()
+      return combined.filter(coin => {
+        if (seen.has(coin.id)) return false
+        seen.add(coin.id)
+        return true
+      })
+    }
     if (tab === "matched") return watchlistCoins
+    if (tab === "personal") return personalCoins
     if (customLists.includes(tab)) {
       const coinIds = coinLists[tab] || []
       return watchlistCoins.filter((coin) => coinIds.includes(coin.id))
@@ -160,6 +174,12 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
                   className="data-[state=active]:bg-orange-50 data-[state=active]:text-orange-600 text-xs px-3 py-1 rounded-full"
                 >
                   Matched
+                </TabsTrigger>
+                <TabsTrigger
+                  value="personal"
+                  className="data-[state=active]:bg-orange-50 data-[state=active]:text-orange-600 text-xs px-3 py-1 rounded-full"
+                >
+                  Personal
                 </TabsTrigger>
                 {customLists.map((listName) => (
                   <TabsTrigger
