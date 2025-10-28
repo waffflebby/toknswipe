@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
-import { fetchTokenChart } from "@/lib/api-enhanced"
+import { fetchTokenChartFromAPI } from "@/lib/api-client"
 
 interface TokenChartProps {
   tokenAddress: string
@@ -26,7 +26,7 @@ export function TokenChart({ tokenAddress, tokenSymbol, className }: TokenChartP
       setError(null)
       
       try {
-        const data: any = await fetchTokenChart(tokenAddress, timeframe)
+        const data: any = await fetchTokenChartFromAPI(tokenAddress, timeframe)
         
         // Chart data not available - show external links
         if (!data) {

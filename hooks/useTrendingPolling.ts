@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react"
-import { fetchTrendingCoins } from "@/lib/api-enhanced"
+import { fetchTrendingCoinsFromAPI } from "@/lib/api-client"
 import { saveCoinCache, getCoinCache } from "@/lib/coin-cache"
 import type { EnrichedCoin } from "@/lib/types"
 
@@ -12,7 +12,7 @@ export function useTrendingPolling(onCoinsUpdate?: (coins: EnrichedCoin[]) => vo
     const pollTrending = async () => {
       try {
         console.log("[Polling] Fetching trending coins...")
-        const coins = await fetchTrendingCoins()
+        const coins = await fetchTrendingCoinsFromAPI()
         
         if (coins.length > 0) {
           // Save to local cache

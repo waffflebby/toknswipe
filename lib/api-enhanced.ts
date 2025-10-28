@@ -2,10 +2,10 @@ import type { EnrichedCoin } from "./types"
 import { Moralis, initMoralis } from "./moralis-client"
 import { detectThemes } from "./theme-detector"
 
-// Get API key from environment variable (NEXT_PUBLIC_ prefix makes it available on client-side)
-const MORALIS_API_KEY = process.env.NEXT_PUBLIC_MORALIS_API_KEY!
-if (!process.env.NEXT_PUBLIC_MORALIS_API_KEY) {
-  throw new Error("NEXT_PUBLIC_MORALIS_API_KEY is required. Please set it in your environment variables.")
+// Get API key from environment variable (server-side only)
+const MORALIS_API_KEY = process.env.MORALIS_API_KEY!
+if (!process.env.MORALIS_API_KEY) {
+  throw new Error("MORALIS_API_KEY is required. Please set it in your environment variables.")
 }
 
 // Cache configuration

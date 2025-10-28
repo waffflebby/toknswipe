@@ -34,7 +34,7 @@ import {
 import Image from "next/image"
 import type { EnrichedCoin } from "@/lib/types"
 import { CleanChart } from "@/components/clean-chart"
-import { fetchTokenHolders } from "@/lib/api-enhanced"
+import { fetchTokenHoldersFromAPI } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
 interface CoinInsightsSheetProps {
@@ -78,7 +78,7 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
       
       setLoadingHolders(true)
       try {
-        const holdersData = await fetchTokenHolders(coin.mint)
+        const holdersData = await fetchTokenHoldersFromAPI(coin.mint)
         if (holdersData && holdersData.holders) {
           setRealTopHolders(holdersData.holders.slice(0, 10))
         }

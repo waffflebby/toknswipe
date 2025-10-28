@@ -66,3 +66,62 @@ export async function searchCoinsFromAPI(query: string): Promise<{ tokens: any[]
     return { tokens: [], themes: [] }
   }
 }
+
+export async function fetchTokenChartFromAPI(
+  tokenAddress: string,
+  timeframe: "1H" | "1D" | "1W" | "1M" | "ALL" | "1m" | "5m" | "15m" | "1h" | "4h" | "1d" = "1D"
+) {
+  try {
+    const normalizedTimeframe = normalizeTimeframe(timeframe)
+    const response = await fetch(
+      `${API_BASE_URL}/api/chart?token=${encodeURIComponent(tokenAddress)}&timeframe=${normalizedTimeframe}`
+    )
+    
+    if (!response.ok) {
+      console.error(`[API Client] Chart API error: ${response.status}`)
+      return null
+    }
+
+    const result = await response.json()
+    return result.data
+  } catch (error) {
+    console.error("[API Client] Error fetching chart:", error)
+    return null
+  }
+}
+
+function normalizeTimeframe(timeframe: string): "1H" | "1D" | "1W" | "1M" | "ALL" {
+  const map: Record<string, "1H" | "1D" | "1W" | "1M" | "ALL"> = {
+    "1m": "1H",
+    "5m": "1H",
+    "15m": "1H",
+    "1h": "1H",
+    "4h": "1D",
+    "1d": "1D",
+    "1H": "1H",
+    "1D": "1D",
+    "1W": "1W",
+    "1M": "1M",
+    "ALL": "ALL",
+  }
+  return map[timeframe] || "1D"
+}
+
+export async function fetchTokenHoldersFromAPI(tokenAddress: string) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/holders?token=${encodeURIComponent(tokenAddress)}`
+    )
+    
+    if (!response.ok) {
+      console.error(`[API Client] Holders API error: ${response.status}`)
+      return null
+    }
+
+    const result = await response.json()
+    return result.data
+  } catch (error) {
+    console.error("[API Client] Error fetching holders:", error)
+    return null
+  }
+}

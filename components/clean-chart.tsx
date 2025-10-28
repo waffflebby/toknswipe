@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { ComposedChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, Customized } from "recharts"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
-import { fetchTokenChart } from "@/lib/api-enhanced"
+import { fetchTokenChartFromAPI } from "@/lib/api-client"
 
 interface CleanChartProps {
   tokenAddress: string
@@ -40,7 +40,7 @@ export function CleanChart({ tokenAddress, tokenSymbol, className, variant = "fu
 
       try {
         // Fetch real price data from Moralis
-        const data: any = await fetchTokenChart(tokenAddress, timeframe)
+        const data: any = await fetchTokenChartFromAPI(tokenAddress, timeframe)
 
         const raw = (data?.result ?? data?.data ?? data) as any[]
         if (!raw || !Array.isArray(raw) || raw.length === 0) {

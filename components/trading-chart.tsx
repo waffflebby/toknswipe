@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { ResponsiveContainer, ComposedChart, XAxis, YAxis, Tooltip, CartesianGrid, Bar, Line } from "recharts";
 import { Button } from "@/components/ui/button"
 import { Loader2, TrendingUp, TrendingDown } from "lucide-react"
-import { fetchTokenChart } from "@/lib/api-enhanced"
+import { fetchTokenChartFromAPI } from "@/lib/api-client"
 
 interface TradingChartProps {
   tokenAddress: string
@@ -35,7 +35,7 @@ export function TradingChart({ tokenAddress, tokenSymbol, className }: TradingCh
       setError(null)
 
       try {
-        const data: any = await fetchTokenChart(tokenAddress, timeframe)
+        const data: any = await fetchTokenChartFromAPI(tokenAddress, timeframe)
 
         if (!data || !data.result || data.result.length === 0) {
           setError("No chart data available")

@@ -4,9 +4,9 @@ import { MEME_THEMES } from "@/lib/theme-detector"
 
 const SEARCH_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
-const MORALIS_API_KEY = process.env.NEXT_PUBLIC_MORALIS_API_KEY!
-if (!process.env.NEXT_PUBLIC_MORALIS_API_KEY) {
-  throw new Error("NEXT_PUBLIC_MORALIS_API_KEY is required. Please set it in your environment variables.")
+const MORALIS_API_KEY = process.env.MORALIS_API_KEY!
+if (!process.env.MORALIS_API_KEY) {
+  throw new Error("MORALIS_API_KEY is required. Please set it in your environment variables.")
 }
 
 export async function GET(request: Request) {
