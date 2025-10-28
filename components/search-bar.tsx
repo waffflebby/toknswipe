@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Search, X } from "lucide-react"
+import { Search, X, Star } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
 import { searchCoinsFromAPI } from "@/lib/api-client"
+import { useThemeStorage } from "@/hooks/useThemeStorage"
 
 interface SearchBarProps {
   coins: EnrichedCoin[]
@@ -24,6 +25,7 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
 
   const [searchResults, setSearchResults] = useState<EnrichedCoin[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  const { addCoin, isCoinInTheme } = useThemeStorage()
 
   // Search via Moralis API
   useEffect(() => {
@@ -131,7 +133,7 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
       </div>
 
       {/* Fire dropdown with results */}
-      {showDropdown && (filteredCoins.length > 0 || filteredThemes.length > 0) && (
+      {showDropdown && (filteredCoins.length > 0 || searchResults.length > 0 || filteredThemes.length > 0) && (
         <div
           ref={dropdownRef}
           className="absolute left-0 right-0 top-full mt-0 w-full bg-white dark:bg-black rounded-none border-b border-gray-200 dark:border-neutral-800 shadow-lg z-[100] max-h-[432px] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
@@ -142,24 +144,24 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
               <p className="text-[9px] font-bold text-gray-500 uppercase tracking-wider px-2 mb-1.5">💰 Coins</p>
               <div className="space-y-0.5">
                 {filteredCoins.map((coin) => (
-                  <button
+                  <div
                     key={coin.id}
-                    onClick={() => handleSelectCoin(coin)}
-                    className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-50 rounded-lg transition-all text-left border border-transparent hover:border-gray-200 hover:shadow-sm"
+                    className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-50 rounded-lg transition-all border border-transparent hover:border-gray-200 hover:shadow-sm"
                   >
                     <img
                       src={coin.image}
                       alt={coin.symbol}
-                      className="h-7 w-7 rounded-full shrink-0 border border-gray-100"
+                      className="h-7 w-7 rounded-full shrink-0 border border-gray-100 cursor-pointer"
+                      onClick={() => handleSelectCoin(coin)}
                       onError={(e) => {
                         e.currentTarget.src = "/placeholder.svg?height=32&width=32"
                       }}
                     />
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleSelectCoin(coin)}>
                       <p className="text-xs font-bold text-gray-900">${coin.symbol}</p>
                       <p className="text-[9px] text-gray-400 truncate">{coin.name}</p>
                     </div>
-                    <div className="text-right shrink-0">
+                    <div className="text-right shrink-0 cursor-pointer" onClick={() => handleSelectCoin(coin)}>
                       <p className="text-xs font-semibold text-gray-900">{coin.price}</p>
                       <p className={cn(
                         "text-xs font-semibold",
@@ -168,7 +170,73 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                         {coin.change24h}
                       </p>
                     </div>
-                  </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        addCoin("trending", coin.mint)
+                      }}
+                      className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 border border-gray-200 hover:border-yellow-300 transition-colors"
+                    >
+                      <Star className={cn(
+                        "h-3.5 w-3.5",
+                        isCoinInTheme("trending", coin.mint) 
+                          ? "fill-yellow-400 text-yellow-400" 
+                          : "text-gray-400"
+                      )} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* API Search Results section */}
+          {searchResults.length > 0 && (
+            <div className={cn("p-2.5", filteredCoins.length > 0 && "border-t border-gray-100")}>
+              <p className="text-[9px] font-bold text-gray-500 uppercase tracking-wider px-2 mb-1.5">🔍 Search Results</p>
+              <div className="space-y-0.5">
+                {searchResults.filter(r => !filteredCoins.some(c => c.mint === r.mint)).map((coin) => (
+                  <div
+                    key={coin.mint}
+                    className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-50 rounded-lg transition-all border border-transparent hover:border-gray-200 hover:shadow-sm"
+                  >
+                    <img
+                      src={coin.image}
+                      alt={coin.symbol}
+                      className="h-7 w-7 rounded-full shrink-0 border border-gray-100 cursor-pointer"
+                      onClick={() => handleSelectCoin(coin)}
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg?height=32&width=32"
+                      }}
+                    />
+                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleSelectCoin(coin)}>
+                      <p className="text-xs font-bold text-gray-900">${coin.symbol}</p>
+                      <p className="text-[9px] text-gray-400 truncate">{coin.name}</p>
+                    </div>
+                    <div className="text-right shrink-0 cursor-pointer" onClick={() => handleSelectCoin(coin)}>
+                      <p className="text-xs font-semibold text-gray-900">{coin.price || "—"}</p>
+                      <p className={cn(
+                        "text-xs font-semibold",
+                        (coin.change24hNum ?? 0) >= 0 ? "text-green-600" : "text-red-600"
+                      )}>
+                        {coin.change24h || "—"}
+                      </p>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        addCoin("trending", coin.mint)
+                      }}
+                      className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 border border-gray-200 hover:border-yellow-300 transition-colors"
+                    >
+                      <Star className={cn(
+                        "h-3.5 w-3.5",
+                        isCoinInTheme("trending", coin.mint) 
+                          ? "fill-yellow-400 text-yellow-400" 
+                          : "text-gray-400"
+                      )} />
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -197,10 +265,17 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
           )}
 
           {/* No results */}
-          {filteredCoins.length === 0 && filteredThemes.length === 0 && query.trim() && (
+          {filteredCoins.length === 0 && searchResults.length === 0 && filteredThemes.length === 0 && query.trim() && !isSearching && (
             <div className="p-6 text-center">
               <p className="text-sm text-gray-500 mb-1">No results for <span className="font-semibold">"{query}"</span></p>
               <p className="text-xs text-gray-400">Try searching for a coin name, symbol, or theme</p>
+            </div>
+          )}
+
+          {/* Searching indicator */}
+          {isSearching && (
+            <div className="p-4 text-center">
+              <p className="text-xs text-gray-500">Searching...</p>
             </div>
           )}
         </div>

@@ -202,12 +202,12 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
                   {/* Price and MCap Only */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center space-y-1">
-                      <p className="text-[9px] font-semibold uppercase text-white dark:text-white">Price</p>
-                      <p className="text-sm font-bold font-numbers text-gray-400 dark:text-gray-400">{coin.price}</p>
+                      <p className="text-[9px] font-semibold uppercase text-gray-400 dark:text-gray-400">Price</p>
+                      <p className="text-sm font-bold font-numbers text-black dark:text-white">{coin.price}</p>
                     </div>
                     <div className="text-center space-y-1">
-                      <p className="text-[9px] font-semibold uppercase text-white dark:text-white">MCap</p>
-                      <p className="text-sm font-bold font-numbers text-gray-400 dark:text-gray-400">{coin.marketCap}</p>
+                      <p className="text-[9px] font-semibold uppercase text-gray-400 dark:text-gray-400">MCap</p>
+                      <p className="text-sm font-bold font-numbers text-black dark:text-white">{coin.marketCap}</p>
                     </div>
                   </div>
 
