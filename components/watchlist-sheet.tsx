@@ -19,6 +19,8 @@ import {
   X,
   Globe,
   Twitter,
+  ChevronDown,
+  Copy,
 } from "lucide-react"
 import type { EnrichedCoin } from "@/lib/types"
 import { getWatchlist, removeFromWatchlist } from "@/lib/storage"
@@ -202,8 +204,11 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
 
         <Dialog open={showNewListDialog} onOpenChange={setShowNewListDialog}>
           <DialogContent className="sm:max-w-md">
-            <DialogHeader>
+            <VisuallyHidden>
               <DialogTitle>Create New Watchlist</DialogTitle>
+            </VisuallyHidden>
+            <DialogHeader>
+              <h2 className="text-lg font-semibold">Create New Watchlist</h2>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <Input
@@ -294,6 +299,7 @@ function CoinCard({
   onViewChart: (coin: EnrichedCoin) => void
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [showAdvanced, setShowAdvanced] = useState(false)
 
   const truncateAddress = (address: string | undefined) => {
     if (!address) return "N/A"
@@ -379,101 +385,90 @@ function CoinCard({
 
       {isExpanded && (
         <div className="mt-2 space-y-2 max-h-[500px] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-          {/* Metadata with View Chart */}
-          <div className="px-1">
-            <div className="flex gap-4 flex-wrap items-end justify-between">
-              <div className="flex gap-4 flex-wrap items-end">
-                {coin.liquidity && (
-                  <div className="space-y-0.5">
-                    <p className="text-[10px] text-black dark:text-white font-medium">Liquidity</p>
-                    <p className="text-sm font-bold text-gray-500 dark:text-neutral-500">{coin.liquidity}</p>
-                  </div>
-                )}
-                <div className="space-y-0.5">
-                  <p className="text-[10px] text-black dark:text-white font-medium">Holders</p>
-                  <p className="text-sm font-bold text-gray-500 dark:text-neutral-500">{coin.holders || "N/A"}</p>
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-[10px] text-black dark:text-white font-medium">Age</p>
-                  <p className="text-sm font-bold text-gray-500 dark:text-neutral-500">{coin.age}</p>
-                </div>
-              </div>
+          {/* Website, Twitter on Left | Chart, Copy on Right */}
+          <div className="px-1 flex gap-2 justify-between">
+            <div className="flex gap-2">
+              <a
+                href={coin.website || "#"}
+                target={coin.website ? "_blank" : undefined}
+                rel={coin.website ? "noopener noreferrer" : undefined}
+                onClick={(e) => !coin.website && e.preventDefault()}
+                className="flex items-center gap-1 px-2 py-1.5 text-[10px] font-medium rounded-md bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors text-black dark:text-white"
+              >
+                <Globe className="h-3 w-3" />
+                Website
+              </a>
+              <a
+                href={`https://twitter.com/search?q=${coin.symbol}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-2 py-1.5 text-[10px] font-medium rounded-md bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors text-black dark:text-white"
+              >
+                <Twitter className="h-3 w-3" />
+                Twitter
+              </a>
+            </div>
+            <div className="flex gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onViewChart(coin)}
-                className="h-7 px-2 gap-1 text-[11px] text-gray-700 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-md"
+                className="h-7 px-2 gap-1 text-[10px] text-gray-700 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-md"
               >
                 <Maximize2 className="h-3 w-3" />
-                View Chart
+                Chart
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(coin.mint)
+                }}
+                className="h-7 px-2 gap-1 text-[10px] text-gray-700 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-md"
+              >
+                <Copy className="h-3 w-3" />
+                Copy
               </Button>
             </div>
           </div>
 
-          {/* Advanced Metadata */}
+          {/* All Metadata - Always Visible */}
           <div className="px-1 space-y-2 border-t border-gray-200 dark:border-neutral-800 pt-2">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
+              {coin.volume24h && (
+                <div className="text-center space-y-0.5">
+                  <p className="text-[9px] font-semibold uppercase text-black dark:text-white">24h Vol</p>
+                  <p className="text-xs font-bold text-gray-600 dark:text-neutral-400">{coin.volume24h}</p>
+                </div>
+              )}
+              {coin.liquidity && (
+                <div className="text-center space-y-0.5">
+                  <p className="text-[9px] font-semibold uppercase text-black dark:text-white">Liq</p>
+                  <p className="text-xs font-bold text-gray-600 dark:text-neutral-400">{coin.liquidity}</p>
+                </div>
+              )}
+              <div className="text-center space-y-0.5">
+                <p className="text-[9px] font-semibold uppercase text-black dark:text-white">Holders</p>
+                <p className="text-xs font-bold text-gray-600 dark:text-neutral-400">{coin.holders || "N/A"}</p>
+              </div>
               {coin.txns24h && (
-                <div className="space-y-0.5">
-                  <p className="text-[10px] text-black dark:text-white font-medium">24h Txns</p>
-                  <p className="text-sm font-bold text-gray-500 dark:text-neutral-500">{coin.txns24h.toLocaleString()}</p>
+                <div className="text-center space-y-0.5">
+                  <p className="text-[9px] font-semibold uppercase text-black dark:text-white">24h Txns</p>
+                  <p className="text-xs font-bold text-gray-600 dark:text-neutral-400">{coin.txns24h.toLocaleString()}</p>
                 </div>
               )}
-              {coin.riskLevel && (
-                <div className="space-y-0.5">
-                  <p className="text-[10px] text-black dark:text-white font-medium">Risk</p>
-                  <p className={`text-sm font-bold ${
-                    coin.riskLevel === 'low' ? 'text-green-600' :
-                    coin.riskLevel === 'medium' ? 'text-yellow-600' :
-                    'text-red-600'
-                  }`}>
-                    {coin.riskLevel.charAt(0).toUpperCase() + coin.riskLevel.slice(1)}
-                  </p>
+              <div className="text-center space-y-0.5">
+                <p className="text-[9px] font-semibold uppercase text-black dark:text-white">FDV</p>
+                <p className="text-xs font-bold text-gray-600 dark:text-neutral-400">—</p>
+              </div>
+              {coin.age && (
+                <div className="text-center space-y-0.5">
+                  <p className="text-[9px] font-semibold uppercase text-black dark:text-white">Pair Age</p>
+                  <p className="text-xs font-bold text-gray-600 dark:text-neutral-400">{coin.age}</p>
                 </div>
               )}
             </div>
-
-            {coin.description && (
-              <div className="space-y-0.5">
-                <p className="text-[10px] text-black dark:text-white font-medium">Description</p>
-                <p className="text-xs text-gray-600 dark:text-neutral-400 line-clamp-2">{coin.description}</p>
-              </div>
-            )}
-
-            {coin.creator && (
-              <div className="space-y-0.5">
-                <p className="text-[10px] text-black dark:text-white font-medium">Creator</p>
-                <code className="text-[9px] text-gray-600 dark:text-neutral-400 font-mono break-all">{coin.creator.slice(0, 20)}...</code>
-              </div>
-            )}
           </div>
-
-          {(coin.website || coin.twitter) && (
-            <div className="flex items-center gap-3 px-1 pb-2">
-              {coin.website && (
-                <a
-                  href={coin.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Website"
-                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-900 transition-colors"
-                >
-                  <Globe className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
-                </a>
-              )}
-              {coin.twitter && (
-                <a
-                  href={coin.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-900 transition-colors"
-                >
-                  <Twitter className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
-                </a>
-              )}
-            </div>
-          )}
 
           <p className="text-xs text-gray-400 text-center pt-1">Tap to collapse</p>
         </div>

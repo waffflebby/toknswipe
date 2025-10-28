@@ -165,20 +165,13 @@ export function CleanChart({ tokenAddress, tokenSymbol, className, variant = "fu
     )
   }
 
-  // Show blank white screen while loading (first 1 second)
-  if (loading && !showError) {
-    return (
-      <div className="h-96 bg-white dark:bg-black" />
-    )
-  }
-
   return (
     <div className={`flex flex-col bg-white dark:bg-black ${className}`}>
 
       {/* Chart - Full height for mobile */}
       <div className="relative px-4 py-4 bg-white dark:bg-black">
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black/80 z-10">
+          <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-black/50 z-10 rounded">
             <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
           </div>
         )}

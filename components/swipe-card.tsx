@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useRef } from "react"
 import { Card } from "@/components/ui/card"
-import { AlertTriangle, Clock, Activity, Users, Globe } from "lucide-react"
+import { AlertTriangle, Clock, Activity, Users, Globe, PenTool } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
@@ -156,7 +156,7 @@ export function SwipeCard({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Image Section with Launch Badge */}
+        {/* Image Section with Launch Badge - Centered */}
         <div
           className="relative h-[40%] w-full bg-white dark:bg-black border-b border-gray-100 dark:border-neutral-800 shrink-0 cursor-pointer active:opacity-90 transition-opacity flex items-center justify-center p-4 overflow-hidden"
           onClick={handleImageClick}
@@ -167,13 +167,16 @@ export function SwipeCard({
               {coin.launchpad.toUpperCase()}
             </div>
           )}
-          <Image
-            src={coin.image || "/placeholder.svg"}
-            alt={coin.name}
-            width={180}
-            height={180}
-            className="object-contain"
-          />
+          {/* Centered Image */}
+          <div className="flex items-center justify-center">
+            <Image
+              src={coin.image || "/placeholder.svg"}
+              alt={coin.name}
+              width={200}
+              height={200}
+              className="object-contain"
+            />
+          </div>
         </div>
 
         <div
@@ -235,13 +238,13 @@ export function SwipeCard({
                   <Image src="/launchpad-meteora.png" alt="Meteora" width={20} height={20} className="object-contain" />
                 )}
                 {coin.launchpad === "raydium" && (
-                  <Image src="/launchpad-raydium.jpg" alt="Raydium" width={20} height={20} className="object-contain" />
+                  <Image src="/raydium-ray-logo.png" alt="Raydium" width={20} height={20} className="object-contain" />
                 )}
                 {coin.launchpad === "jupiter" && (
                   <Image src="/launchpad-jupiter.jpg" alt="Jupiter" width={20} height={20} className="object-contain" />
                 )}
                 {coin.launchpad === "bonk" && (
-                  <Image src="/launchpad-bonk.png" alt="Bonk" width={20} height={20} className="object-contain" />
+                  <Image src="/bonk.png" alt="Bonk" width={20} height={20} className="object-contain" />
                 )}
                 {(!coin.launchpad ||
                   (coin.launchpad !== "pumpfun" &&
@@ -284,6 +287,7 @@ export function SwipeCard({
               </div>
               <span className="text-[9px] text-gray-700 dark:text-neutral-400">Twitter</span>
             </a>
+
           </div>
 
           <div className="pt-1 border-t border-white/20">

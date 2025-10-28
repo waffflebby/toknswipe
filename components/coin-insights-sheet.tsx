@@ -148,83 +148,97 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[90vh] p-0 bg-white dark:bg-black">
-          <ScrollArea className="h-full">
+        <SheetContent side="bottom" className="h-[90vh] p-0 bg-white dark:bg-black flex flex-col">
+          <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-neutral-800 shrink-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowFullChart(true)}
+              className="h-6 px-1.5 gap-0.5 text-[10px] text-gray-700 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-md"
+            >
+              <Maximize2 className="h-2.5 w-2.5" />
+              View Chart
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onOpenChange(false)}
+              className="h-6 w-6 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <ScrollArea className="flex-1">
             <div className="p-4 space-y-4">
-              <SheetHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="relative h-12 w-12 shrink-0">
-                      <Image
-                        src={coin.image || "/placeholder.svg"}
-                        alt={coin.name}
-                        fill
-                        className="object-contain rounded-lg"
-                        onError={(e) => {
-                          e.currentTarget.src = "/placeholder.svg"
-                        }}
-                      />
-                      {coin.isVerified && (
-                        <div className="absolute -top-1 -right-1 rounded-full bg-blue-500 p-0.5 shadow-lg">
-                          <Shield className="h-2.5 w-2.5 text-white" />
-                        </div>
-                      )}
+              {/* Centered Logo */}
+              <div className="flex justify-center">
+                <div className="relative h-16 w-16">
+                  <Image
+                    src={coin.image || "/placeholder.svg"}
+                    alt={coin.name}
+                    fill
+                    className="object-contain rounded-lg"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg"
+                    }}
+                  />
+                  {coin.isVerified && (
+                    <div className="absolute -top-1 -right-1 rounded-full bg-blue-500 p-0.5 shadow-lg">
+                      <Shield className="h-2.5 w-2.5 text-white" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <SheetTitle className="text-lg font-bold tracking-tight">{coin.name}</SheetTitle>
-                      <p className="text-xs text-muted-foreground font-medium">${coin.symbol}</p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowFullChart(true)}
-                    className="h-7 px-2 gap-1 text-[11px] text-gray-700 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-md shrink-0"
-                  >
-                    <Maximize2 className="h-3 w-3" />
-                    View Chart
-                  </Button>
+                  )}
                 </div>
-              </SheetHeader>
+              </div>
+
+              {/* Coin Name and Symbol */}
+              <div className="text-center space-y-1">
+                <p className="text-sm font-semibold text-black dark:text-white">{coin.name}</p>
+                <p className="text-xs text-muted-foreground">${coin.symbol}</p>
+              </div>
 
               {viewMode === "full" && (
                 <>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-1.5">
-                      <h3 className="text-xs font-semibold uppercase tracking-wide text-black dark:text-white flex items-center gap-1.5">
-                        <BarChart3 className="h-4 w-4" />
-                        Live Price
-                      </h3>
+                  {/* Price and MCap Only */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center space-y-1">
+                      <p className="text-[9px] font-semibold uppercase text-white dark:text-white">Price</p>
+                      <p className="text-sm font-bold font-numbers text-gray-400 dark:text-gray-400">{coin.price}</p>
                     </div>
-                    <div className="flex items-baseline gap-3">
-                      <p className="text-3xl font-bold tracking-tight font-numbers text-black dark:text-white">${livePrice.toFixed(8)}</p>
-                      <div className={cn(
-                        "text-sm font-semibold px-2 py-1 rounded-md inline-flex items-center gap-0.5",
-                        priceChange >= 0 ? "text-green-600" : "text-red-600",
-                      )}>
-                        {priceChange >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                        {priceChange >= 0 ? "+" : ""}{priceChange.toFixed(2)}%
-                      </div>
+                    <div className="text-center space-y-1">
+                      <p className="text-[9px] font-semibold uppercase text-white dark:text-white">MCap</p>
+                      <p className="text-sm font-bold font-numbers text-gray-400 dark:text-gray-400">{coin.marketCap}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                        <p className="text-[10px] font-semibold uppercase text-black dark:text-white">24h Vol</p>
-                        <p className="text-base font-bold font-numbers text-gray-500 dark:text-neutral-500">{coin.volume24h}</p>
+                  <Separator />
+
+                  {/* Metadata Section */}
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-3 gap-2 w-full">
+                      <div className="text-center space-y-1">
+                        <p className="text-[9px] font-semibold uppercase text-black dark:text-white">24h Vol</p>
+                        <p className="text-xs font-bold font-numbers text-gray-600 dark:text-neutral-400">{coin.volume24h}</p>
                       </div>
-                      <div className="space-y-1.5">
-                        <p className="text-[10px] font-semibold uppercase text-black dark:text-white">MCap</p>
-                        <p className="text-base font-bold font-numbers text-gray-500 dark:text-neutral-500">{coin.marketCap}</p>
+                      <div className="text-center space-y-1">
+                        <p className="text-[9px] font-semibold uppercase text-black dark:text-white">Liq</p>
+                        <p className="text-xs font-bold font-numbers text-gray-600 dark:text-neutral-400">{coin.liquidity}</p>
                       </div>
-                      <div className="space-y-1.5">
-                        <p className="text-[10px] font-semibold uppercase text-black dark:text-white">Liq</p>
-                        <p className="text-base font-bold font-numbers text-gray-500 dark:text-neutral-500">{coin.liquidity}</p>
+                      <div className="text-center space-y-1">
+                        <p className="text-[9px] font-semibold uppercase text-black dark:text-white">Holders</p>
+                        <p className="text-xs font-bold font-numbers text-gray-600 dark:text-neutral-400">{coin.holders?.toLocaleString() || "2.8K"}</p>
                       </div>
-                      <div className="space-y-1.5">
-                        <p className="text-[10px] font-semibold uppercase text-black dark:text-white">Holders</p>
-                        <p className="text-base font-bold font-numbers text-gray-500 dark:text-neutral-500">{coin.holders?.toLocaleString() || "2.8K"}</p>
+                      <div className="text-center space-y-1">
+                        <p className="text-[9px] font-semibold uppercase text-black dark:text-white">24h Txns</p>
+                        <p className="text-xs font-bold font-numbers text-gray-600 dark:text-neutral-400">{coin.txns24h?.toLocaleString() || "—"}</p>
+                      </div>
+                      <div className="text-center space-y-1">
+                        <p className="text-[9px] font-semibold uppercase text-black dark:text-white">FDV</p>
+                        <p className="text-xs font-bold font-numbers text-gray-600 dark:text-neutral-400">{coin.fdv || "—"}</p>
+                      </div>
+                      <div className="text-center space-y-1">
+                        <p className="text-[9px] font-semibold uppercase text-black dark:text-white">Pair Age</p>
+                        <p className="text-xs font-bold font-numbers text-gray-600 dark:text-neutral-400">{coin.age || "—"}</p>
                       </div>
                     </div>
                   </div>
@@ -235,13 +249,6 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
 
               {viewMode === "full" && (
                 <>
-                  <Button variant="outline" size="sm" className="gap-1.5 text-xs text-gray-700 dark:text-neutral-300 bg-gray-50 dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-800 px-3 py-1.5 w-fit" asChild>
-                    <a href={`https://twitter.com/search?q=${coin.symbol}`} target="_blank" rel="noopener noreferrer">
-                      <Twitter className="h-3 w-3" />
-                      Search
-                    </a>
-                  </Button>
-
                   <Separator />
 
                   <div className="space-y-3">
@@ -306,47 +313,31 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
 
                   <div className="space-y-2">
                     <h3 className="text-xs font-semibold uppercase tracking-wide text-black dark:text-white">Links</h3>
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <a
                         href={`https://solscan.io/token/${coin.mint}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Solscan"
-                        className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-900 transition-colors"
+                        className="flex-1 min-w-[100px] text-center px-3 py-2 text-xs font-medium rounded-md bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors text-black dark:text-white"
                       >
-                        <ExternalLink className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
+                        Solscan
+                      </a>
+                      <a
+                        href={`https://twitter.com/search?q=${coin.symbol}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 min-w-[100px] text-center px-3 py-2 text-xs font-medium rounded-md bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors text-black dark:text-white"
+                      >
+                        Twitter
                       </a>
                       {coin.website && (
                         <a
                           href={coin.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          aria-label="Website"
-                          className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-900 transition-colors"
+                          className="flex-1 min-w-[100px] text-center px-3 py-2 text-xs font-medium rounded-md bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors text-black dark:text-white"
                         >
-                          <Globe className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
-                        </a>
-                      )}
-                      {coin.twitter && (
-                        <a
-                          href={coin.twitter}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label="X"
-                          className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-900 transition-colors"
-                        >
-                          <Twitter className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
-                        </a>
-                      )}
-                      {coin.telegram && (
-                        <a
-                          href={coin.telegram}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label="Telegram"
-                          className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-neutral-900 transition-colors"
-                        >
-                          <Send className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
+                          Website
                         </a>
                       )}
                     </div>

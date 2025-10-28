@@ -262,16 +262,6 @@ export function SwipeView() {
   const canUndo = swipeHistory.length > 0
   const remainingSwipes = maxFreeSwipes - swipeCount
 
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="text-center space-y-4">
-          <RefreshCw className="h-12 w-12 animate-spin text-muted-foreground mx-auto" />
-          <p className="text-sm text-muted-foreground font-medium">Loading coins...</p>
-        </div>
-      </div>
-    )
-  }
 
   if (coins.length === 0) {
     return (
@@ -430,6 +420,14 @@ export function SwipeView() {
       </header>
 
       <div className="relative flex flex-1 items-center justify-center px-4 overflow-hidden">
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/30 dark:bg-black/30 backdrop-blur-sm z-40 rounded-3xl">
+            <div className="text-center space-y-3">
+              <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground mx-auto" />
+              <p className="text-xs text-muted-foreground font-medium">Loading coins...</p>
+            </div>
+          </div>
+        )}
         {swipeEffect === "like" && (
           <div className="absolute inset-0 pointer-events-none z-[60] flex items-center justify-center">
             <div className="absolute inset-0 animate-confetti">

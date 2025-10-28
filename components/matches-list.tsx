@@ -18,11 +18,25 @@ import {
   Search,
   Waves,
   ArrowLeft,
+  BarChart3,
+  Zap,
+  Copy,
+  Globe,
+  Twitter,
+  MoreVertical,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 
 interface Match {
   id: string
@@ -33,6 +47,15 @@ interface Match {
   matchedAt: string
   image: string
   unreadMessages: number
+  mint?: string
+  volume24h?: string
+  marketCap?: string
+  liquidity?: string
+  holders?: number
+  txns24h?: number
+  riskLevel?: string
+  website?: string
+  twitter?: string
 }
 
 interface FriendMatch {
@@ -61,6 +84,15 @@ const mockMatches: Match[] = [
     matchedAt: "2h ago",
     image: "/pepe-meme-coin.png",
     unreadMessages: 3,
+    mint: "4k3Dyjzvzp8eMZWUUbCbRCw6gZAqvHn5C2MZt4wa7524",
+    volume24h: "$329.71M",
+    marketCap: "$6.89B",
+    liquidity: "$184.86M",
+    holders: 629543,
+    txns24h: 47728,
+    riskLevel: "low",
+    website: "https://pepe.vip",
+    twitter: "https://twitter.com/pepecoineth",
   },
   {
     id: "2",
@@ -71,6 +103,15 @@ const mockMatches: Match[] = [
     matchedAt: "5h ago",
     image: "/bonk-dog-coin-solana-logo.jpg",
     unreadMessages: 0,
+    mint: "DezXAZ8z7PnrnRJjz3wXBoRgixVqXaSL1shNorWMaWRd",
+    volume24h: "$125.43M",
+    marketCap: "$2.15B",
+    liquidity: "$89.23M",
+    holders: 245821,
+    txns24h: 32156,
+    riskLevel: "medium",
+    website: "https://bonkcoin.com",
+    twitter: "https://twitter.com/bonkcoin",
   },
   {
     id: "3",
@@ -81,6 +122,15 @@ const mockMatches: Match[] = [
     matchedAt: "1d ago",
     image: "/shiba-inu-doge-coin-logo.jpg",
     unreadMessages: 1,
+    mint: "9B2F8q6639PsE4Ajw1N6iB8c2Bp8IksLLxMHU5MKcqH1",
+    volume24h: "$456.78M",
+    marketCap: "$12.34B",
+    liquidity: "$567.89M",
+    holders: 1234567,
+    txns24h: 89234,
+    riskLevel: "low",
+    website: "https://dogecoin.com",
+    twitter: "https://twitter.com/dogecoin",
   },
   {
     id: "4",
@@ -91,6 +141,15 @@ const mockMatches: Match[] = [
     matchedAt: "2d ago",
     image: "/floki-inu-viking-dog-coin-logo.jpg",
     unreadMessages: 0,
+    mint: "EchesyfXePKdLsHn3sqsRe1vDvReNsFiYbMXwaLLzM1s",
+    volume24h: "$78.92M",
+    marketCap: "$890.12M",
+    liquidity: "$123.45M",
+    holders: 456789,
+    txns24h: 23456,
+    riskLevel: "medium",
+    website: "https://floki.io",
+    twitter: "https://twitter.com/RealFlokiInu",
   },
 ]
 
@@ -132,6 +191,8 @@ export function MatchesList() {
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null)
   const [chatMessage, setChatMessage] = useState("")
   const [activeTab, setActiveTab] = useState("your-matches")
+  const [viewMode, setViewMode] = useState<"list" | "advanced">("list")
+  const [selectedCoinForDetails, setSelectedCoinForDetails] = useState<Match | null>(null)
 
   return (
     <div className="flex h-full flex-col bg-gradient-to-b from-background to-muted/20">
@@ -149,6 +210,19 @@ export function MatchesList() {
             <h1 className="text-xl font-bold tracking-tight">Your Matches</h1>
             <p className="text-xs text-muted-foreground mt-1">Coins you loved & friend activity</p>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setViewMode(viewMode === "list" ? "advanced" : "list")}
+            className="h-8 px-2 rounded-lg hover:bg-white/20"
+            title={viewMode === "list" ? "Switch to advanced view" : "Switch to list view"}
+          >
+            {viewMode === "list" ? (
+              <BarChart3 className="h-4 w-4" />
+            ) : (
+              <Zap className="h-4 w-4" />
+            )}
+          </Button>
         </div>
       </header>
 
@@ -192,7 +266,77 @@ export function MatchesList() {
                   <Link href="/">Start Swiping</Link>
                 </Button>
               </div>
+            ) : viewMode === "advanced" ? (
+              // Advanced Grid View
+              <div className="grid grid-cols-1 gap-4 px-4 pb-6 pt-4">
+                {mockMatches.map((match) => {
+                  const isPositiveChange = match.change24h.startsWith("+")
+
+                  return (
+                    <Card
+                      key={match.id}
+                      className="overflow-hidden transition-all hover:shadow-lg active:scale-[0.98] glass border-2 border-white/40"
+                    >
+                      {/* Advanced Card Header with Image */}
+                      <div className="relative h-40 w-full bg-white dark:bg-black border-b border-gray-100 dark:border-neutral-800 flex items-center justify-center p-4">
+                        <Image
+                          src={match.image || "/placeholder.svg"}
+                          alt={match.name}
+                          width={120}
+                          height={120}
+                          className="object-contain"
+                        />
+                      </div>
+
+                      {/* Advanced Card Content */}
+                      <div className="p-4 space-y-3">
+                        <div className="text-center">
+                          <h3 className="text-2xl font-bold text-black dark:text-white">${match.symbol}</h3>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{match.name}</p>
+                        </div>
+
+                        <div className="flex items-center justify-center gap-6">
+                          <div className="flex flex-col items-center">
+                            <span className="text-[10px] text-gray-400 font-medium">PRICE</span>
+                            <span className="text-lg font-bold text-black dark:text-white">{match.price}</span>
+                          </div>
+                          <div className="h-5 w-px bg-gray-200 dark:bg-gray-700" />
+                          <div className="flex flex-col items-center">
+                            <span className="text-[10px] text-gray-400 font-medium">24H</span>
+                            <Badge
+                              variant={isPositiveChange ? "default" : "destructive"}
+                              className="text-xs px-2 py-0.5 h-auto font-numbers mt-1"
+                            >
+                              {match.change24h}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                          <Button
+                            variant="ghost"
+                            className="flex-1 gap-1.5 text-xs h-10 hover:bg-white/20"
+                            onClick={() => window.open(`https://twitter.com/search?q=%24${match.symbol}`, "_blank")}
+                          >
+                            <Search className="h-3.5 w-3.5" />
+                            Twitter
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="flex-1 gap-1.5 text-xs h-10 hover:bg-white/20"
+                            onClick={() => window.open(`https://dexscreener.com/solana/${match.symbol}`, "_blank")}
+                          >
+                            <BarChart3 className="h-3.5 w-3.5" />
+                            Chart
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  )
+                })}
+              </div>
             ) : (
+              // List View
               <div className="space-y-4 px-4 pb-6">
                 {mockMatches.map((match) => {
                   const isPositiveChange = match.change24h.startsWith("+")
@@ -245,10 +389,10 @@ export function MatchesList() {
                         <Button
                           variant="ghost"
                           className="flex-1 gap-1.5 rounded-none text-xs h-12 hover:bg-white/20"
-                          onClick={() => window.open(`https://twitter.com/search?q=%24${match.symbol}`, "_blank")}
+                          onClick={() => setSelectedCoinForDetails(match)}
                         >
-                          <Search className="h-3.5 w-3.5" />
-                          Twitter
+                          <BarChart3 className="h-3.5 w-3.5" />
+                          Advanced
                         </Button>
                         <div className="w-px bg-white/20" />
                         <Button
@@ -263,10 +407,10 @@ export function MatchesList() {
                         <Button
                           variant="ghost"
                           className="flex-1 gap-1.5 rounded-none text-xs h-12 hover:bg-white/20"
-                          onClick={() => window.open(`https://dexscreener.com/solana/${match.symbol}`, "_blank")}
+                          onClick={() => window.open(`https://twitter.com/search?q=${match.symbol}`, "_blank")}
                         >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                          Chart
+                          <Twitter className="h-3.5 w-3.5" />
+                          Twitter
                         </Button>
                       </div>
                     </Card>
@@ -350,6 +494,156 @@ export function MatchesList() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Advanced Coin Details Modal */}
+      <Dialog open={!!selectedCoinForDetails} onOpenChange={(open) => !open && setSelectedCoinForDetails(null)}>
+        <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto bg-white dark:bg-black">
+          <VisuallyHidden>
+            <DialogTitle>{selectedCoinForDetails?.name} Details</DialogTitle>
+          </VisuallyHidden>
+          {selectedCoinForDetails && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-3">
+                  <div className="relative h-10 w-10 shrink-0">
+                    <Image
+                      src={selectedCoinForDetails.image || "/placeholder.svg"}
+                      alt={selectedCoinForDetails.name}
+                      fill
+                      className="object-contain rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold">{selectedCoinForDetails.name}</h2>
+                    <p className="text-xs text-muted-foreground">${selectedCoinForDetails.symbol}</p>
+                  </div>
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                {/* Price Section */}
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase text-black dark:text-white">Price</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-2xl font-bold font-numbers">{selectedCoinForDetails.price}</p>
+                    <p className={`text-sm font-semibold ${selectedCoinForDetails.change24h.startsWith("+") ? "text-green-600" : "text-red-600"}`}>
+                      {selectedCoinForDetails.change24h}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Main Stats Grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedCoinForDetails.volume24h && (
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-semibold uppercase text-black dark:text-white">24h Vol</p>
+                      <p className="text-sm font-bold text-gray-600 dark:text-neutral-400">{selectedCoinForDetails.volume24h}</p>
+                    </div>
+                  )}
+                  {selectedCoinForDetails.marketCap && (
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-semibold uppercase text-black dark:text-white">MCap</p>
+                      <p className="text-sm font-bold text-gray-600 dark:text-neutral-400">{selectedCoinForDetails.marketCap}</p>
+                    </div>
+                  )}
+                  {selectedCoinForDetails.liquidity && (
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-semibold uppercase text-black dark:text-white">Liq</p>
+                      <p className="text-sm font-bold text-gray-600 dark:text-neutral-400">{selectedCoinForDetails.liquidity}</p>
+                    </div>
+                  )}
+                  {selectedCoinForDetails.holders && (
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-semibold uppercase text-black dark:text-white">Holders</p>
+                      <p className="text-sm font-bold text-gray-600 dark:text-neutral-400">{selectedCoinForDetails.holders.toLocaleString()}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Advanced Stats */}
+                <div className="space-y-3 border-t border-gray-200 dark:border-neutral-800 pt-3">
+                  <p className="text-xs font-semibold uppercase text-black dark:text-white">Advanced</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {selectedCoinForDetails.txns24h && (
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-semibold uppercase text-black dark:text-white">24h Txns</p>
+                        <p className="text-sm font-bold text-gray-600 dark:text-neutral-400">{selectedCoinForDetails.txns24h.toLocaleString()}</p>
+                      </div>
+                    )}
+                    {selectedCoinForDetails.riskLevel && (
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-semibold uppercase text-black dark:text-white">Risk Level</p>
+                        <p className={`text-sm font-bold ${
+                          selectedCoinForDetails.riskLevel === "low" ? "text-green-600" :
+                          selectedCoinForDetails.riskLevel === "medium" ? "text-yellow-600" :
+                          "text-red-600"
+                        }`}>
+                          {selectedCoinForDetails.riskLevel.charAt(0).toUpperCase() + selectedCoinForDetails.riskLevel.slice(1)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Links & Copy */}
+                <div className="space-y-3 border-t border-gray-200 dark:border-neutral-800 pt-3">
+                  <p className="text-xs font-semibold uppercase text-black dark:text-white">Links</p>
+                  <div className="flex gap-2 flex-wrap">
+                    {selectedCoinForDetails.website && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        asChild
+                        className="text-xs h-8"
+                      >
+                        <a href={selectedCoinForDetails.website} target="_blank" rel="noopener noreferrer">
+                          <Globe className="h-3 w-3 mr-1" />
+                          Website
+                        </a>
+                      </Button>
+                    )}
+                    {selectedCoinForDetails.twitter && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        asChild
+                        className="text-xs h-8"
+                      >
+                        <a href={selectedCoinForDetails.twitter} target="_blank" rel="noopener noreferrer">
+                          <Twitter className="h-3 w-3 mr-1" />
+                          Twitter
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Copy Address */}
+                {selectedCoinForDetails.mint && (
+                  <div className="space-y-2 border-t border-gray-200 dark:border-neutral-800 pt-3">
+                    <p className="text-[10px] font-semibold uppercase text-black dark:text-white">Contract</p>
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 rounded-lg bg-gray-100 dark:bg-neutral-900 px-2.5 py-2 text-[9px] font-mono break-all text-gray-700 dark:text-neutral-300">
+                        {selectedCoinForDetails.mint.slice(0, 20)}...
+                      </code>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedCoinForDetails.mint!)
+                        }}
+                        className="shrink-0 h-8 w-8"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
