@@ -45,6 +45,38 @@ export async function fetchNewCoinsFromAPI(): Promise<EnrichedCoin[]> {
   }
 }
 
+export async function fetchMostSwipedCoinsFromAPI(): Promise<EnrichedCoin[]> {
+  try {
+    const response = await fetch('/api/most-swiped?days=7&limit=50')
+    if (!response.ok) {
+      console.warn('[API] Most swiped API unavailable, falling back to trending')
+      return await fetchTrendingCoinsFromAPI()
+    }
+    const data = await response.json()
+    
+    const coinMints = data.coins.map((c: any) => c.coinMint)
+    
+    if (coinMints.length === 0) {
+      return await fetchTrendingCoinsFromAPI()
+    }
+    
+    const trendingCoins = await fetchTrendingCoinsFromAPI()
+    
+    const mostSwipedCoins = trendingCoins.filter(coin => 
+      coinMints.includes(coin.id) || coinMints.includes(coin.mint)
+    )
+    
+    if (mostSwipedCoins.length === 0) {
+      return await fetchTrendingCoinsFromAPI()
+    }
+    
+    return mostSwipedCoins
+  } catch (error) {
+    console.error('[API] Error fetching most swiped coins:', error)
+    return await fetchTrendingCoinsFromAPI()
+  }
+}
+
 export async function searchCoinsFromAPI(query: string): Promise<{ tokens: any[]; themes: any[] }> {
   try {
     if (!query || query.length < 1) {

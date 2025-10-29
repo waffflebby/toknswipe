@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { X, Heart, RefreshCw, SlidersHorizontal, Bookmark, Zap, Dog, Cat, Bug, Bot, Vote } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PaywallModal } from "@/components/paywall-modal"
-import { fetchTrendingCoinsFromAPI, fetchNewCoinsFromAPI } from "@/lib/api-client"
+import { fetchTrendingCoinsFromAPI, fetchNewCoinsFromAPI, fetchMostSwipedCoinsFromAPI } from "@/lib/api-client"
 import { getThemeFeed } from "@/lib/theme-feed"
 import { getCoinCache } from "@/lib/coin-cache"
 import type { EnrichedCoin, JackpotReward } from "@/lib/types"
@@ -24,12 +24,12 @@ import { RewardModal } from "@/components/reward-modal"
 import { SearchBar } from "@/components/search-bar"
 import { LoginButton } from "@/components/login-button"
 import {
-  addToWatchlist,
   incrementTotalSwipes,
   incrementSwipeProgress,
   resetSwipeProgress,
   checkAndUnlockBadges,
 } from "@/lib/storage"
+import { addToMatches, recordSwipe } from "@/lib/storage-db"
 
 const JACKPOT_REWARDS: JackpotReward[] = [
   {
@@ -143,6 +143,8 @@ export function SwipeView() {
       fetchedCoins = await fetchTrendingCoinsFromAPI()
     } else if (feedType === "new") {
       fetchedCoins = await fetchNewCoinsFromAPI()
+    } else if (feedType === "most-swiped") {
+      fetchedCoins = await fetchMostSwipedCoinsFromAPI()
     } else if (feedType === "themed" && selectedTheme) {
       const allCoins = await fetchTrendingCoinsFromAPI()
       fetchedCoins = getThemeFeed(selectedTheme, allCoins, "all")
@@ -194,11 +196,13 @@ export function SwipeView() {
 
     if (direction === "right") {
       setSwipeEffect("like")
-      addToWatchlist(currentCoin)
+      addToMatches(currentCoin)
       checkForJackpot()
     } else {
       setSwipeEffect("dislike")
     }
+
+    recordSwipe(currentCoin.id, direction)
 
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % coins.length)

@@ -23,7 +23,8 @@ import {
   Copy,
 } from "lucide-react"
 import type { EnrichedCoin } from "@/lib/types"
-import { getWatchlist, removeFromWatchlist, getPersonalList, removeFromPersonalList } from "@/lib/storage"
+import { removeFromWatchlist, removeFromPersonalList } from "@/lib/storage"
+import { getFavorites, getMatches, removeFromFavorites, removeFromMatches } from "@/lib/storage-db"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -72,8 +73,7 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
 
   useEffect(() => {
     if (open) {
-      setWatchlistCoins(getWatchlist())
-      setPersonalCoins(getPersonalList())
+      loadCoins()
       const savedLists = localStorage.getItem("customWatchlists")
       if (savedLists) {
         setCustomLists(JSON.parse(savedLists))
@@ -85,11 +85,19 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
     }
   }, [open])
 
-  const handleRemove = (coinId: string) => {
+  const loadCoins = async () => {
+    const matches = await getMatches()
+    const favorites = await getFavorites()
+    setWatchlistCoins(matches)
+    setPersonalCoins(favorites)
+  }
+
+  const handleRemove = async (coinId: string) => {
+    await removeFromMatches(coinId)
+    await removeFromFavorites(coinId)
     removeFromWatchlist(coinId)
     removeFromPersonalList(coinId)
-    setWatchlistCoins(getWatchlist())
-    setPersonalCoins(getPersonalList())
+    loadCoins()
   }
 
   const handleCreateList = () => {

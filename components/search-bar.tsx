@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
 import { searchCoinsFromAPI } from "@/lib/api-client"
-import { addToPersonalList, removeFromPersonalList, getPersonalList } from "@/lib/storage"
+import { getPersonalList } from "@/lib/storage"
+import { addToFavorites, removeFromFavorites } from "@/lib/storage-db"
 
 interface SearchBarProps {
   coins: EnrichedCoin[]
@@ -176,17 +177,17 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                       </p>
                     </div>
                     <button
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation()
                         if (starredCoins.has(coin.id)) {
-                          removeFromPersonalList(coin.id)
+                          await removeFromFavorites(coin.id)
                           setStarredCoins(prev => {
                             const next = new Set(prev)
                             next.delete(coin.id)
                             return next
                           })
                         } else {
-                          addToPersonalList(coin)
+                          await addToFavorites(coin)
                           setStarredCoins(prev => new Set(prev).add(coin.id))
                         }
                       }}
@@ -238,17 +239,17 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                       </p>
                     </div>
                     <button
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation()
                         if (starredCoins.has(coin.id)) {
-                          removeFromPersonalList(coin.id)
+                          await removeFromFavorites(coin.id)
                           setStarredCoins(prev => {
                             const next = new Set(prev)
                             next.delete(coin.id)
                             return next
                           })
                         } else {
-                          addToPersonalList(coin)
+                          await addToFavorites(coin)
                           setStarredCoins(prev => new Set(prev).add(coin.id))
                         }
                       }}
