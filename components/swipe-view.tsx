@@ -304,20 +304,8 @@ export function SwipeView() {
     loadCoins()
   }
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center p-6">
-        <div className="text-center space-y-4">
-          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground mx-auto" />
-          <p className="text-sm text-muted-foreground">Loading coins...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Show empty state
-  if (coins.length === 0) {
+  // Show empty state (only if not loading and no coins)
+  if (!isLoading && coins.length === 0) {
     return (
       <div className="flex h-full items-center justify-center p-6">
         <div className="text-center space-y-4">
@@ -601,6 +589,17 @@ export function SwipeView() {
       <WatchlistSheet open={showWatchlist} onOpenChange={setShowWatchlist} />
       <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />
       <RewardModal open={showRewardModal} onOpenChange={setShowRewardModal} onClaim={handleClaimReward} />
+      
+      {isLoading && (
+        <div className="absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm flex items-center justify-center z-[100] transition-all">
+          <div className="bg-white/95 dark:bg-neutral-900/95 rounded-2xl p-6 shadow-2xl border border-gray-200/50 dark:border-neutral-800">
+            <div className="flex items-center gap-3">
+              <RefreshCw className="h-5 w-5 animate-spin text-purple-500" />
+              <p className="text-sm font-medium text-gray-900 dark:text-white">Loading coins...</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
