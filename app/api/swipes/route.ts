@@ -2,9 +2,23 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
 import { swipes } from '@/shared/schema'
+import { checkRateLimit } from '@/lib/rate-limit'
+import { z } from 'zod'
+
+const addSwipeSchema = z.object({
+  coinMint: z.string().min(1, 'coinMint is required'),
+  direction: z.enum(['left', 'right'], {
+    errorMap: () => ({ message: 'direction must be "left" or "right"' }),
+  }),
+})
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitResult = await checkRateLimit(request, 'mutations')
+    if ('status' in rateLimitResult) {
+      return rateLimitResult
+    }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -13,21 +27,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { coinMint, direction } = body
-
-    if (!coinMint || !direction) {
+    
+    const validationResult = addSwipeSchema.safeParse(body)
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Missing required fields: coinMint, direction' },
+        { error: 'Invalid request body', details: validationResult.error.flatten() },
         { status: 400 }
       )
     }
 
-    if (direction !== 'left' && direction !== 'right') {
-      return NextResponse.json(
-        { error: 'Invalid direction. Must be "left" or "right"' },
-        { status: 400 }
-      )
-    }
+    const { coinMint, direction } = validationResult.data
 
     const [newSwipe] = await db
       .insert(swipes)

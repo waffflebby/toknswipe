@@ -4,21 +4,38 @@ import { db } from '@/lib/db'
 import { coinThemes } from '@/shared/schema'
 import { eq, and } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
+import { z } from 'zod'
+
+const tagThemeSchema = z.object({
+  coinMint: z.string().min(1, 'coinMint is required'),
+  coinData: z.object({
+    name: z.string(),
+    symbol: z.string(),
+  }).passthrough(),
+})
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitResult = await checkRateLimit(request, 'mutations')
+    if ('status' in rateLimitResult) {
+      return rateLimitResult
+    }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     const body = await request.json()
-    const { coinMint, coinData } = body
-
-    if (!coinMint || !coinData) {
+    
+    const validationResult = tagThemeSchema.safeParse(body)
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Missing coinMint or coinData' },
+        { error: 'Invalid request body', details: validationResult.error.flatten() },
         { status: 400 }
       )
     }
+
+    const { coinMint, coinData } = validationResult.data
 
     const detectedThemes = detectThemes(coinData)
 

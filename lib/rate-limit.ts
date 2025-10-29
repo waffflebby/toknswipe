@@ -4,7 +4,7 @@ import { ratelimit } from './redis'
 export async function checkRateLimit(
   request: NextRequest,
   type: 'mutations' | 'reads' = 'mutations'
-): Promise<{ success: true } | NextResponse> {
+): Promise<{ success: true } | NextResponse<any>> {
   // If rate limiting is not configured, allow the request
   if (!ratelimit) {
     return { success: true }

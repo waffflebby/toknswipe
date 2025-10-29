@@ -3,6 +3,17 @@ import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
 import { favorites } from '@/shared/schema'
 import { eq, and } from 'drizzle-orm'
+import { checkRateLimit } from '@/lib/rate-limit'
+import { z } from 'zod'
+
+const addFavoriteSchema = z.object({
+  coinMint: z.string().min(1, 'coinMint is required'),
+  coinData: z.object({
+    name: z.string(),
+    symbol: z.string(),
+    mint: z.string(),
+  }).passthrough(),
+})
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,6 +42,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check rate limit
+    const rateLimitResult = await checkRateLimit(request, 'mutations')
+    if ('status' in rateLimitResult) {
+      return rateLimitResult
+    }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -39,14 +56,17 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { coinMint, coinData } = body
-
-    if (!coinMint || !coinData) {
+    
+    // Validate request body
+    const validationResult = addFavoriteSchema.safeParse(body)
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Missing required fields: coinMint, coinData' },
+        { error: 'Invalid request body', details: validationResult.error.flatten() },
         { status: 400 }
       )
     }
+
+    const { coinMint, coinData } = validationResult.data
 
     const existingFavorites = await db
       .select()
@@ -82,6 +102,12 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Check rate limit
+    const rateLimitResult = await checkRateLimit(request, 'mutations')
+    if ('status' in rateLimitResult) {
+      return rateLimitResult
+    }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
