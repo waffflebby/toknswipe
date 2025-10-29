@@ -89,6 +89,17 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
     }
   }, [open])
 
+  // Cleanup when sheet closes to prevent freezing
+  useEffect(() => {
+    if (!open) {
+      const timer = setTimeout(() => {
+        // Reset any expanded states
+        setActiveTab("all")
+      }, 200)
+      return () => clearTimeout(timer)
+    }
+  }, [open])
+
   const loadCoins = async () => {
     const matches = await getMatches()
     const favorites = await getFavorites()

@@ -558,7 +558,11 @@ export function SwipeView() {
       />
       <JackpotModal open={showJackpot} onOpenChange={setShowJackpot} reward={currentReward} />
       <AdvancedFilterModal open={showFilters} onOpenChange={setShowFilters} />
-      <WatchlistSheet open={showWatchlist} onOpenChange={setShowWatchlist} />
+      <WatchlistSheet 
+        key={showWatchlist ? "open" : "closed"}
+        open={showWatchlist} 
+        onOpenChange={setShowWatchlist} 
+      />
       <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />
       <RewardModal open={showRewardModal} onOpenChange={setShowRewardModal} onClaim={handleClaimReward} />
       
