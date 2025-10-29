@@ -32,6 +32,7 @@ import {
 import { addToMatches, recordSwipe } from "@/lib/storage-db"
 import { useAuth } from "@/hooks/useAuth"
 import { LoginPromptDialog } from "@/components/login-prompt-dialog"
+import { toast } from "sonner"
 
 const JACKPOT_REWARDS: JackpotReward[] = [
   {
@@ -176,11 +177,6 @@ export function SwipeView() {
 
   const handleSwipe = (direction: "left" | "right") => {
     if (isSwipeAnimating || coins.length === 0) return
-    
-    if (!isAuthenticated) {
-      setShowLoginPrompt(true)
-      return
-    }
 
     if (swipeCount >= maxFreeSwipes) {
       setShowPaywall(true)
@@ -213,6 +209,13 @@ export function SwipeView() {
     }
 
     recordSwipe(currentCoin.id, direction)
+    
+    if (!isAuthenticated) {
+      toast.info("Sign in to save your swipes", {
+        description: "Your swipes won't be saved unless you create an account",
+        duration: 3000,
+      })
+    }
 
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % coins.length)

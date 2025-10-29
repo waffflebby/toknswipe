@@ -6,6 +6,7 @@ import { Roboto } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Suspense } from "react"
+import { Toaster } from "@/components/ui/sonner"
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${roboto.variable}`}>
         <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
         <Analytics />
+        <Toaster />
       </body>
     </html>
   )

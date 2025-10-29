@@ -10,6 +10,7 @@ import { searchCoinsFromAPI } from "@/lib/api-client"
 import { addToFavorites, removeFromFavorites, getFavorites } from "@/lib/storage-db"
 import { useAuth } from "@/hooks/useAuth"
 import { LoginPromptDialog } from "@/components/login-prompt-dialog"
+import { toast } from "sonner"
 
 interface SearchBarProps {
   coins: EnrichedCoin[]
@@ -192,17 +193,19 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                       onClick={async (e) => {
                         e.stopPropagation()
                         
-                        if (!isAuthenticated) {
-                          setShowLoginPrompt(true)
-                          return
-                        }
-                        
                         if (starredCoins.has(coin.id)) {
                           await removeFromFavorites(coin.id)
                           await loadStarredCoins()
                         } else {
                           await addToFavorites(coin)
                           await loadStarredCoins()
+                        }
+                        
+                        if (!isAuthenticated) {
+                          toast.info("Sign in to save favorites", {
+                            description: "Your starred coins won't be saved unless you create an account",
+                            duration: 3000,
+                          })
                         }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
@@ -256,17 +259,19 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                       onClick={async (e) => {
                         e.stopPropagation()
                         
-                        if (!isAuthenticated) {
-                          setShowLoginPrompt(true)
-                          return
-                        }
-                        
                         if (starredCoins.has(coin.id)) {
                           await removeFromFavorites(coin.id)
                           await loadStarredCoins()
                         } else {
                           await addToFavorites(coin)
                           await loadStarredCoins()
+                        }
+                        
+                        if (!isAuthenticated) {
+                          toast.info("Sign in to save favorites", {
+                            description: "Your starred coins won't be saved unless you create an account",
+                            duration: 3000,
+                          })
                         }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
