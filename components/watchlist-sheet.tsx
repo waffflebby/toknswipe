@@ -92,11 +92,15 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
     setPersonalCoins(favorites)
   }
 
-  const handleRemove = async (coinId: string) => {
-    await removeFromMatches(coinId)
-    await removeFromFavorites(coinId)
-    removeFromWatchlist(coinId)
-    removeFromPersonalList(coinId)
+  const handleRemove = async (coinId: string, folder: 'matched' | 'personal' | 'all') => {
+    if (folder === 'matched' || folder === 'all') {
+      await removeFromMatches(coinId)
+      removeFromWatchlist(coinId)
+    }
+    if (folder === 'personal' || folder === 'all') {
+      await removeFromFavorites(coinId)
+      removeFromPersonalList(coinId)
+    }
     loadCoins()
   }
 
@@ -218,6 +222,7 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
                         key={coin.id}
                         coin={coin}
                         onRemove={handleRemove}
+                        folder={activeTab as 'matched' | 'personal' | 'all'}
                         customLists={customLists}
                         onMoveToList={handleMoveToList}
                         onViewChart={setFullscreenChart}
@@ -316,12 +321,14 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
 function CoinCard({
   coin,
   onRemove,
+  folder,
   customLists,
   onMoveToList,
   onViewChart,
 }: {
   coin: EnrichedCoin
-  onRemove: (id: string) => void
+  onRemove: (id: string, folder: 'matched' | 'personal' | 'all') => void
+  folder: 'matched' | 'personal' | 'all'
   customLists: string[]
   onMoveToList: (coinId: string, listName: string) => void
   onViewChart: (coin: EnrichedCoin) => void
@@ -403,7 +410,7 @@ function CoinCard({
                 Move to {listName}
               </DropdownMenuItem>
             ))}
-            <DropdownMenuItem className="text-red-600" onClick={() => onRemove(coin.id)}>
+            <DropdownMenuItem className="text-red-600" onClick={() => onRemove(coin.id, folder)}>
               <Trash2 className="h-3.5 w-3.5 mr-2" />
               Remove
             </DropdownMenuItem>
