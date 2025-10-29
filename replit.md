@@ -7,14 +7,21 @@ Meme Coin Tinder is a Next.js application providing a Tinder-style swipe interfa
 None specified yet.
 
 ## Recent Changes (October 29, 2025)
-- **Subtle Loading Overlay**: Replaced full-screen blocking loader with elegant overlay that appears over current content during theme switches - features blur background, centered loading card with purple spinner, and z-index 100
-- **Real Images for Famous Coins**: Updated POPCAT, MEW, BONK, and WIF with authentic Cloudfront image URLs using verified Solana mainnet token addresses
-- **Enhanced Error Handling in loadCoins**: Added defensive logging, fallback branches for edge cases (themed feed without theme, unmatched feedType), ensures isLoading always clears in finally block
-- **Fixed Undefined Coin Errors**: Added safety check to only render SwipeCard when currentCoin exists, prevents "Cannot read properties of undefined" errors
-- **Fixed Theme ID Mismatch (400 Error)**: Standardized all theme IDs to use plural format ("cats", "dogs") across `lib/theme-detector.ts`, `lib/famous-coins.ts`, and `lib/types.ts` - fixes 400 Bad Request errors when selecting themes
-- **Back Button**: Added conditional back button (ArrowLeft icon) in header that appears when viewing themed feeds, returns to trending feed on click
-- **Theme Feed API**: Created `/api/themes/search` endpoint with multi-layer fallback (trending scan → famous coins → error handling)
-- **Famous Placeholder Coins**: Created fully-enriched placeholder coins (MEW, POPCAT, BONK, WIF) for cat/dog themes to prevent empty states
+- **Fixed React Hydration Mismatch**: Added `isMounted` state to prevent hydration errors that were blocking UI updates - loading state now only shows after component mounts on client side
+- **New Folder-Based Watchlist System**: Complete redesign of coin organization with proper database schema
+  - Created `folders` table (supports system folders like Personal/Matched and custom user folders)
+  - Created `folderCoins` junction table for many-to-many coin-to-folder relationships
+  - System folders automatically created on user signup (Personal ⭐ and Matched 💚)
+  - Updated `/api/favorites` and `/api/matches` endpoints to use new folder system internally
+  - Created `/api/folders` endpoints for folder management (list, create, delete)
+  - Created `/api/folders/[id]/coins` endpoints for coin management (add, remove, list coins in folder)
+  - Helper functions in `lib/folder-helpers.ts` for system folder initialization
+- **Previous Updates**:
+  - Subtle Loading Overlay with blur background and purple spinner
+  - Real Images for Famous Coins (POPCAT, MEW, BONK, WIF) with Cloudfront CDN URLs
+  - Fixed Theme ID Mismatch and standardized to plural format
+  - Back Button for themed feeds navigation
+  - Theme Feed API with multi-layer fallback
 
 ## System Architecture
 The application is built on Next.js 15.2.4 (App Router) using React 19 and TypeScript. Styling is handled with Tailwind CSS 4.1.9 and UI components leverage Radix UI. Charting functionalities are provided by Lightweight Charts and Recharts.
@@ -23,7 +30,7 @@ The application is built on Next.js 15.2.4 (App Router) using React 19 and TypeS
 - **State Management & Caching**: Utilizes TanStack Query for data fetching and client-side caching, complemented by TanStack DB for reactive collections and sub-millisecond live queries. Server-side caching is implemented with Upstash Redis, with an in-memory fallback.
 - **Data Validation & Security**: All API endpoints employ Zod schemas for input validation. Security architecture prioritizes rate limiting, authentication, and validation before business logic execution.
 - **Authentication**: Supabase Auth handles user authentication via email OTP, integrated with Resend for email delivery.
-- **Database**: Supabase PostgreSQL is used as the primary database, with Drizzle ORM managing interactions. The schema includes tables for users, favorites, matches, swipes (for analytics), and `coinThemes` for categorization.
+- **Database**: Supabase PostgreSQL is used as the primary database, with Drizzle ORM managing interactions. The schema includes tables for users, swipes (for analytics), coinThemes (for categorization), folders (for organizing saved coins), and folderCoins (junction table connecting coins to folders). The old favorites/matches tables are deprecated in favor of the folder system.
 - **Mobile Optimization**: Responsive design with `100dvh` for dynamic viewport height, optimized touch targets, and increased swipe sensitivity for a better mobile user experience.
 - **Guest Experience**: Guests can interact with the swipe interface and "star" coins, with non-intrusive toast notifications prompting sign-in to save their actions. Actions are not persisted to the database for unauthenticated users.
 - **UI/UX**: Features a swipe-based discovery, real-time price charts, risk level indicators, and theme-based categorization. Watchlist folders (Personal for starred, Matched for swiped-right) are distinct and database-backed.
@@ -31,7 +38,7 @@ The application is built on Next.js 15.2.4 (App Router) using React 19 and TypeS
 **Feature Specifications:**
 - **Core Swipe Mechanics**: Allows users to swipe left (dismiss) or right (match/like) on meme coins.
 - **Coin Data**: Displays real-time data from Moralis API, including price, 24h change, and detailed coin information.
-- **Watchlists**: "Personal" folder for favorited coins and "Matched" folder for coins swiped right, with separate database persistence.
+- **Watchlists**: Folder-based organization system with system folders (Personal for starred coins, Matched for swiped-right coins) and support for custom user-created folders. All folders use the unified folders/folderCoins table structure.
 - **Theme System**: Comprehensive keyword-based auto-categorization into 17+ themes (e.g., Dog, Cat, Pepe, NFT), with persistent storage in the `coinThemes` table.
 - **Trending & Analytics**: "Most Swiped" feed based on 7-day aggregation of user swipes, falling back to general trending data if unavailable.
 - **Performance**: Optimized with TanStack Query, TanStack DB, and Redis caching for fast data retrieval and reactive UI updates.

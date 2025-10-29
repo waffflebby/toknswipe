@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
-import { favorites } from '@/shared/schema'
+import { folders, folderCoins } from '@/shared/schema'
 import { eq, and } from 'drizzle-orm'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { z } from 'zod'
+import { getPersonalFolder } from '@/lib/folder-helpers'
 
 const addFavoriteSchema = z.object({
   coinMint: z.string().min(1, 'coinMint is required'),
@@ -30,13 +31,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userFavorites = await db
-      .select()
-      .from(favorites)
-      .where(eq(favorites.userId, user.id))
-      .orderBy(favorites.createdAt)
+    const personalFolder = await getPersonalFolder(user.id)
+    
+    if (!personalFolder) {
+      return NextResponse.json({ favorites: [] })
+    }
 
-    return NextResponse.json({ favorites: userFavorites })
+    const coins = await db
+      .select()
+      .from(folderCoins)
+      .where(eq(folderCoins.folderId, personalFolder.id))
+      .orderBy(folderCoins.addedAt)
+
+    return NextResponse.json({ favorites: coins })
   } catch (error) {
     console.error('Error fetching favorites:', error)
     return NextResponse.json(
@@ -74,13 +81,19 @@ export async function POST(request: NextRequest) {
 
     const { coinMint, coinData } = validationResult.data
 
-    const existingFavorites = await db
+    const personalFolder = await getPersonalFolder(user.id)
+    
+    if (!personalFolder) {
+      return NextResponse.json({ error: 'Personal folder not found' }, { status: 500 })
+    }
+
+    const existing = await db
       .select()
-      .from(favorites)
-      .where(and(eq(favorites.userId, user.id), eq(favorites.coinMint, coinMint)))
+      .from(folderCoins)
+      .where(and(eq(folderCoins.folderId, personalFolder.id), eq(folderCoins.coinMint, coinMint)))
       .limit(1)
 
-    if (existingFavorites.length > 0) {
+    if (existing.length > 0) {
       return NextResponse.json(
         { error: 'Coin already in favorites' },
         { status: 409 }
@@ -88,9 +101,9 @@ export async function POST(request: NextRequest) {
     }
 
     const [newFavorite] = await db
-      .insert(favorites)
+      .insert(folderCoins)
       .values({
-        userId: user.id,
+        folderId: personalFolder.id,
         coinMint,
         coinData,
       })
@@ -131,9 +144,15 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
+    const personalFolder = await getPersonalFolder(user.id)
+    
+    if (!personalFolder) {
+      return NextResponse.json({ error: 'Personal folder not found' }, { status: 500 })
+    }
+
     const deleted = await db
-      .delete(favorites)
-      .where(and(eq(favorites.userId, user.id), eq(favorites.coinMint, coinMint)))
+      .delete(folderCoins)
+      .where(and(eq(folderCoins.folderId, personalFolder.id), eq(folderCoins.coinMint, coinMint)))
       .returning()
 
     if (deleted.length === 0) {

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { users } from '@/shared/schema';
 import { eq } from 'drizzle-orm';
+import { ensureSystemFolders } from '@/lib/folder-helpers';
 
 export async function POST() {
   try {
@@ -39,6 +40,9 @@ export async function POST() {
         .returning();
 
       userProfile = newUser[0];
+      
+      // Initialize system folders for new user
+      await ensureSystemFolders(authUser.id);
     } else {
       // Update existing user profile (in case email or metadata changed)
       const updated = await db

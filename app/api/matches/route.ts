@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/lib/db'
-import { matches } from '@/shared/schema'
+import { folders, folderCoins } from '@/shared/schema'
 import { eq, and } from 'drizzle-orm'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { z } from 'zod'
+import { getMatchedFolder } from '@/lib/folder-helpers'
 
 const addMatchSchema = z.object({
   coinMint: z.string().min(1, 'coinMint is required'),
@@ -30,13 +31,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userMatches = await db
-      .select()
-      .from(matches)
-      .where(eq(matches.userId, user.id))
-      .orderBy(matches.createdAt)
+    const matchedFolder = await getMatchedFolder(user.id)
+    
+    if (!matchedFolder) {
+      return NextResponse.json({ matches: [] })
+    }
 
-    return NextResponse.json({ matches: userMatches })
+    const coins = await db
+      .select()
+      .from(folderCoins)
+      .where(eq(folderCoins.folderId, matchedFolder.id))
+      .orderBy(folderCoins.addedAt)
+
+    return NextResponse.json({ matches: coins })
   } catch (error) {
     console.error('Error fetching matches:', error)
     return NextResponse.json(
@@ -72,13 +79,19 @@ export async function POST(request: NextRequest) {
 
     const { coinMint, coinData } = validationResult.data
 
-    const existingMatches = await db
+    const matchedFolder = await getMatchedFolder(user.id)
+    
+    if (!matchedFolder) {
+      return NextResponse.json({ error: 'Matched folder not found' }, { status: 500 })
+    }
+
+    const existing = await db
       .select()
-      .from(matches)
-      .where(and(eq(matches.userId, user.id), eq(matches.coinMint, coinMint)))
+      .from(folderCoins)
+      .where(and(eq(folderCoins.folderId, matchedFolder.id), eq(folderCoins.coinMint, coinMint)))
       .limit(1)
 
-    if (existingMatches.length > 0) {
+    if (existing.length > 0) {
       return NextResponse.json(
         { error: 'Coin already in matches' },
         { status: 409 }
@@ -86,9 +99,9 @@ export async function POST(request: NextRequest) {
     }
 
     const [newMatch] = await db
-      .insert(matches)
+      .insert(folderCoins)
       .values({
-        userId: user.id,
+        folderId: matchedFolder.id,
         coinMint,
         coinData,
       })
@@ -128,9 +141,15 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
+    const matchedFolder = await getMatchedFolder(user.id)
+    
+    if (!matchedFolder) {
+      return NextResponse.json({ error: 'Matched folder not found' }, { status: 500 })
+    }
+
     const deleted = await db
-      .delete(matches)
-      .where(and(eq(matches.userId, user.id), eq(matches.coinMint, coinMint)))
+      .delete(folderCoins)
+      .where(and(eq(folderCoins.folderId, matchedFolder.id), eq(folderCoins.coinMint, coinMint)))
       .returning()
 
     if (deleted.length === 0) {

@@ -95,6 +95,7 @@ export function SwipeView() {
 
   const maxFreeSwipes = 25
   const [theme, setTheme] = useState<"light" | "dark" | "neon">("light")
+  const [isMounted, setIsMounted] = useState(false)
 
   const [swipeEffect, setSwipeEffect] = useState<"like" | "dislike" | null>(null)
   const [isScrolling, setIsScrolling] = useState(false) // Added state to track scrolling
@@ -133,10 +134,16 @@ export function SwipeView() {
     }
   }
 
+  // Set mounted state
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   // Poll for trending coins every 2 hours
   useEffect(() => {
+    if (!isMounted) return
     loadCoins()
-  }, [feedType, selectedTheme])
+  }, [feedType, selectedTheme, isMounted])
 
   const loadCoins = async () => {
     try {
@@ -594,7 +601,7 @@ export function SwipeView() {
       <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />
       <RewardModal open={showRewardModal} onOpenChange={setShowRewardModal} onClaim={handleClaimReward} />
       
-      {isLoading && (
+      {isMounted && isLoading && (
         <div className="absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm flex items-center justify-center z-[100] transition-all">
           <div className="bg-white/95 dark:bg-neutral-900/95 rounded-2xl p-6 shadow-2xl border border-gray-200/50 dark:border-neutral-800">
             <div className="flex items-center gap-3">

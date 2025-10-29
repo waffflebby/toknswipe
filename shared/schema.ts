@@ -93,3 +93,35 @@ export const coinThemes = pgTable("coin_themes", {
 
 export type CoinTheme = typeof coinThemes.$inferSelect;
 export type InsertCoinTheme = typeof coinThemes.$inferInsert;
+
+// Folders - user-created and system folders for organizing coins
+export const folders = pgTable("folders", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name: varchar("name", { length: 100 }).notNull(), // "Personal", "Matched", "Cats", etc.
+  type: varchar("type", { length: 20 }).notNull().default('custom'), // 'system' or 'custom'
+  icon: varchar("icon", { length: 50 }), // emoji or icon identifier
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("folders_user_id_idx").on(table.userId),
+  index("folders_type_idx").on(table.type),
+]);
+
+export type Folder = typeof folders.$inferSelect;
+export type InsertFolder = typeof folders.$inferInsert;
+
+// Folder Coins - junction table connecting folders to coins
+export const folderCoins = pgTable("folder_coins", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  folderId: uuid("folder_id").notNull().references(() => folders.id, { onDelete: 'cascade' }),
+  coinMint: varchar("coin_mint").notNull(), // Solana mint address
+  coinData: jsonb("coin_data").notNull(), // Store full enriched coin object
+  addedAt: timestamp("added_at").defaultNow(),
+}, (table) => [
+  index("folder_coins_folder_id_idx").on(table.folderId),
+  index("folder_coins_coin_mint_idx").on(table.coinMint),
+]);
+
+export type FolderCoin = typeof folderCoins.$inferSelect;
+export type InsertFolderCoin = typeof folderCoins.$inferInsert;
