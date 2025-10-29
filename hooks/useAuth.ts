@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
+import { migrateLocalStorageToDatabase } from "@/lib/migrate-storage"
 
 export function useAuth() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
@@ -26,6 +27,18 @@ export function useAuth() {
     }
   }
 
+  // Migrate localStorage data to database
+  const migrateData = async () => {
+    try {
+      const result = await migrateLocalStorageToDatabase()
+      if (result.success && (result.favoritesAdded > 0 || result.matchesAdded > 0)) {
+        console.log(`✅ Migration complete: ${result.favoritesAdded} favorites, ${result.matchesAdded} matches`)
+      }
+    } catch (error) {
+      console.error('Migration error:', error)
+    }
+  }
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -35,7 +48,7 @@ export function useAuth() {
       
       // Sync profile on initial load if authenticated
       if (session?.user && !hasSynced.current) {
-        syncProfile()
+        syncProfile().then(() => migrateData())
         hasSynced.current = true
       }
     })
@@ -50,7 +63,7 @@ export function useAuth() {
       
       // Sync profile when user signs in
       if (session?.user && !hasSynced.current) {
-        syncProfile()
+        syncProfile().then(() => migrateData())
         hasSynced.current = true
       } else if (!session?.user) {
         // Reset sync flag on logout
