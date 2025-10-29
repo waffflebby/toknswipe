@@ -22,7 +22,7 @@ import { Separator } from "@/components/ui/separator"
 import { useState, useEffect } from "react"
 import { getBadges, getTotalSwipes, getSwipeProgress, getProStatus, getProSinceDate, setProStatus } from "@/lib/storage"
 import { useDarkMode } from "@/hooks/use-dark-mode"
-import type { Badge } from "@/lib/types"
+import type { Badge as BadgeType } from "@/lib/types"
 import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 
@@ -35,7 +35,7 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
   const { isDark, toggleDarkMode } = useDarkMode()
   const [isPro, setIsPro] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
-  const [badges, setBadges] = useState<Badge[]>([])
+  const [badges, setBadges] = useState<BadgeType[]>([])
   const [totalSwipes, setTotalSwipes] = useState(0)
   const [swipeProgress, setSwipeProgress] = useState(0)
   const [proSince, setProSince] = useState<Date | null>(null)
@@ -47,7 +47,7 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
       setProSince(getProSinceDate())
 
       const userBadges = getBadges()
-      const mockBadges: Badge[] = [
+      const mockBadges: BadgeType[] = [
         { id: "early-bird", name: "Early Bird", description: "First 10,000 users", icon: "🌟", earned: true },
         { id: "og-swiper", name: "OG Swiper", description: "Downloaded in first month", icon: "💎", earned: true },
         { id: "degen", name: "Degen", description: "10,000+ swipes", icon: "🔥", earned: true },
@@ -251,19 +251,19 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-4 text-center relative">
-                <Badge variant="secondary" className="absolute top-2 right-2 text-[9px] px-1.5 py-0">Soon</Badge>
+                <span className="absolute top-2 right-2 text-[9px] text-gray-400 font-medium">Coming Soon</span>
                 <Zap className="h-5 w-5 text-yellow-500 mx-auto mb-2 opacity-50" />
                 <p className="font-numbers font-bold text-lg text-muted-foreground">{totalSwipes}</p>
                 <p className="text-xs text-gray-500 mt-1">Swipes</p>
               </div>
               <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-4 text-center relative">
-                <Badge variant="secondary" className="absolute top-2 right-2 text-[9px] px-1.5 py-0">Soon</Badge>
+                <span className="absolute top-2 right-2 text-[9px] text-gray-400 font-medium">Coming Soon</span>
                 <Heart className="h-5 w-5 text-red-500 mx-auto mb-2 opacity-50" />
                 <p className="font-numbers font-bold text-lg text-muted-foreground">--</p>
                 <p className="text-xs text-gray-500 mt-1">Matches</p>
               </div>
               <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-4 text-center relative">
-                <Badge variant="secondary" className="absolute top-2 right-2 text-[9px] px-1.5 py-0">Soon</Badge>
+                <span className="absolute top-2 right-2 text-[9px] text-gray-400 font-medium">Coming Soon</span>
                 <TrendingUp className="h-5 w-5 text-green-500 mx-auto mb-2 opacity-50" />
                 <p className="font-numbers font-bold text-lg text-muted-foreground">--</p>
                 <p className="text-xs text-gray-500 mt-1">Streak</p>
@@ -273,7 +273,7 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
             {/* PRO Section */}
             {isPro ? (
               <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-5 relative">
-                <Badge variant="secondary" className="absolute top-3 right-3 text-[9px] px-2 py-0.5">Soon</Badge>
+                <span className="absolute top-3 right-3 text-[9px] text-gray-400 font-medium">Coming Soon</span>
                 <div className="flex flex-col items-center text-center gap-2">
                   <div className="flex items-center gap-2 opacity-50">
                     <Crown className="h-6 w-6 text-yellow-500" />
