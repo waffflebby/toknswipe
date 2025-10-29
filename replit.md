@@ -45,13 +45,19 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 - **Provider**: Supabase (wcwcrktwrrfpeouqjids.supabase.co)
 - **Authentication**: Email OTP via Supabase Auth
 - **Email Provider**: Resend (for OTP delivery)
+- **ORM**: Drizzle ORM with postgres-js driver (SSL-enabled for production)
 
-### Planned Schema (to be migrated)
-- **users**: User profiles and metadata
+### Database Schema (✅ Deployed)
+- **users**: User profiles linked to Supabase auth.users (UUID primary key)
+  - id (uuid), email, displayName, avatarUrl, isPro, proSince, stripeCustomerId, stripeSubscriptionId
 - **favorites**: Personal starred coins
+  - id (uuid), userId (FK), coinMint, coinData (jsonb), createdAt
 - **matches**: Swiped-right coins
+  - id (uuid), userId (FK), coinMint, coinData (jsonb), createdAt
 - **swipes**: All swipe tracking for analytics
+  - id (uuid), userId (FK), coinMint, direction, createdAt
 - **coinThemes**: Keyword-based theme categorization
+  - id (uuid), coinMint, theme, matchedKeywords, createdAt
 
 ## Environment Variables
 
@@ -61,6 +67,7 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key (server-side only, required)
 - `RESEND_API_KEY`: Resend API key for email delivery (server-side only, required)
 - `MORALIS_API_KEY`: Moralis API key for Solana blockchain data (server-side only, required)
+- `DATABASE_URL`: PostgreSQL connection string for Supabase database (server-side only, required)
 - `NODE_ENV`: Environment (development/production)
 
 ### Security Note
@@ -68,21 +75,31 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ## Recent Changes
 
-### October 29, 2025 - Supabase Migration Complete ✅
+### October 29, 2025 - Database Integration Complete ✅
 1. **Supabase Authentication**:
    - ✅ Migrated from Replit Auth to Supabase Auth
    - ✅ Email OTP (one-time password) authentication
-   - ✅ Resend integration for email delivery
+   - ✅ Resend integration for email delivery (noreply@toknswipe.com)
    - ✅ Supabase client setup (browser, server, middleware)
    - ✅ Auth session management with automatic cookie refresh
    - ✅ Login UI with email input and code verification
    - ✅ Auth callback route for magic links
    - ✅ useAuth hook integrated with Supabase auth state
+   - ✅ Profile sync on login (auto-creates user records in database)
    - Removed Express server - now using standard Next.js
 
-2. **Package Installations**:
+2. **Database Schema & ORM**:
+   - ✅ Drizzle ORM configured with postgres-js driver
+   - ✅ SSL-enabled connection for Supabase production compatibility
+   - ✅ Database schema deployed (users, favorites, matches, swipes, coinThemes)
+   - ✅ Profile sync API route (`/api/profile/sync`)
+   - ✅ Automatic user profile creation on first login
+   - ✅ UUID-based primary keys linked to Supabase auth.users
+
+3. **Package Installations**:
    - Installed with `--legacy-peer-deps` due to React 19:
      - @supabase/supabase-js, @supabase/ssr
+     - postgres (postgres-js driver for Drizzle)
      - Resend connector (Python integration)
 
 ### October 28, 2025 - Vercel to Replit Migration
@@ -137,16 +154,18 @@ None specified yet.
 
 ### In Progress (Phase 1-5 Rollout)
 - **Phase 1**: Database + Authentication ✅ COMPLETE
-  - ✅ PostgreSQL database setup
-  - ✅ Database schema (users, favorites, matches, swipes, themes)
-  - ✅ Replit Auth integration with Google/GitHub/email login
-  - ✅ Auth UI with login button and user profile dropdown
-  - ✅ Session persistence and user profile storage
+  - ✅ PostgreSQL database setup via Supabase
+  - ✅ Database schema (users, favorites, matches, swipes, coinThemes)
+  - ✅ Supabase Auth integration with email OTP
+  - ✅ Auth UI with login button and code verification
+  - ✅ Session persistence and automatic profile sync
 
-- **Phase 2**: Core Features with Database
-  - Favorites API (star coins → save to database)
-  - Matches API (swipe right → save to database)
-  - Migrate localStorage to database
+- **Phase 2**: Core Features with Database (IN PROGRESS)
+  - ✅ Database schema deployed and connected
+  - ✅ User profile sync on login
+  - 🔄 Favorites API (star coins → save to database)
+  - 🔄 Matches API (swipe right → save to database)
+  - 🔄 Migrate localStorage to database
   
 - **Phase 3**: Theme System
   - Keyword-based auto-categorization
