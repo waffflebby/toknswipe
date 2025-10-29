@@ -7,7 +7,7 @@ import { CoinInsightsSheet } from "@/components/coin-insights-sheet"
 import { AdvancedFilterModal } from "@/components/advanced-filter-modal"
 import { JackpotModal } from "@/components/jackpot-modal"
 import { Button } from "@/components/ui/button"
-import { X, Heart, RefreshCw, SlidersHorizontal, User, Bookmark, Zap, Dog, Cat, Bug, Bot, Vote } from "lucide-react"
+import { X, Heart, RefreshCw, SlidersHorizontal, Bookmark, Zap, Dog, Cat, Bug, Bot, Vote } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PaywallModal } from "@/components/paywall-modal"
 import { fetchTrendingCoinsFromAPI, fetchNewCoinsFromAPI } from "@/lib/api-client"
@@ -22,6 +22,7 @@ import { WatchlistSheet } from "@/components/watchlist-sheet"
 import { ProfileSheet } from "@/components/profile-sheet"
 import { RewardModal } from "@/components/reward-modal"
 import { SearchBar } from "@/components/search-bar"
+import { LoginButton } from "@/components/login-button"
 import {
   addToWatchlist,
   incrementTotalSwipes,
@@ -305,14 +306,7 @@ export function SwipeView() {
             >
               <Bookmark className="h-3 w-3" />
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowProfile(true)}
-              className="gap-1.5 border-neutral-200/50 dark:border-neutral-700 hover:bg-gray-100 dark:hover:bg-neutral-900 hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-600 font-medium px-2.5 h-7 text-[10px] shadow-sm rounded-full bg-white/90 dark:bg-black border transition-all"
-            >
-              <User className="h-3 w-3" />
-            </Button>
+            <LoginButton />
           </div>
         </div>
 
