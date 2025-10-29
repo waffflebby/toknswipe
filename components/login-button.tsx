@@ -15,7 +15,9 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { LogIn, LogOut, UserIcon } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { LoginForm } from "@/components/auth/login-form"
@@ -51,6 +53,9 @@ export function LoginButton() {
         </Button>
         <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
           <DialogContent className="sm:max-w-md">
+            <VisuallyHidden>
+              <DialogTitle>Log in to CoinSwipe</DialogTitle>
+            </VisuallyHidden>
             <LoginForm />
           </DialogContent>
         </Dialog>
