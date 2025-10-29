@@ -10,8 +10,7 @@ import { Button } from "@/components/ui/button"
 import { X, Heart, RefreshCw, SlidersHorizontal, Bookmark, Zap, Dog, Cat, Bug, Bot, Vote, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PaywallModal } from "@/components/paywall-modal"
-import { fetchTrendingCoinsFromAPI, fetchNewCoinsFromAPI, fetchMostSwipedCoinsFromAPI } from "@/lib/api-client"
-import { getThemeFeed } from "@/lib/theme-feed"
+import { fetchTrendingCoinsFromAPI, fetchNewCoinsFromAPI, fetchMostSwipedCoinsFromAPI, fetchThemeCoinsFromAPI } from "@/lib/api-client"
 import { getCoinCache } from "@/lib/coin-cache"
 import type { EnrichedCoin, JackpotReward } from "@/lib/types"
 import { BuyButton } from "@/components/buy-button" // Import BuyButton component
@@ -140,29 +139,35 @@ export function SwipeView() {
   }, [feedType, selectedTheme])
 
   const loadCoins = async () => {
-    setIsLoading(true)
-    let fetchedCoins: EnrichedCoin[] = []
+    try {
+      setIsLoading(true)
+      let fetchedCoins: EnrichedCoin[] = []
 
-    // Fetch from API routes (server-side cached)
-    if (feedType === "trending") {
-      fetchedCoins = await fetchTrendingCoinsFromAPI()
-    } else if (feedType === "new") {
-      fetchedCoins = await fetchNewCoinsFromAPI()
-    } else if (feedType === "most-swiped") {
-      fetchedCoins = await fetchMostSwipedCoinsFromAPI()
-    } else if (feedType === "themed" && selectedTheme) {
-      const allCoins = await fetchTrendingCoinsFromAPI()
-      fetchedCoins = getThemeFeed(selectedTheme, allCoins, "all")
+      // Fetch from API routes (server-side cached)
+      if (feedType === "trending") {
+        fetchedCoins = await fetchTrendingCoinsFromAPI()
+      } else if (feedType === "new") {
+        fetchedCoins = await fetchNewCoinsFromAPI()
+      } else if (feedType === "most-swiped") {
+        fetchedCoins = await fetchMostSwipedCoinsFromAPI()
+      } else if (feedType === "themed" && selectedTheme) {
+        fetchedCoins = await fetchThemeCoinsFromAPI(selectedTheme)
+      }
+
+      // Apply sorting
+      const sortedCoins = sortCoins(fetchedCoins)
+
+      console.log("[SwipeView] Loaded coins:", sortedCoins.length, "for feed:", feedType, "theme:", selectedTheme, "sort:", sortBy)
+      setCoins(sortedCoins)
+      setAllCoins(sortedCoins)
+      setCurrentIndex(0)
+    } catch (error) {
+      console.error("[SwipeView] Error loading coins:", error)
+      setCoins([])
+      setAllCoins([])
+    } finally {
+      setIsLoading(false)
     }
-
-    // Apply sorting
-    const sortedCoins = sortCoins(fetchedCoins)
-
-    console.log("[SwipeView] Loaded coins:", sortedCoins.length, "for feed:", feedType, "theme:", selectedTheme, "sort:", sortBy)
-    setCoins(sortedCoins)
-    setAllCoins(sortedCoins)
-    setCurrentIndex(0)
-    setIsLoading(false)
   }
 
   const checkForJackpot = () => {
@@ -388,6 +393,7 @@ export function SwipeView() {
             }}
             onSelectTheme={(themeId) => {
               setSelectedTheme(themeId)
+              setFeedType("themed")
             }}
           />
         </div>

@@ -77,6 +77,25 @@ export async function fetchMostSwipedCoinsFromAPI(): Promise<EnrichedCoin[]> {
   }
 }
 
+export async function fetchThemeCoinsFromAPI(themeId: string): Promise<EnrichedCoin[]> {
+  try {
+    console.log("[API Client] Fetching theme coins for:", themeId)
+    const response = await fetch(`${API_BASE_URL}/api/themes/search?theme=${encodeURIComponent(themeId)}`)
+    
+    if (!response.ok) {
+      console.error("[API Client] Theme API error:", response.status)
+      return []
+    }
+
+    const result = await response.json()
+    console.log(`[API Client] Got ${result.count} coins for theme ${themeId} from ${result.source}`)
+    return result.coins || []
+  } catch (error) {
+    console.error("[API Client] Error fetching theme coins:", error)
+    return []
+  }
+}
+
 export async function searchCoinsFromAPI(query: string): Promise<{ tokens: any[]; themes: any[] }> {
   try {
     if (!query || query.length < 1) {
