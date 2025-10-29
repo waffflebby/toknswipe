@@ -8,7 +8,7 @@ import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
 import { searchCoinsFromAPI } from "@/lib/api-client"
 import { getPersonalList } from "@/lib/storage"
-import { addToFavorites, removeFromFavorites } from "@/lib/storage-db"
+import { addToFavorites, removeFromFavorites, getFavorites } from "@/lib/storage-db"
 
 interface SearchBarProps {
   coins: EnrichedCoin[]
@@ -29,9 +29,19 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
   const [starredCoins, setStarredCoins] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    const personalList = getPersonalList()
-    setStarredCoins(new Set(personalList.map(c => c.id)))
+    loadStarredCoins()
   }, [])
+
+  const loadStarredCoins = async () => {
+    try {
+      const favorites = await getFavorites()
+      setStarredCoins(new Set(favorites.map(coin => coin.id)))
+    } catch (error) {
+      console.error('Error loading starred coins:', error)
+      const personalList = getPersonalList()
+      setStarredCoins(new Set(personalList.map(coin => coin.id)))
+    }
+  }
 
   // Search via Moralis API
   useEffect(() => {
@@ -181,14 +191,10 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                         e.stopPropagation()
                         if (starredCoins.has(coin.id)) {
                           await removeFromFavorites(coin.id)
-                          setStarredCoins(prev => {
-                            const next = new Set(prev)
-                            next.delete(coin.id)
-                            return next
-                          })
+                          await loadStarredCoins()
                         } else {
                           await addToFavorites(coin)
-                          setStarredCoins(prev => new Set(prev).add(coin.id))
+                          await loadStarredCoins()
                         }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
@@ -243,14 +249,10 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                         e.stopPropagation()
                         if (starredCoins.has(coin.id)) {
                           await removeFromFavorites(coin.id)
-                          setStarredCoins(prev => {
-                            const next = new Set(prev)
-                            next.delete(coin.id)
-                            return next
-                          })
+                          await loadStarredCoins()
                         } else {
                           await addToFavorites(coin)
-                          setStarredCoins(prev => new Set(prev).add(coin.id))
+                          await loadStarredCoins()
                         }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
