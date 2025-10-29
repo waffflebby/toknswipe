@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      themes: themes.map((t: { theme: ThemeId }) => t.theme),
+      themes: themes.map((t) => t.theme as ThemeId),
     })
   } catch (error) {
     console.error('Error fetching themes:', error)

@@ -20,21 +20,21 @@ export const MEME_THEMES = {
     id: "dog",
     name: "Dog Coins",
     emoji: "🐕",
-    keywords: ["dog", "doge", "shib", "inu", "puppy", "pup", "corgi", "husky", "retriever", "hound", "woof", "bark", "floki", "doggo"],
+    keywords: ["dog", "doge", "shib", "inu", "puppy", "pup", "corgi", "husky", "retriever", "hound", "woof", "bark", "floki", "doggo", "bonk", "wif", "howl", "fetch", "shiba", "army"],
     color: "bg-yellow-100 text-yellow-700 border-yellow-300"
   },
   cat: {
     id: "cat",
     name: "Cat Coins",
     emoji: "🐱",
-    keywords: ["cat", "kitten", "kitty", "meow", "feline", "neko", "tabby", "persian", "siamese", "grumpy", "garfield"],
+    keywords: ["cat", "kitten", "kitty", "meow", "feline", "neko", "tabby", "persian", "siamese", "grumpy", "garfield", "popcat", "mog", "mew", "toshi", "pop", "simon", "base", "nub", "michi", "mini", "bongo", "nyan", "happy", "giko", "hehe", "wyac", "oiiaoiia", "glorp", "bingus", "gary", "long", "gak", "elgato"],
     color: "bg-pink-100 text-pink-700 border-pink-300"
   },
   pepe: {
     id: "pepe",
     name: "Pepe & Frogs",
     emoji: "🐸",
-    keywords: ["pepe", "frog", "kek", "wojak", "apu", "feels", "ribbit", "toad", "amphibian"],
+    keywords: ["pepe", "frog", "kek", "apu", "feels", "ribbit", "toad", "amphibian", "lilpepe", "pepenode", "unchained", "node", "deflation"],
     color: "bg-green-100 text-green-700 border-green-300"
   },
   elon: {
@@ -48,7 +48,7 @@ export const MEME_THEMES = {
     id: "trump",
     name: "Trump",
     emoji: "🇺🇸",
-    keywords: ["trump", "donald", "maga", "president"],
+    keywords: ["trump", "donald", "maga", "president", "wlfi", "melania", "election", "liberty", "policy"],
     color: "bg-red-100 text-red-700 border-red-300"
   },
   defi: {
@@ -62,14 +62,14 @@ export const MEME_THEMES = {
     id: "nft",
     name: "NFT & Art",
     emoji: "🖼️",
-    keywords: ["nft", "art", "collectible", "rare", "unique", "mint", "gallery", "drop", "metaverse"],
+    keywords: ["nft", "art", "collectible", "rare", "unique", "mint", "gallery", "drop", "metaverse", "ape", "flow", "blur", "pengu", "collect", "bayc", "pudgy", "azuki"],
     color: "bg-indigo-100 text-indigo-700 border-indigo-300"
   },
   sport: {
     id: "sport",
     name: "Sports",
     emoji: "⚽",
-    keywords: ["sport", "football", "soccer", "basketball", "baseball", "tennis", "racing", "athlete", "team", "champion"],
+    keywords: ["sport", "football", "soccer", "basketball", "baseball", "tennis", "racing", "athlete", "team", "champion", "chiliz", "sore", "sweat", "fan", "token", "fitness", "icon"],
     color: "bg-orange-100 text-orange-700 border-orange-300"
   },
   food: {
@@ -83,21 +83,21 @@ export const MEME_THEMES = {
     id: "anime",
     name: "Anime",
     emoji: "🎌",
-    keywords: ["anime", "manga", "otaku", "waifu", "kawaii", "naruto", "pokemon", "goku", "japan", "ninja", "samurai", "chan", "kun", "senpai"],
+    keywords: ["anime", "manga", "otaku", "waifu", "kawaii", "naruto", "pokemon", "goku", "japan", "ninja", "samurai", "chan", "kun", "senpai", "wen", "ghibli", "web3"],
     color: "bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300"
   },
   meme: {
     id: "meme",
     name: "Meme Coins",
     emoji: "😂",
-    keywords: ["meme", "based", "chad", "sigma", "gigachad", "dank", "lol", "lmao", "kek", "rekt", "lambo", "wen"],
+    keywords: ["meme", "based", "chad", "sigma", "gigachad", "dank", "lol", "lmao", "kek", "rekt", "lambo", "wen", "spx", "bome", "brett", "turbo", "fart", "fartcoin", "viral", "hype", "rug", "maxi"],
     color: "bg-cyan-100 text-cyan-700 border-cyan-300"
   },
   wojak: {
     id: "wojak",
     name: "Wojak",
     emoji: "😐",
-    keywords: ["wojak", "feels", "doomer", "boomer", "zoomer"],
+    keywords: ["wojak", "feels", "doomer", "boomer", "zoomer", "npc", "rfc", "guy", "retard", "finder"],
     color: "bg-slate-100 text-slate-700 border-slate-300"
   },
   diamond: {
@@ -111,7 +111,7 @@ export const MEME_THEMES = {
     id: "fire",
     name: "Fire",
     emoji: "🔥",
-    keywords: ["fire", "hot", "burn", "flame", "blaze", "inferno"],
+    keywords: ["fire", "hot", "burn", "flame", "blaze", "inferno", "matr1x"],
     color: "bg-rose-100 text-rose-700 border-rose-300"
   },
   king: {
