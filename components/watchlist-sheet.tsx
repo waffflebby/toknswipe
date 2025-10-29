@@ -61,27 +61,31 @@ function generateMockChartData(change24h: number): number[] {
   }
 }
 
+interface Folder {
+  id: string
+  name: string
+  type: 'system' | 'custom'
+  emoji?: string | null
+}
+
+interface FolderCoins {
+  coins: EnrichedCoin[]
+}
+
 export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
   const [watchlistCoins, setWatchlistCoins] = useState<EnrichedCoin[]>([])
   const [personalCoins, setPersonalCoins] = useState<EnrichedCoin[]>([])
   const [activeTab, setActiveTab] = useState("all")
-  const [customLists, setCustomLists] = useState<string[]>([])
+  const [customFolders, setCustomFolders] = useState<Folder[]>([])
   const [fullscreenChart, setFullscreenChart] = useState<EnrichedCoin | null>(null)
   const [showNewListDialog, setShowNewListDialog] = useState(false)
   const [newListName, setNewListName] = useState("")
-  const [coinLists, setCoinLists] = useState<Record<string, string[]>>({})
+  const [folderCoins, setFolderCoins] = useState<Record<string, EnrichedCoin[]>>({})
 
   useEffect(() => {
     if (open) {
       loadCoins()
-      const savedLists = localStorage.getItem("customWatchlists")
-      if (savedLists) {
-        setCustomLists(JSON.parse(savedLists))
-      }
-      const savedCoinLists = localStorage.getItem("coinWatchlistAssignments")
-      if (savedCoinLists) {
-        setCoinLists(JSON.parse(savedCoinLists))
-      }
+      loadFolders()
     }
   }, [open])
 
@@ -92,43 +96,119 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
     setPersonalCoins(favorites)
   }
 
-  const handleRemove = async (coinId: string, folder: 'matched' | 'personal' | 'all') => {
-    if (folder === 'matched' || folder === 'all') {
-      await removeFromMatches(coinId)
-      removeFromWatchlist(coinId)
+  const loadFolders = async () => {
+    try {
+      const response = await fetch('/api/folders')
+      if (response.ok) {
+        const data = await response.json()
+        const customOnly = data.folders.filter((f: Folder) => f.type === 'custom')
+        setCustomFolders(customOnly)
+      }
+    } catch (error) {
+      console.error('Error loading folders:', error)
     }
-    if (folder === 'personal' || folder === 'all') {
-      await removeFromFavorites(coinId)
-      removeFromPersonalList(coinId)
-    }
-    loadCoins()
   }
 
-  const handleCreateList = () => {
+  const loadFolderCoins = async (folderId: string) => {
+    try {
+      const response = await fetch(`/api/folders/${folderId}/coins`)
+      if (response.ok) {
+        const data: FolderCoins = await response.json()
+        setFolderCoins(prev => ({ ...prev, [folderId]: data.coins }))
+      }
+    } catch (error) {
+      console.error('Error loading folder coins:', error)
+    }
+  }
+
+  const handleRemove = async (coinId: string, folderId: string) => {
+    const customFolder = customFolders.find(f => f.id === folderId)
+    
+    if (customFolder) {
+      try {
+        const response = await fetch(`/api/folders/${folderId}/coins?coinMint=${coinId}`, {
+          method: 'DELETE'
+        })
+        
+        if (!response.ok) {
+          console.error('Failed to remove coin from folder:', response.status)
+        }
+      } catch (error) {
+        console.error('Error removing coin from folder:', error)
+      } finally {
+        await loadFolderCoins(folderId)
+      }
+    } else {
+      if (folderId === 'matched' || folderId === 'all') {
+        await removeFromMatches(coinId)
+        removeFromWatchlist(coinId)
+      }
+      if (folderId === 'personal' || folderId === 'all') {
+        await removeFromFavorites(coinId)
+        removeFromPersonalList(coinId)
+      }
+      loadCoins()
+    }
+  }
+
+  const handleCreateList = async () => {
     if (newListName.trim()) {
-      const updatedLists = [...customLists, newListName.trim()]
-      setCustomLists(updatedLists)
-      localStorage.setItem("customWatchlists", JSON.stringify(updatedLists))
-      setNewListName("")
-      setShowNewListDialog(false)
+      try {
+        const response = await fetch('/api/folders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newListName.trim() })
+        })
+        
+        if (response.ok) {
+          await loadFolders()
+          setNewListName("")
+          setShowNewListDialog(false)
+        }
+      } catch (error) {
+        console.error('Error creating folder:', error)
+      }
     }
   }
 
-  const handleMoveToList = (coinId: string, listName: string) => {
-    const updatedCoinLists = { ...coinLists }
-    if (!updatedCoinLists[listName]) {
-      updatedCoinLists[listName] = []
+  const handleMoveToList = async (coin: EnrichedCoin, folderId: string) => {
+    try {
+      const response = await fetch(`/api/folders/${folderId}/coins`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          coinMint: coin.id,
+          coinData: coin
+        })
+      })
+      
+      if (response.ok || response.status === 409) {
+        await loadFolderCoins(folderId)
+      }
+    } catch (error) {
+      console.error('Error moving coin to folder:', error)
     }
-    if (!updatedCoinLists[listName].includes(coinId)) {
-      updatedCoinLists[listName].push(coinId)
-      setCoinLists(updatedCoinLists)
-      localStorage.setItem("coinWatchlistAssignments", JSON.stringify(updatedCoinLists))
+  }
+
+  const handleDeleteFolder = async (folderId: string) => {
+    try {
+      const response = await fetch(`/api/folders/${folderId}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.ok) {
+        await loadFolders()
+        if (activeTab === folderId) {
+          setActiveTab('all')
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting folder:', error)
     }
   }
 
   const getCoinsForTab = (tab: string) => {
     if (tab === "all") {
-      // Combine both watchlist and personal, deduplicate by id
       const combined = [...watchlistCoins, ...personalCoins]
       const seen = new Set<string>()
       return combined.filter(coin => {
@@ -139,11 +219,16 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
     }
     if (tab === "matched") return watchlistCoins
     if (tab === "personal") return personalCoins
-    if (customLists.includes(tab)) {
-      const coinIds = coinLists[tab] || []
-      return watchlistCoins.filter((coin) => coinIds.includes(coin.id))
+    
+    const folder = customFolders.find(f => f.id === tab)
+    if (folder) {
+      if (!folderCoins[tab]) {
+        loadFolderCoins(tab)
+        return []
+      }
+      return folderCoins[tab] || []
     }
-    return watchlistCoins
+    return []
   }
 
   const themes = Array.from(new Set(watchlistCoins.map((coin) => coin.theme).filter(Boolean)))
@@ -193,13 +278,13 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
                 >
                   Personal
                 </TabsTrigger>
-                {customLists.map((listName) => (
+                {customFolders.map((folder) => (
                   <TabsTrigger
-                    key={listName}
-                    value={listName}
+                    key={folder.id}
+                    value={folder.id}
                     className="data-[state=active]:bg-orange-50 data-[state=active]:text-orange-600 text-xs px-3 py-1 rounded-full"
                   >
-                    {listName}
+                    {folder.emoji ? `${folder.emoji} ` : ''}{folder.name}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -222,9 +307,10 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
                         key={coin.id}
                         coin={coin}
                         onRemove={handleRemove}
-                        folder={activeTab as 'matched' | 'personal' | 'all'}
-                        customLists={customLists}
-                        onMoveToList={handleMoveToList}
+                        currentFolderId={activeTab}
+                        customFolders={customFolders}
+                        onMoveToFolder={handleMoveToList}
+                        onDeleteFolder={handleDeleteFolder}
                         onViewChart={setFullscreenChart}
                       />
                     ))}
@@ -321,16 +407,18 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
 function CoinCard({
   coin,
   onRemove,
-  folder,
-  customLists,
-  onMoveToList,
+  currentFolderId,
+  customFolders,
+  onMoveToFolder,
+  onDeleteFolder,
   onViewChart,
 }: {
   coin: EnrichedCoin
-  onRemove: (id: string, folder: 'matched' | 'personal' | 'all') => void
-  folder: 'matched' | 'personal' | 'all'
-  customLists: string[]
-  onMoveToList: (coinId: string, listName: string) => void
+  onRemove: (coinId: string, folderId: string) => void
+  currentFolderId: string
+  customFolders: Folder[]
+  onMoveToFolder: (coin: EnrichedCoin, folderId: string) => void
+  onDeleteFolder: (folderId: string) => void
   onViewChart: (coin: EnrichedCoin) => void
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -405,14 +493,34 @@ function CoinCard({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {customLists.map((listName) => (
-              <DropdownMenuItem key={listName} onClick={() => onMoveToList(coin.id, listName)}>
-                Move to {listName}
+            {customFolders.length > 0 && (
+              <>
+                {customFolders.map((customFolder) => (
+                  <DropdownMenuItem 
+                    key={customFolder.id} 
+                    onClick={() => onMoveToFolder(coin, customFolder.id)}
+                  >
+                    {customFolder.emoji ? `${customFolder.emoji} ` : ''}Add to {customFolder.name}
+                  </DropdownMenuItem>
+                ))}
+              </>
+            )}
+            {customFolders.find(f => f.id === currentFolderId) && (
+              <DropdownMenuItem 
+                className="text-red-600" 
+                onClick={() => {
+                  if (confirm('Delete this custom folder? All coins will be removed from it.')) {
+                    onDeleteFolder(currentFolderId)
+                  }
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-2" />
+                Delete Folder
               </DropdownMenuItem>
-            ))}
-            <DropdownMenuItem className="text-red-600" onClick={() => onRemove(coin.id, folder)}>
+            )}
+            <DropdownMenuItem className="text-red-600" onClick={() => onRemove(coin.id, currentFolderId)}>
               <Trash2 className="h-3.5 w-3.5 mr-2" />
-              Remove
+              Remove Coin
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
