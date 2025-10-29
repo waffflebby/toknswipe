@@ -27,7 +27,7 @@ export const MEME_THEMES = {
     id: "cat",
     name: "Cat Coins",
     emoji: "🐱",
-    keywords: ["cat", "kitten", "kitty", "meow", "feline", "neko", "tabby", "persian", "siamese", "grumpy", "garfield", "popcat", "mog", "mew", "toshi", "pop", "simon", "base", "nub", "michi", "mini", "bongo", "nyan", "happy", "giko", "hehe", "wyac", "oiiaoiia", "glorp", "bingus", "gary", "long", "gak", "elgato"],
+    keywords: ["cat", "kitten", "kitty", "meow", "feline", "neko", "tabby", "persian", "siamese", "grumpy", "garfield", "popcat", "mog", "mew", "toshi", "pop", "simon", "base", "nub", "michi", "mini", "bongo", "nyan", "happy", "giko", "hehe", "wyac", "oiiaoiia", "glorp", "bingus", "gary", "long", "gak", "elgato", "catwifhat", "catdog", "catmew"],
     color: "bg-pink-100 text-pink-700 border-pink-300"
   },
   pepe: {
@@ -127,7 +127,15 @@ export type ThemeId = keyof typeof MEME_THEMES
 
 // Detect themes from coin data
 export function detectThemes(coin: EnrichedCoin): ThemeId[] {
-  const searchText = `${coin.name} ${coin.symbol} ${coin.description || ""}`.toLowerCase()
+  const name = coin.name || ""
+  const symbol = coin.symbol || ""
+  const description = coin.description || ""
+  const searchText = `${name} ${symbol} ${description}`.toLowerCase()
+  
+  if (!searchText.trim()) {
+    return []
+  }
+
   const detectedThemes: ThemeId[] = []
 
   for (const [themeId, theme] of Object.entries(MEME_THEMES)) {
