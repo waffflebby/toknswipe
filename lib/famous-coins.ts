@@ -3,7 +3,7 @@ import type { EnrichedCoin } from './types'
 // Famous placeholder coins for each theme to prevent empty results
 // These are fully enriched coins with all required properties
 export const FAMOUS_COINS_BY_THEME: Record<string, EnrichedCoin[]> = {
-  cat: [
+  cats: [
     {
       id: 'MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5',
       mint: 'MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5',
@@ -27,7 +27,7 @@ export const FAMOUS_COINS_BY_THEME: Record<string, EnrichedCoin[]> = {
       isVerified: true,
       riskLevel: 'low' as const,
       launchpad: 'pumpfun',
-      themes: ['cat'],
+      themes: ['cats'],
     },
     {
       id: '7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr',
@@ -52,10 +52,10 @@ export const FAMOUS_COINS_BY_THEME: Record<string, EnrichedCoin[]> = {
       isVerified: true,
       riskLevel: 'low' as const,
       launchpad: 'raydium',
-      themes: ['cat'],
+      themes: ['cats'],
     },
   ],
-  dog: [
+  dogs: [
     {
       id: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
       mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
@@ -79,7 +79,7 @@ export const FAMOUS_COINS_BY_THEME: Record<string, EnrichedCoin[]> = {
       isVerified: true,
       riskLevel: 'low' as const,
       launchpad: 'bonk',
-      themes: ['dog'],
+      themes: ['dogs'],
     },
     {
       id: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
@@ -104,7 +104,7 @@ export const FAMOUS_COINS_BY_THEME: Record<string, EnrichedCoin[]> = {
       isVerified: true,
       riskLevel: 'low' as const,
       launchpad: 'raydium',
-      themes: ['dog'],
+      themes: ['dogs'],
     },
   ],
   pepe: [],

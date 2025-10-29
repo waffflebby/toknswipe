@@ -16,15 +16,15 @@ export const MEME_THEMES = {
     keywords: ["game", "gaming", "play", "gamer", "esport", "arcade", "console", "xbox", "playstation", "nintendo", "steam", "fps", "rpg", "mmo", "pixel", "quest"],
     color: "bg-purple-100 text-purple-700 border-purple-300"
   },
-  dog: {
-    id: "dog",
+  dogs: {
+    id: "dogs",
     name: "Dog Coins",
     emoji: "🐕",
     keywords: ["dog", "doge", "shib", "inu", "puppy", "pup", "corgi", "husky", "retriever", "hound", "woof", "bark", "floki", "doggo", "bonk", "wif", "howl", "fetch", "shiba", "army"],
     color: "bg-yellow-100 text-yellow-700 border-yellow-300"
   },
-  cat: {
-    id: "cat",
+  cats: {
+    id: "cats",
     name: "Cat Coins",
     emoji: "🐱",
     keywords: ["cat", "kitten", "kitty", "meow", "feline", "neko", "tabby", "persian", "siamese", "grumpy", "garfield", "popcat", "mog", "mew", "toshi", "pop", "simon", "base", "nub", "michi", "mini", "bongo", "nyan", "happy", "giko", "hehe", "wyac", "oiiaoiia", "glorp", "bingus", "gary", "long", "gak", "elgato", "catwifhat", "catdog", "catmew"],

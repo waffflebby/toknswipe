@@ -7,6 +7,7 @@ Meme Coin Tinder is a Next.js application providing a Tinder-style swipe interfa
 None specified yet.
 
 ## Recent Changes (October 29, 2025)
+- **Fixed Theme ID Mismatch (400 Error)**: Standardized all theme IDs to use plural format ("cats", "dogs") across `lib/theme-detector.ts`, `lib/famous-coins.ts`, and `lib/types.ts` - fixes 400 Bad Request errors when selecting themes
 - **Fixed App Crash**: Added try-catch-finally error handling to ensure loading state is always properly managed
 - **Back Button**: Added conditional back button (ArrowLeft icon) in header that appears when viewing themed feeds, returns to trending feed on click
 - **Theme Feed API**: Created `/api/themes/search` endpoint with multi-layer fallback (trending scan → famous coins → error handling)
