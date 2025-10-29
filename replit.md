@@ -7,16 +7,14 @@ Meme Coin Tinder is a Next.js application providing a Tinder-style swipe interfa
 None specified yet.
 
 ## Recent Changes (October 29, 2025)
+- **Subtle Loading Overlay**: Replaced full-screen blocking loader with elegant overlay that appears over current content during theme switches - features blur background, centered loading card with purple spinner, and z-index 100
+- **Real Images for Famous Coins**: Updated POPCAT, MEW, BONK, and WIF with authentic Cloudfront image URLs using verified Solana mainnet token addresses
+- **Enhanced Error Handling in loadCoins**: Added defensive logging, fallback branches for edge cases (themed feed without theme, unmatched feedType), ensures isLoading always clears in finally block
+- **Fixed Undefined Coin Errors**: Added safety check to only render SwipeCard when currentCoin exists, prevents "Cannot read properties of undefined" errors
 - **Fixed Theme ID Mismatch (400 Error)**: Standardized all theme IDs to use plural format ("cats", "dogs") across `lib/theme-detector.ts`, `lib/famous-coins.ts`, and `lib/types.ts` - fixes 400 Bad Request errors when selecting themes
-- **Fixed App Crash**: Added try-catch-finally error handling to ensure loading state is always properly managed
 - **Back Button**: Added conditional back button (ArrowLeft icon) in header that appears when viewing themed feeds, returns to trending feed on click
 - **Theme Feed API**: Created `/api/themes/search` endpoint with multi-layer fallback (trending scan → famous coins → error handling)
-- **Fixed Theme Loading**: Updated SwipeView to use new `fetchThemeCoinsFromAPI()` instead of client-side filtering
-- **Fixed Search Bar Integration**: SearchBar now properly sets both `selectedTheme` AND `feedType="themed"` when theme is clicked
 - **Famous Placeholder Coins**: Created fully-enriched placeholder coins (MEW, POPCAT, BONK, WIF) for cat/dog themes to prevent empty states
-- **Auto-Redirect System**: Implements 2-second delay redirect to trending feed when no coins available after retry
-- **Multi-Layer Fallback**: Theme feeds now use: API scan → famous coins → error with retry → auto-redirect
-- **Loading State**: Added loading spinner with proper error handling to prevent undefined access errors
 
 ## System Architecture
 The application is built on Next.js 15.2.4 (App Router) using React 19 and TypeScript. Styling is handled with Tailwind CSS 4.1.9 and UI components leverage Radix UI. Charting functionalities are provided by Lightweight Charts and Recharts.
