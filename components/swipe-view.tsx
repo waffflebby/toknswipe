@@ -10,10 +10,9 @@ import { Button } from "@/components/ui/button"
 import { X, Heart, RefreshCw, SlidersHorizontal, Bookmark, Zap, Dog, Cat, Bug, Bot, Vote, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PaywallModal } from "@/components/paywall-modal"
-import { fetchTrendingCoinsFromAPI, fetchNewCoinsFromAPI, fetchMostSwipedCoinsFromAPI, fetchThemeCoinsFromAPI } from "@/lib/api-client"
 import { getCoinCache } from "@/lib/coin-cache"
 import type { EnrichedCoin, JackpotReward } from "@/lib/types"
-import { BuyButton } from "@/components/buy-button" // Import BuyButton component
+import { BuyButton } from "@/components/buy-button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { COIN_THEMES } from "@/lib/types"
 import { ActivityBanner } from "@/components/activity-banner"
@@ -28,8 +27,10 @@ import {
   resetSwipeProgress,
   checkAndUnlockBadges,
 } from "@/lib/storage"
-import { addToMatches, recordSwipe } from "@/lib/storage-db"
+import { recordSwipe } from "@/lib/storage-db"
 import { useAuth } from "@/hooks/useAuth"
+import { useCoins } from "@/hooks/useCoins"
+import { useMatches } from "@/hooks/useMatches"
 import { toast } from "sonner"
 
 const JACKPOT_REWARDS: JackpotReward[] = [
@@ -71,20 +72,17 @@ const JACKPOT_REWARDS: JackpotReward[] = [
 ]
 
 export function SwipeView() {
-  const [coins, setCoins] = useState<EnrichedCoin[]>([])
-  const [allCoins, setAllCoins] = useState<EnrichedCoin[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showFilters, setShowFilters] = useState(false)
   const [swipeHistory, setSwipeHistory] = useState<Array<{ coinId: string; direction: "left" | "right" }>>([])
   const [isSwipeAnimating, setIsSwipeAnimating] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
   const [swipeCount, setSwipeCount] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
   const [selectedCoin, setSelectedCoin] = useState<EnrichedCoin | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [showInsightsSheet, setShowInsightsSheet] = useState(false)
   const [insightsViewMode, setInsightsViewMode] = useState<"full" | "devMetrics">("full")
-  const [feedType, setFeedType] = useState<"trending" | "new" | "themed" | "most-swiped">("trending") // Updated feed type to support the four main types: trending, new, themed, and most-swiped
+  const [feedType, setFeedType] = useState<"trending" | "new" | "themed" | "most-swiped">("trending")
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null)
 
   const [streak, setStreak] = useState(5)
@@ -98,16 +96,28 @@ export function SwipeView() {
   const [isMounted, setIsMounted] = useState(false)
 
   const [swipeEffect, setSwipeEffect] = useState<"like" | "dislike" | null>(null)
-  const [isScrolling, setIsScrolling] = useState(false) // Added state to track scrolling
+  const [isScrolling, setIsScrolling] = useState(false)
   const [showWatchlist, setShowWatchlist] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
-  const [retryAttempts, setRetryAttempts] = useState(0) // Track retry attempts
+  const [retryAttempts, setRetryAttempts] = useState(0)
   
   const { isAuthenticated } = useAuth()
+  const { coins: fetchedCoins, isLoading } = useCoins(feedType, selectedTheme)
+  const { addMatch } = useMatches()
 
-  // Filter and sorting
   const [sortBy, setSortBy] = useState<"mcap" | "volume" | "holders" | "age">("mcap")
   const [showSortMenu, setShowSortMenu] = useState(false)
+  const [coins, setCoins] = useState<EnrichedCoin[]>([])
+  const [allCoins, setAllCoins] = useState<EnrichedCoin[]>([])
+
+  useEffect(() => {
+    if (fetchedCoins.length > 0) {
+      const sorted = sortCoins(fetchedCoins)
+      setCoins(sorted)
+      setAllCoins(sorted)
+      setCurrentIndex(0)
+    }
+  }, [fetchedCoins, sortBy])
 
   // Sort coins by selected filter
   const sortCoins = (coinsToSort: EnrichedCoin[]) => {
@@ -134,58 +144,9 @@ export function SwipeView() {
     }
   }
 
-  // Set mounted state
   useEffect(() => {
     setIsMounted(true)
   }, [])
-
-  // Poll for trending coins every 2 hours
-  useEffect(() => {
-    if (!isMounted) return
-    loadCoins()
-  }, [feedType, selectedTheme, isMounted])
-
-  const loadCoins = async () => {
-    try {
-      console.log("[SwipeView] Loading coins for feed:", feedType, "theme:", selectedTheme)
-      setIsLoading(true)
-      let fetchedCoins: EnrichedCoin[] = []
-
-      // Fetch from API routes (server-side cached)
-      if (feedType === "trending") {
-        fetchedCoins = await fetchTrendingCoinsFromAPI()
-      } else if (feedType === "new") {
-        fetchedCoins = await fetchNewCoinsFromAPI()
-      } else if (feedType === "most-swiped") {
-        fetchedCoins = await fetchMostSwipedCoinsFromAPI()
-      } else if (feedType === "themed" && selectedTheme) {
-        fetchedCoins = await fetchThemeCoinsFromAPI(selectedTheme)
-      } else if (feedType === "themed" && !selectedTheme) {
-        // Themed feed without a theme selected - default to trending
-        console.warn("[SwipeView] Themed feed selected but no theme provided, falling back to trending")
-        fetchedCoins = await fetchTrendingCoinsFromAPI()
-      } else {
-        // Fallback to trending if no branch matches
-        console.warn("[SwipeView] No feed type matched, falling back to trending")
-        fetchedCoins = await fetchTrendingCoinsFromAPI()
-      }
-
-      // Apply sorting
-      const sortedCoins = sortCoins(fetchedCoins)
-
-      console.log("[SwipeView] Loaded coins:", sortedCoins.length, "for feed:", feedType, "theme:", selectedTheme, "sort:", sortBy)
-      setCoins(sortedCoins)
-      setAllCoins(sortedCoins)
-      setCurrentIndex(0)
-    } catch (error) {
-      console.error("[SwipeView] Error loading coins:", error)
-      setCoins([])
-      setAllCoins([])
-    } finally {
-      console.log("[SwipeView] Clearing loading state")
-      setIsLoading(false)
-    }
-  }
 
   const checkForJackpot = () => {
     const jackpotChance = 0.05
@@ -223,7 +184,7 @@ export function SwipeView() {
 
     if (direction === "right") {
       setSwipeEffect("like")
-      addToMatches(currentCoin)
+      addMatch(currentCoin)
       checkForJackpot()
     } else {
       setSwipeEffect("dislike")
@@ -318,7 +279,6 @@ export function SwipeView() {
 
   const handleRetry = () => {
     setRetryAttempts(prev => prev + 1)
-    loadCoins()
   }
 
   // Show empty state (only if not loading and no coins)

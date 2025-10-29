@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { Search, X, Star } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
 import { searchCoinsFromAPI } from "@/lib/api-client"
-import { addToFavorites, removeFromFavorites, getFavorites } from "@/lib/storage-db"
+import { useFavorites } from "@/hooks/useFavorites"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
 
@@ -27,22 +27,13 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
 
   const [searchResults, setSearchResults] = useState<EnrichedCoin[]>([])
   const [isSearching, setIsSearching] = useState(false)
-  const [starredCoins, setStarredCoins] = useState<Set<string>>(new Set())
   const { isAuthenticated } = useAuth()
-
-  useEffect(() => {
-    loadStarredCoins()
-  }, [])
-
-  const loadStarredCoins = async () => {
-    try {
-      const favorites = await getFavorites()
-      setStarredCoins(new Set(favorites.map(coin => coin.id)))
-    } catch (error) {
-      console.error('Error loading starred coins:', error)
-      setStarredCoins(new Set())
-    }
-  }
+  const { favorites, addFavorite, removeFavorite } = useFavorites()
+  
+  const starredCoins = useMemo(() => 
+    new Set(favorites.map(coin => coin.id)), 
+    [favorites]
+  )
 
   // Search via Moralis API
   useEffect(() => {
@@ -125,6 +116,25 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
     onSelectTheme(themeId)
   }
 
+  const handleToggleStar = async (coin: EnrichedCoin, e: React.MouseEvent) => {
+    e.stopPropagation()
+    
+    const isStarred = starredCoins.has(coin.id)
+    
+    if (isStarred) {
+      removeFavorite(coin.id)
+    } else {
+      addFavorite(coin)
+    }
+    
+    if (!isAuthenticated) {
+      toast.info("Sign in to save favorites", {
+        description: "Your starred coins won't be saved unless you create an account",
+        duration: 3000,
+      })
+    }
+  }
+
   return (
     <div className={cn("relative", className)}>
       {/* Always-open search bar */}
@@ -188,24 +198,7 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                       </p>
                     </div>
                     <button
-                      onClick={async (e) => {
-                        e.stopPropagation()
-                        
-                        if (starredCoins.has(coin.id)) {
-                          await removeFromFavorites(coin.id)
-                          await loadStarredCoins()
-                        } else {
-                          await addToFavorites(coin)
-                          await loadStarredCoins()
-                        }
-                        
-                        if (!isAuthenticated) {
-                          toast.info("Sign in to save favorites", {
-                            description: "Your starred coins won't be saved unless you create an account",
-                            duration: 3000,
-                          })
-                        }
-                      }}
+                      onClick={(e) => handleToggleStar(coin, e)}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
@@ -254,24 +247,7 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                       </p>
                     </div>
                     <button
-                      onClick={async (e) => {
-                        e.stopPropagation()
-                        
-                        if (starredCoins.has(coin.id)) {
-                          await removeFromFavorites(coin.id)
-                          await loadStarredCoins()
-                        } else {
-                          await addToFavorites(coin)
-                          await loadStarredCoins()
-                        }
-                        
-                        if (!isAuthenticated) {
-                          toast.info("Sign in to save favorites", {
-                            description: "Your starred coins won't be saved unless you create an account",
-                            duration: 3000,
-                          })
-                        }
-                      }}
+                      onClick={(e) => handleToggleStar(coin, e)}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
