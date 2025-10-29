@@ -69,12 +69,7 @@ export function LoginButton() {
   const displayName = user.email?.split('@')[0] || "User"
 
   return (
-    <DropdownMenu onOpenChange={(open) => {
-      if (!open) {
-        // Close profile sheet when dropdown closes
-        setShowProfile(false)
-      }
-    }}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-2">
           <Avatar className="h-7 w-7">
