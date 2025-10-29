@@ -8,9 +8,9 @@ export async function fetchTrendingCoinsFromAPI(): Promise<EnrichedCoin[]> {
     const url = `${API_BASE_URL}/api/trending`
     console.log("[API Client] Fetching trending coins from:", url)
     const response = await fetch(url)
-    
+
     console.log("[API Client] Response status:", response.status)
-    
+
     if (!response.ok) {
       const text = await response.text()
       console.error("[API Client] Error response:", text)
@@ -19,8 +19,10 @@ export async function fetchTrendingCoinsFromAPI(): Promise<EnrichedCoin[]> {
 
     const result = await response.json()
     console.log("[API Client] Got result:", result)
-    console.log(`[API Client] Got ${result.data.length} coins from ${result.source}`)
-    return result.data
+    // Extract 'data' field from response object
+    const coins = result.data || result
+    console.log(`[API Client] Got ${coins.length} coins from ${result.source}`)
+    return Array.isArray(coins) ? coins : []
   } catch (error) {
     console.error("[API Client] Error fetching trending:", error)
     return []
@@ -31,14 +33,16 @@ export async function fetchNewCoinsFromAPI(): Promise<EnrichedCoin[]> {
   try {
     console.log("[API Client] Fetching new coins from Express server")
     const response = await fetch(`${API_BASE_URL}/api/new`)
-    
+
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`)
     }
 
     const result = await response.json()
-    console.log(`[API Client] Got ${result.data.length} new coins from ${result.source}`)
-    return result.data
+    // Extract 'data' field from response object
+    const coins = result.data || result
+    console.log(`[API Client] Got ${coins.length} new coins from ${result.source}`)
+    return Array.isArray(coins) ? coins : []
   } catch (error) {
     console.error("[API Client] Error fetching new coins:", error)
     return []
@@ -52,24 +56,27 @@ export async function fetchMostSwipedCoinsFromAPI(): Promise<EnrichedCoin[]> {
       console.warn('[API] Most swiped API unavailable, falling back to trending')
       return await fetchTrendingCoinsFromAPI()
     }
-    const data = await response.json()
-    
-    const coinMints = data.coins.map((c: any) => c.coinMint)
-    
+    const result = await response.json()
+
+    // Extract 'data' field from response object
+    const coins = result.data || result
+
+    const coinMints = coins.map((c: any) => c.coinMint)
+
     if (coinMints.length === 0) {
       return await fetchTrendingCoinsFromAPI()
     }
-    
+
     const trendingCoins = await fetchTrendingCoinsFromAPI()
-    
+
     const mostSwipedCoins = trendingCoins.filter(coin => 
       coinMints.includes(coin.id) || coinMints.includes(coin.mint)
     )
-    
+
     if (mostSwipedCoins.length === 0) {
       return await fetchTrendingCoinsFromAPI()
     }
-    
+
     return mostSwipedCoins
   } catch (error) {
     console.error('[API] Error fetching most swiped coins:', error)
@@ -81,15 +88,17 @@ export async function fetchThemeCoinsFromAPI(themeId: string): Promise<EnrichedC
   try {
     console.log("[API Client] Fetching theme coins for:", themeId)
     const response = await fetch(`${API_BASE_URL}/api/themes/search?theme=${encodeURIComponent(themeId)}`)
-    
+
     if (!response.ok) {
       console.error("[API Client] Theme API error:", response.status)
       return []
     }
 
     const result = await response.json()
-    console.log(`[API Client] Got ${result.count} coins for theme ${themeId} from ${result.source}`)
-    return result.coins || []
+    // Extract 'data' field from response object
+    const coins = result.coins || result.data || result
+    console.log(`[API Client] Got ${coins.length} coins for theme ${themeId} from ${result.source}`)
+    return Array.isArray(coins) ? coins : []
   } catch (error) {
     console.error("[API Client] Error fetching theme coins:", error)
     return []
@@ -104,14 +113,16 @@ export async function searchCoinsFromAPI(query: string): Promise<{ tokens: any[]
 
     console.log("[API Client] Searching for:", query)
     const response = await fetch(`${API_BASE_URL}/api/search?q=${encodeURIComponent(query)}`)
-    
+
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`)
     }
 
     const result = await response.json()
-    console.log(`[API Client] Found ${result.data.tokens.length} tokens and ${result.data.themes.length} themes from ${result.source}`)
-    return result.data
+    // Extract 'data' field from response object if it exists
+    const data = result.data || result
+    console.log(`[API Client] Found ${data.tokens.length} tokens and ${data.themes.length} themes from ${result.source}`)
+    return data
   } catch (error) {
     console.error("[API Client] Error searching:", error)
     return { tokens: [], themes: [] }
@@ -127,14 +138,15 @@ export async function fetchTokenChartFromAPI(
     const response = await fetch(
       `${API_BASE_URL}/api/chart?token=${encodeURIComponent(tokenAddress)}&timeframe=${normalizedTimeframe}`
     )
-    
+
     if (!response.ok) {
       console.error(`[API Client] Chart API error: ${response.status}`)
       return null
     }
 
     const result = await response.json()
-    return result.data
+    // Extract 'data' field from response object
+    return result.data || result
   } catch (error) {
     console.error("[API Client] Error fetching chart:", error)
     return null
@@ -163,14 +175,15 @@ export async function fetchTokenHoldersFromAPI(tokenAddress: string) {
     const response = await fetch(
       `${API_BASE_URL}/api/holders?token=${encodeURIComponent(tokenAddress)}`
     )
-    
+
     if (!response.ok) {
       console.error(`[API Client] Holders API error: ${response.status}`)
       return null
     }
 
     const result = await response.json()
-    return result.data
+    // Extract 'data' field from response object
+    return result.data || result
   } catch (error) {
     console.error("[API Client] Error fetching holders:", error)
     return null
