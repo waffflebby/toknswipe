@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Suspense } from "react"
 import { Toaster } from "@/components/ui/sonner"
+import Providers from "./providers"
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
@@ -34,9 +35,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${roboto.variable} antialiased`}>
-        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
-        <Analytics />
-        <Toaster />
+        <Providers>
+          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+          <Analytics />
+          <Toaster />
+        </Providers>
       </body>
     </html>
   )
