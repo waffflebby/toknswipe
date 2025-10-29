@@ -140,6 +140,7 @@ export function SwipeView() {
 
   const loadCoins = async () => {
     try {
+      console.log("[SwipeView] Loading coins for feed:", feedType, "theme:", selectedTheme)
       setIsLoading(true)
       let fetchedCoins: EnrichedCoin[] = []
 
@@ -152,6 +153,14 @@ export function SwipeView() {
         fetchedCoins = await fetchMostSwipedCoinsFromAPI()
       } else if (feedType === "themed" && selectedTheme) {
         fetchedCoins = await fetchThemeCoinsFromAPI(selectedTheme)
+      } else if (feedType === "themed" && !selectedTheme) {
+        // Themed feed without a theme selected - default to trending
+        console.warn("[SwipeView] Themed feed selected but no theme provided, falling back to trending")
+        fetchedCoins = await fetchTrendingCoinsFromAPI()
+      } else {
+        // Fallback to trending if no branch matches
+        console.warn("[SwipeView] No feed type matched, falling back to trending")
+        fetchedCoins = await fetchTrendingCoinsFromAPI()
       }
 
       // Apply sorting
@@ -166,6 +175,7 @@ export function SwipeView() {
       setCoins([])
       setAllCoins([])
     } finally {
+      console.log("[SwipeView] Clearing loading state")
       setIsLoading(false)
     }
   }
@@ -473,14 +483,6 @@ export function SwipeView() {
       </header>
 
       <div className="relative flex flex-1 items-center justify-center px-4 overflow-hidden">
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/30 dark:bg-black/30 backdrop-blur-sm z-40 rounded-3xl">
-            <div className="text-center space-y-3">
-              <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground mx-auto" />
-              <p className="text-xs text-muted-foreground font-medium">Loading coins...</p>
-            </div>
-          </div>
-        )}
         {swipeEffect === "like" && (
           <div className="absolute inset-0 pointer-events-none z-[60] flex items-center justify-center">
             <div className="absolute inset-0 animate-confetti">
@@ -526,15 +528,17 @@ export function SwipeView() {
           </div>
         )}
 
-        <SwipeCard
-          coin={currentCoin}
-          onSwipe={handleSwipe}
-          onTap={handleCardTap}
-          onImageTap={handleImageTap}
-          onDoubleTap={handleDoubleTap}
-          onDevMetricsTap={handleDevMetricsTap}
-          onScrollChange={handleScrollChange} // Pass scroll handler to card
-        />
+        {currentCoin && (
+          <SwipeCard
+            coin={currentCoin}
+            onSwipe={handleSwipe}
+            onTap={handleCardTap}
+            onImageTap={handleImageTap}
+            onDoubleTap={handleDoubleTap}
+            onDevMetricsTap={handleDevMetricsTap}
+            onScrollChange={handleScrollChange} // Pass scroll handler to card
+          />
+        )}
       </div>
 
       <div
