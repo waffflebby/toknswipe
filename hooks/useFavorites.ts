@@ -8,15 +8,21 @@ export function useFavorites() {
   const { data: favorites = [], isLoading, refetch } = useQuery({
     queryKey: ['favorites'],
     queryFn: getFavoritesAPI,
-    staleTime: 30 * 1000,
+    staleTime: 60 * 1000, // Increased from 30s to 1min
+    gcTime: 5 * 60 * 1000, // 5 minutes cache
+    refetchOnWindowFocus: false, // Prevent unnecessary refetches
   })
 
   const addMutation = useMutation({
     mutationFn: (coin: EnrichedCoin) => addToFavoritesAPI(coin),
     onMutate: async (newCoin) => {
+      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['favorites'] })
+      
+      // Snapshot previous value
       const previous = queryClient.getQueryData<EnrichedCoin[]>(['favorites'])
       
+      // Optimistically update
       queryClient.setQueryData<EnrichedCoin[]>(['favorites'], (old = []) => {
         if (old.some(c => c.id === newCoin.id)) {
           return old
@@ -27,11 +33,13 @@ export function useFavorites() {
       return { previous }
     },
     onError: (_err, _newCoin, context) => {
+      // Rollback on error
       if (context?.previous) {
         queryClient.setQueryData(['favorites'], context.previous)
       }
     },
-    onSettled: () => {
+    onSuccess: () => {
+      // Only invalidate on success, not on settled
       queryClient.invalidateQueries({ queryKey: ['favorites'] })
     },
   })

@@ -35,10 +35,18 @@ export function useCoins(feedType: FeedType, theme?: string | null) {
         fetchedCoins = await fetchTrendingCoinsFromAPI()
       }
 
+      if (!Array.isArray(fetchedCoins)) {
+        console.error('[useCoins] Invalid response, expected array:', fetchedCoins)
+        return []
+      }
+
       return fetchedCoins
     },
-    staleTime: 2 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    retry: 2, // Retry failed requests twice
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   })
 
   return {

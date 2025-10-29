@@ -8,7 +8,9 @@ export function useMatches() {
   const { data: matches = [], isLoading, refetch } = useQuery({
     queryKey: ['matches'],
     queryFn: getMatchesAPI,
-    staleTime: 30 * 1000,
+    staleTime: 60 * 1000, // 1 minute
+    gcTime: 5 * 60 * 1000, // 5 minutes cache
+    refetchOnWindowFocus: false,
   })
 
   const addMutation = useMutation({
@@ -31,7 +33,7 @@ export function useMatches() {
         queryClient.setQueryData(['matches'], context.previous)
       }
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['matches'] })
     },
   })
