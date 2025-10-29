@@ -62,9 +62,17 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
       setBadges(userBadges.length > 0 ? userBadges : mockBadges)
       setTotalSwipes(getTotalSwipes())
       setSwipeProgress(getSwipeProgress())
-    } else {
-      // Reset settings when sheet closes to prevent state issues
-      setShowSettings(false)
+    }
+  }, [open])
+
+  // Cleanup when sheet closes
+  useEffect(() => {
+    if (!open) {
+      // Small delay to allow animation to complete
+      const timer = setTimeout(() => {
+        setShowSettings(false)
+      }, 200)
+      return () => clearTimeout(timer)
     }
   }, [open])
 
@@ -91,14 +99,10 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
   const handleLogoutClick = async () => {
     if (confirm("Are you sure you want to log out?")) {
       try {
-        onOpenChange(false) // Close sheet first
         const supabase = createClient()
         await supabase.auth.signOut()
         toast.success("Logged out successfully")
-        // Small delay to ensure sheet closes before reload
-        setTimeout(() => {
-          window.location.reload()
-        }, 100)
+        window.location.reload()
       } catch (error) {
         console.error("Logout error:", error)
         toast.error("Failed to log out")

@@ -103,7 +103,13 @@ export function LoginButton() {
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
-      <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />
+      <ProfileSheet 
+        key={showProfile ? "open" : "closed"}
+        open={showProfile} 
+        onOpenChange={(open) => {
+          setShowProfile(open)
+        }} 
+      />
     </DropdownMenu>
   )
 }
