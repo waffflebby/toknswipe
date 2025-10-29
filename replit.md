@@ -6,6 +6,14 @@ Meme Coin Tinder is a Next.js application providing a Tinder-style swipe interfa
 ## User Preferences
 None specified yet.
 
+## Recent Changes (October 29, 2025)
+- **Fixed App Crash**: Added proper loading state handling to prevent "Cannot read properties of undefined (reading 'change24hNum')" error
+- **Back Button**: Added back button (ArrowLeft icon) in header that appears when viewing a themed feed, allowing easy return to trending feed
+- **Famous Placeholder Coins**: Created fully-enriched placeholder coins for cat/dog themes to prevent empty states
+- **Auto-Redirect System**: Implements 2-second delay redirect to trending feed when no coins available after retry
+- **Multi-Layer Fallback**: Theme feeds now use: API scan → famous coins → error with retry → auto-redirect
+- **Loading State**: Added loading spinner before coins load to prevent undefined access errors
+
 ## System Architecture
 The application is built on Next.js 15.2.4 (App Router) using React 19 and TypeScript. Styling is handled with Tailwind CSS 4.1.9 and UI components leverage Radix UI. Charting functionalities are provided by Lightweight Charts and Recharts.
 

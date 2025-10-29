@@ -7,7 +7,7 @@ import { CoinInsightsSheet } from "@/components/coin-insights-sheet"
 import { AdvancedFilterModal } from "@/components/advanced-filter-modal"
 import { JackpotModal } from "@/components/jackpot-modal"
 import { Button } from "@/components/ui/button"
-import { X, Heart, RefreshCw, SlidersHorizontal, Bookmark, Zap, Dog, Cat, Bug, Bot, Vote } from "lucide-react"
+import { X, Heart, RefreshCw, SlidersHorizontal, Bookmark, Zap, Dog, Cat, Bug, Bot, Vote, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PaywallModal } from "@/components/paywall-modal"
 import { fetchTrendingCoinsFromAPI, fetchNewCoinsFromAPI, fetchMostSwipedCoinsFromAPI } from "@/lib/api-client"
@@ -336,6 +336,19 @@ export function SwipeView() {
       <header className="bg-white/80 dark:bg-black backdrop-blur-sm border-b border-gray-200/50 dark:border-neutral-800 px-4 py-2 shrink-0 space-y-2 shadow-sm relative z-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
+            {selectedTheme && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedTheme(null)
+                  setFeedType("trending")
+                }}
+                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
             <h1 className="text-sm font-bold tracking-tighter">CoinSwipe</h1>
             <p className="text-[9px] text-muted-foreground font-medium">
               {remainingSwipes}/{maxFreeSwipes}
