@@ -1,5 +1,5 @@
 // Database schema for Meme Coin Tinder
-// Reference: Replit Auth blueprint integration
+// Using Supabase Auth for authentication
 
 import { sql } from 'drizzle-orm';
 import {
@@ -12,28 +12,16 @@ import {
   boolean,
   integer,
   primaryKey,
+  uuid,
 } from "drizzle-orm/pg-core";
 
-// Session storage table.
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
-export const sessions = pgTable(
-  "sessions",
-  {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull(),
-  },
-  (table) => [index("IDX_session_expire").on(table.expire)],
-);
-
 // User storage table.
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+// Links to Supabase auth.users via id (UUID)
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
+  id: uuid("id").primaryKey(), // Links to Supabase auth.users.id
+  email: varchar("email").notNull().unique(),
+  displayName: varchar("display_name"),
+  avatarUrl: varchar("avatar_url"),
   isPro: boolean("is_pro").default(false).notNull(),
   proSince: timestamp("pro_since"),
   stripeCustomerId: varchar("stripe_customer_id"),
@@ -47,8 +35,8 @@ export type User = typeof users.$inferSelect;
 
 // Favorites (personal watchlist) - coins user has starred
 export const favorites = pgTable("favorites", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   coinMint: varchar("coin_mint").notNull(), // Solana mint address
   coinData: jsonb("coin_data").notNull(), // Store full coin object
   createdAt: timestamp("created_at").defaultNow(),
@@ -62,8 +50,8 @@ export type InsertFavorite = typeof favorites.$inferInsert;
 
 // Matches - coins user swiped right on
 export const matches = pgTable("matches", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   coinMint: varchar("coin_mint").notNull(),
   coinData: jsonb("coin_data").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
@@ -77,8 +65,8 @@ export type InsertMatch = typeof matches.$inferInsert;
 
 // Swipes - track all swipe actions for analytics and "Most Swiped"
 export const swipes = pgTable("swipes", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   coinMint: varchar("coin_mint").notNull(),
   direction: varchar("direction").notNull(), // 'left' or 'right'
   createdAt: timestamp("created_at").defaultNow(),
@@ -93,7 +81,7 @@ export type InsertSwipe = typeof swipes.$inferInsert;
 
 // Coin themes - auto-categorization by keywords
 export const coinThemes = pgTable("coin_themes", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: uuid("id").primaryKey().defaultRandom(),
   coinMint: varchar("coin_mint").notNull(),
   theme: varchar("theme").notNull(), // 'dogs', 'cats', 'frogs', 'political', 'ai', 'celebrity'
   matchedKeywords: text("matched_keywords").array(), // Which keywords triggered this theme
