@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
 import { searchCoinsFromAPI } from "@/lib/api-client"
-import { addToPersonalList, removeFromPersonalList, isInPersonalList } from "@/lib/storage"
+import { addToPersonalList, removeFromPersonalList, getPersonalList } from "@/lib/storage"
 
 interface SearchBarProps {
   coins: EnrichedCoin[]
@@ -25,6 +25,12 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
 
   const [searchResults, setSearchResults] = useState<EnrichedCoin[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  const [starredCoins, setStarredCoins] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    const personalList = getPersonalList()
+    setStarredCoins(new Set(personalList.map(c => c.id)))
+  }, [])
 
   // Search via Moralis API
   useEffect(() => {
@@ -172,17 +178,23 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        if (isInPersonalList(coin.id)) {
+                        if (starredCoins.has(coin.id)) {
                           removeFromPersonalList(coin.id)
+                          setStarredCoins(prev => {
+                            const next = new Set(prev)
+                            next.delete(coin.id)
+                            return next
+                          })
                         } else {
                           addToPersonalList(coin)
+                          setStarredCoins(prev => new Set(prev).add(coin.id))
                         }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
                         "h-3.5 w-3.5",
-                        isInPersonalList(coin.id)
+                        starredCoins.has(coin.id)
                           ? "fill-yellow-400 text-yellow-400" 
                           : "text-gray-400"
                       )} />
@@ -228,17 +240,23 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        if (isInPersonalList(coin.id)) {
+                        if (starredCoins.has(coin.id)) {
                           removeFromPersonalList(coin.id)
+                          setStarredCoins(prev => {
+                            const next = new Set(prev)
+                            next.delete(coin.id)
+                            return next
+                          })
                         } else {
                           addToPersonalList(coin)
+                          setStarredCoins(prev => new Set(prev).add(coin.id))
                         }
                       }}
                       className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-gray-200 dark:border-neutral-700 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors"
                     >
                       <Star className={cn(
                         "h-3.5 w-3.5",
-                        isInPersonalList(coin.id)
+                        starredCoins.has(coin.id)
                           ? "fill-yellow-400 text-yellow-400" 
                           : "text-gray-400"
                       )} />
