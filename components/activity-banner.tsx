@@ -1,7 +1,9 @@
+
 "use client"
 
 import { TrendingUp, TrendingDown } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useCoins } from "@/hooks/useCoins"
 
 interface PriceChange {
   coin: string
@@ -9,36 +11,57 @@ interface PriceChange {
   isPositive: boolean
 }
 
-const PRICE_CHANGES: PriceChange[] = [
-  { coin: "PEPE", change: "+24.5%", isPositive: true },
-  { coin: "WIF", change: "+18.2%", isPositive: true },
-  { coin: "BONK", change: "+31.7%", isPositive: true },
-  { coin: "DOGE", change: "+12.3%", isPositive: true },
-  { coin: "SHIB", change: "-5.8%", isPositive: false },
-  { coin: "FLOKI", change: "+9.4%", isPositive: true },
-  { coin: "SAMO", change: "+15.6%", isPositive: true },
-  { coin: "MYRO", change: "+22.1%", isPositive: true },
-]
-
 export function ActivityBanner() {
+  const { data: coins, isLoading } = useCoins('trending')
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
+  const [priceChanges, setPriceChanges] = useState<PriceChange[]>([])
 
   useEffect(() => {
+    if (coins && coins.length > 0) {
+      // Extract price changes from trending coins
+      const changes = coins
+        .filter(coin => coin.priceChange24h !== undefined && coin.priceChange24h !== null)
+        .map(coin => ({
+          coin: coin.symbol || coin.name || 'Unknown',
+          change: `${coin.priceChange24h > 0 ? '+' : ''}${coin.priceChange24h.toFixed(1)}%`,
+          isPositive: coin.priceChange24h > 0
+        }))
+        .slice(0, 15) // Get top 15 for rotation
+
+      if (changes.length > 0) {
+        setPriceChanges(changes)
+      }
+    }
+  }, [coins])
+
+  useEffect(() => {
+    if (priceChanges.length === 0) return
+
     const interval = setInterval(() => {
       setIsVisible(false)
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 3) % PRICE_CHANGES.length)
+        setCurrentIndex((prev) => (prev + 3) % priceChanges.length)
         setIsVisible(true)
       }, 400)
     }, 6000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [priceChanges])
 
-  const priceChange1 = PRICE_CHANGES[currentIndex]
-  const priceChange2 = PRICE_CHANGES[(currentIndex + 1) % PRICE_CHANGES.length]
-  const priceChange3 = PRICE_CHANGES[(currentIndex + 2) % PRICE_CHANGES.length]
+  if (isLoading || priceChanges.length === 0) {
+    return (
+      <div className="overflow-hidden w-full flex justify-start">
+        <div className="flex items-center gap-2 text-[9px] font-semibold text-muted-foreground">
+          <span>Loading prices...</span>
+        </div>
+      </div>
+    )
+  }
+
+  const priceChange1 = priceChanges[currentIndex]
+  const priceChange2 = priceChanges[(currentIndex + 1) % priceChanges.length]
+  const priceChange3 = priceChanges[(currentIndex + 2) % priceChanges.length]
 
   return (
     <div className="overflow-hidden w-full flex justify-start">
