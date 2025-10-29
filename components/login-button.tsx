@@ -18,13 +18,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
-import { LogIn, LogOut, UserIcon } from "lucide-react"
+import { LogIn, LogOut, User } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { LoginForm } from "@/components/auth/login-form"
+import { ProfileSheet } from "@/components/profile-sheet"
 
 export function LoginButton() {
   const { user, isLoading, isAuthenticated } = useAuth()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
   const supabase = createClient()
 
   const handleLogout = async () => {
@@ -88,9 +90,9 @@ export function LoginButton() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem disabled className="cursor-default">
-          <UserIcon className="mr-2 h-4 w-4" />
-          Profile (Coming Soon)
+        <DropdownMenuItem onClick={() => setShowProfile(true)}>
+          <User className="mr-2 h-4 w-4" />
+          Profile
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -101,6 +103,7 @@ export function LoginButton() {
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
+      <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />
     </DropdownMenu>
   )
 }
