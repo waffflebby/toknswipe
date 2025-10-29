@@ -42,29 +42,47 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
   const [swipeProgress, setSwipeProgress] = useState(0)
   const [proSince, setProSince] = useState<Date | null>(null)
 
+  // Handle close with logging and safety check
+  const handleOpenChange = (newOpen: boolean) => {
+    console.log("[ProfileSheet] onOpenChange called with:", newOpen)
+    try {
+      onOpenChange(newOpen)
+      console.log("[ProfileSheet] State update successful")
+    } catch (error) {
+      console.error("[ProfileSheet] Error in onOpenChange:", error)
+      // Force close even if there's an error
+      onOpenChange(false)
+    }
+  }
+
   useEffect(() => {
     if (open) {
-      const proStatus = getProStatus()
-      setIsPro(proStatus)
-      setProSince(getProSinceDate())
+      try {
+        const proStatus = getProStatus()
+        setIsPro(proStatus)
+        setProSince(getProSinceDate())
 
-      const userBadges = getBadges()
-      const mockBadges: BadgeType[] = [
-        { id: "early-bird", name: "Early Bird", description: "First 10,000 users", icon: "🌟", earned: true },
-        { id: "og-swiper", name: "OG Swiper", description: "Downloaded in first month", icon: "💎", earned: true },
-        { id: "degen", name: "Degen", description: "10,000+ swipes", icon: "🔥", earned: true },
-      ]
+        const userBadges = getBadges()
+        const mockBadges: BadgeType[] = [
+          { id: "early-bird", name: "Early Bird", description: "First 10,000 users", icon: "🌟", unlockedAt: new Date() },
+          { id: "og-swiper", name: "OG Swiper", description: "Downloaded in first month", icon: "💎", unlockedAt: new Date() },
+          { id: "degen", name: "Degen", description: "10,000+ swipes", icon: "🔥", unlockedAt: new Date() },
+        ]
 
-      if (proStatus) {
-        mockBadges.push({ id: "pro", name: "PRO Member", description: "Premium subscriber", icon: "👑", earned: true })
+        if (proStatus) {
+          mockBadges.push({ id: "pro", name: "PRO Member", description: "Premium subscriber", icon: "👑", unlockedAt: new Date() })
+        }
+
+        setBadges(userBadges.length > 0 ? userBadges : mockBadges)
+        setTotalSwipes(getTotalSwipes())
+        setSwipeProgress(getSwipeProgress())
+      } catch (error) {
+        console.error("[ProfileSheet] Error loading profile data:", error)
       }
-
-      setBadges(userBadges.length > 0 ? userBadges : mockBadges)
-      setTotalSwipes(getTotalSwipes())
-      setSwipeProgress(getSwipeProgress())
     } else {
-      // Reset settings immediately when closing
+      // Clean up all state when closing
       setShowSettings(false)
+      console.log("[ProfileSheet] Sheet closed, state cleaned up")
     }
   }, [open])
 
@@ -73,28 +91,29 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
   }
 
   const handleQuickBuySettingsClick = () => {
-    alert("Quick Buy Settings - Customize your quick buy amounts (Coming soon!)")
+    toast.info("Quick Buy Settings - Coming soon!")
   }
 
   const handleNotificationsClick = () => {
-    alert("Notifications settings - Coming soon!")
+    toast.info("Notifications settings - Coming soon!")
   }
 
   const handlePrivacyClick = () => {
-    alert("Privacy & Security settings - Coming soon!")
+    toast.info("Privacy & Security settings - Coming soon!")
   }
 
   const handleHelpClick = () => {
-    alert("Help & Support - Coming soon!")
+    toast.info("Help & Support - Coming soon!")
   }
 
   const handleLogoutClick = async () => {
     if (confirm("Are you sure you want to log out?")) {
       try {
+        onOpenChange(false)
         const supabase = createClient()
         await supabase.auth.signOut()
         toast.success("Logged out successfully")
-        window.location.reload()
+        setTimeout(() => window.location.reload(), 100)
       } catch (error) {
         console.error("Logout error:", error)
         toast.error("Failed to log out")
@@ -103,11 +122,11 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
   }
 
   const handleUpgradeClick = () => {
-    alert("Upgrade to PRO - Coming soon!")
+    toast.info("Upgrade to PRO - Coming soon!")
   }
 
   const handleManageSubscription = () => {
-    alert("Manage Subscription - Coming soon!")
+    toast.info("Manage Subscription - Coming soon!")
   }
 
   const handleTogglePro = () => {
@@ -120,7 +139,7 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleOpenChange} modal={true}>
       <SheetContent side="bottom" className="h-[85vh] p-0 fixed bg-white dark:bg-black rounded-t-2xl">
         <SheetHeader className="bg-white dark:bg-black border-b border-gray-100 dark:border-neutral-800 px-6 py-4">
           <SheetTitle className="text-lg font-bold flex items-center gap-2">
