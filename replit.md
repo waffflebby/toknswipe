@@ -15,11 +15,10 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 ### Directory Structure
 ```
 ├── app/              # Next.js app router pages and API routes
-├── components/       # React components
+├── components/       # React components (including auth/)
 ├── hooks/           # Custom React hooks
-├── lib/             # Utility functions and services
+├── lib/             # Utility functions and services (including supabase/)
 ├── public/          # Static assets
-├── server/          # Backend Express server (auth, database)
 ├── shared/          # Shared types and schema
 └── styles/          # Global styles
 ```
@@ -28,10 +27,10 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ### Port Configuration (Replit-specific)
 - Development server runs on port 5000 with host 0.0.0.0
-- Custom Express server runs Next.js programmatically
+- Standard Next.js server (no custom Express)
 - Scripts configured in package.json:
-  - `npm run dev`: Starts custom server with tsx (server/index.ts)
-  - `npm run start`: Starts production server with tsx
+  - `npm run dev`: Starts Next.js dev server on port 5000
+  - `npm run start`: Starts Next.js production server on port 5000
   - `npm run build`: Builds the Next.js application
 
 ### Next.js Configuration
@@ -42,14 +41,13 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ## Database
 
-### PostgreSQL (Neon)
-- **Provider**: Neon via Replit integration
-- **ORM**: Drizzle ORM
-- **Migration**: `npm run db:push` (pushes schema changes)
+### Supabase PostgreSQL
+- **Provider**: Supabase (wcwcrktwrrfpeouqjids.supabase.co)
+- **Authentication**: Email OTP via Supabase Auth
+- **Email Provider**: Resend (for OTP delivery)
 
-### Schema
-- **users**: User accounts (Replit Auth integration)
-- **sessions**: Auth session storage
+### Planned Schema (to be migrated)
+- **users**: User profiles and metadata
 - **favorites**: Personal starred coins
 - **matches**: Swiped-right coins
 - **swipes**: All swipe tracking for analytics
@@ -58,45 +56,34 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 ## Environment Variables
 
 ### Currently Used
-- `DATABASE_URL`: PostgreSQL connection string (auto-configured)
-- `SESSION_SECRET`: Session encryption key (auto-configured)
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL (public)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anon/public key (public)
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key (server-side only, required)
+- `RESEND_API_KEY`: Resend API key for email delivery (server-side only, required)
 - `MORALIS_API_KEY`: Moralis API key for Solana blockchain data (server-side only, required)
-- `NEXT_PUBLIC_API_URL`: Base URL for API calls (optional)
 - `NODE_ENV`: Environment (development/production)
-- `DEBUG`: Enable detailed logging (optional)
 
 ### Security Note
-**IMPORTANT**: The `MORALIS_API_KEY` environment variable is required and must be set as a Replit secret. This key is server-side only (no NEXT_PUBLIC_ prefix) to prevent exposure in client bundles. All Moralis API calls are routed through Next.js API routes to keep the key secure.
+**IMPORTANT**: Server-side only keys (`SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `MORALIS_API_KEY`) must be set as Replit secrets and never exposed in client bundles. All sensitive operations are routed through Next.js API routes to keep keys secure.
 
 ## Recent Changes
 
-### October 29, 2025 - Phase 1 Complete: Authentication System ✅
-1. **Database Setup**:
-   - Created PostgreSQL database via Replit
-   - Set up Drizzle ORM with proper schema
-   - Created tables: users, sessions, favorites, matches, swipes, coinThemes
-   - Added `npm run db:push` script for schema migrations
+### October 29, 2025 - Supabase Migration Complete ✅
+1. **Supabase Authentication**:
+   - ✅ Migrated from Replit Auth to Supabase Auth
+   - ✅ Email OTP (one-time password) authentication
+   - ✅ Resend integration for email delivery
+   - ✅ Supabase client setup (browser, server, middleware)
+   - ✅ Auth session management with automatic cookie refresh
+   - ✅ Login UI with email input and code verification
+   - ✅ Auth callback route for magic links
+   - ✅ useAuth hook integrated with Supabase auth state
+   - Removed Express server - now using standard Next.js
 
-2. **Authentication System (COMPLETE)**:
-   - ✅ Custom Express server running alongside Next.js
-   - ✅ Replit Auth integration (supports Google, GitHub, email/password login)
-   - ✅ Passport.js authentication with OIDC strategy
-   - ✅ Session management with PostgreSQL storage (connect-pg-simple)
-   - ✅ Secure HTTPS-only session cookies with 1-week TTL
-   - ✅ Token refresh mechanism for expired access tokens
-   - ✅ Database storage layer with full CRUD operations
-   - ✅ Auth routes: `/api/login`, `/api/logout`, `/api/callback`, `/api/auth/user`
-   - ✅ Protected route middleware (`isAuthenticated`)
-   - ✅ Login UI component with avatar dropdown
-   - ✅ useAuth hook for client-side auth state
-   - Server architecture: tsx runs server/index.ts → Express + Next.js hybrid
-
-3. **Package Installations**:
+2. **Package Installations**:
    - Installed with `--legacy-peer-deps` due to React 19:
-     - openid-client, passport, express-session
-     - memoizee, connect-pg-simple
-     - @neondatabase/serverless, drizzle-orm, drizzle-kit
-     - tsx (for TypeScript server execution)
+     - @supabase/supabase-js, @supabase/ssr
+     - Resend connector (Python integration)
 
 ### October 28, 2025 - Vercel to Replit Migration
 1. Updated package.json scripts to bind to port 5000 with host 0.0.0.0
