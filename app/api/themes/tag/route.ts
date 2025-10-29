@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { detectThemes, type ThemeId } from '@/lib/theme-detector'
-import { db } from '@/shared/db'
+import { db } from '@/lib/db'
 import { coinThemes } from '@/shared/schema'
 import { eq, and } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      themes: themes.map(t => t.theme),
+      themes: themes.map((t: { theme: ThemeId }) => t.theme),
     })
   } catch (error) {
     console.error('Error fetching themes:', error)

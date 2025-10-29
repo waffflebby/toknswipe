@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
         name: coin.name || '',
         symbol: coin.symbol || '',
         description: coin.description || '',
-      }
+      } as any
       const themes = detectThemes(enrichedCoin)
       return themes.includes(theme)
     })
