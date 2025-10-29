@@ -25,6 +25,8 @@ import { useDarkMode } from "@/hooks/use-dark-mode"
 import type { Badge as BadgeType } from "@/lib/types"
 import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 interface ProfileSheetProps {
   open: boolean
@@ -83,9 +85,18 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
     alert("Help & Support - Coming soon!")
   }
 
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
     if (confirm("Are you sure you want to log out?")) {
-      alert("Logout functionality - Coming soon!")
+      try {
+        const supabase = createClient()
+        await supabase.auth.signOut()
+        toast.success("Logged out successfully")
+        onOpenChange(false)
+        window.location.reload()
+      } catch (error) {
+        console.error("Logout error:", error)
+        toast.error("Failed to log out")
+      }
     }
   }
 

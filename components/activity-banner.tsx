@@ -11,7 +11,7 @@ interface PriceChange {
 }
 
 export function ActivityBanner() {
-  const { data: coins, isLoading } = useCoins('trending')
+  const { coins, isLoading } = useCoins('trending')
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
   const [priceChanges, setPriceChanges] = useState<PriceChange[]>([])
@@ -20,11 +20,11 @@ export function ActivityBanner() {
     if (coins && coins.length > 0) {
       // Extract price changes from trending coins
       const changes = coins
-        .filter(coin => coin.priceChange24h !== undefined && coin.priceChange24h !== null)
+        .filter(coin => coin.change24hNum !== undefined && coin.change24hNum !== null)
         .map(coin => ({
           coin: coin.symbol || coin.name || 'Unknown',
-          change: `${coin.priceChange24h > 0 ? '+' : ''}${coin.priceChange24h.toFixed(1)}%`,
-          isPositive: coin.priceChange24h > 0
+          change: `${coin.change24hNum! > 0 ? '+' : ''}${coin.change24hNum!.toFixed(1)}%`,
+          isPositive: coin.change24hNum! > 0
         }))
         .slice(0, 15) // Get top 15 for rotation
 
