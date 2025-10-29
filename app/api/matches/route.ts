@@ -17,6 +17,12 @@ const addMatchSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    // Check rate limit
+    const rateLimitResult = await checkRateLimit(request, 'reads')
+    if ('status' in rateLimitResult) {
+      return rateLimitResult
+    }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 

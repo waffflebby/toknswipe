@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     const { coinMint, coinData } = validationResult.data
 
-    const detectedThemes = detectThemes(coinData)
+    const detectedThemes = detectThemes(coinData as any)
 
     if (detectedThemes.length > 0) {
       for (const theme of detectedThemes) {
@@ -81,6 +81,18 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const rateLimitResult = await checkRateLimit(request, 'reads')
+    if ('status' in rateLimitResult) {
+      return rateLimitResult
+    }
+
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
     const coinMint = searchParams.get('coinMint')
 
