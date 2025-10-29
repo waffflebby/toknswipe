@@ -75,6 +75,32 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ## Recent Changes
 
+### October 29, 2025 - Database Integration Complete (Phase 2) ✅
+1. **Database-Backed Storage System**:
+   - ✅ Swipe tracking automatically saves to database when authenticated
+   - ✅ Matched coins (right swipes) save to matches table
+   - ✅ Starred coins save to favorites table
+   - ✅ Hybrid approach: database for logged-in users, localStorage fallback for guests
+   - ✅ Automatic migration from localStorage to database on first login
+
+2. **API Routes Created**:
+   - ✅ `/api/favorites` - GET/POST/DELETE for starred coins
+   - ✅ `/api/matches` - GET/POST/DELETE for swiped-right coins
+   - ✅ `/api/swipes` - POST for swipe analytics tracking
+   - ✅ `/api/most-swiped` - GET top coins by swipe count (7-day aggregation)
+
+3. **Most Swiped Feature**:
+   - ✅ SQL analytics query aggregates swipe counts from database
+   - ✅ Feed displays most-swiped coins from last 7 days
+   - ✅ Falls back to trending if no data available
+   - ✅ Integrated into main feed selector
+
+4. **Component Updates**:
+   - ✅ swipe-view.tsx: Calls recordSwipe() and addToMatches()
+   - ✅ watchlist-sheet.tsx: Loads from getFavorites() and getMatches()
+   - ✅ search-bar.tsx: Star button uses addToFavorites()
+   - ✅ All components support async database operations
+
 ### October 29, 2025 - Mobile Optimization Complete ✅
 1. **Viewport & Scaling Fixes**:
    - ✅ Viewport meta tags prevent auto-zoom on input fields (user-scalable=no, maximum-scale=1)
@@ -182,21 +208,26 @@ None specified yet.
   - ✅ Auth UI with login button and code verification
   - ✅ Session persistence and automatic profile sync
 
-- **Phase 2**: Core Features with Database (IN PROGRESS)
+- **Phase 2**: Core Features with Database ✅ COMPLETE
   - ✅ Database schema deployed and connected
   - ✅ User profile sync on login
-  - 🔄 Favorites API (star coins → save to database)
-  - 🔄 Matches API (swipe right → save to database)
-  - 🔄 Migrate localStorage to database
+  - ✅ Favorites API (star coins → save to database)
+  - ✅ Matches API (swipe right → save to database)
+  - ✅ Swipe tracking API for analytics
+  - ✅ Most Swiped feed with 7-day aggregation
+  - ✅ Hybrid storage (database + localStorage fallback)
+  - ✅ Automatic localStorage migration on login
   
-- **Phase 3**: Theme System
+- **Phase 3**: Theme System (NEXT)
   - Keyword-based auto-categorization
   - Theme search/filtering
   - Auto-tag new coins
+  - coinThemes table integration
 
 - **Phase 4**: Social Features
-  - Most Swiped tracking
-  - Trending coins display
+  - User activity feed
+  - Trending by region/category
+  - Community insights
 
 - **Phase 5**: Pro Features + Security
   - Stripe subscriptions
