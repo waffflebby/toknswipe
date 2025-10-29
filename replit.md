@@ -19,6 +19,8 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 ├── hooks/           # Custom React hooks
 ├── lib/             # Utility functions and services
 ├── public/          # Static assets
+├── server/          # Backend Express server (auth, database)
+├── shared/          # Shared types and schema
 └── styles/          # Global styles
 ```
 
@@ -37,9 +39,26 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 - Cache-Control headers set to no-cache (prevents iframe caching issues)
 - Server actions allowed from all origins
 
+## Database
+
+### PostgreSQL (Neon)
+- **Provider**: Neon via Replit integration
+- **ORM**: Drizzle ORM
+- **Migration**: `npm run db:push` (pushes schema changes)
+
+### Schema
+- **users**: User accounts (Replit Auth integration)
+- **sessions**: Auth session storage
+- **favorites**: Personal starred coins
+- **matches**: Swiped-right coins
+- **swipes**: All swipe tracking for analytics
+- **coinThemes**: Keyword-based theme categorization
+
 ## Environment Variables
 
 ### Currently Used
+- `DATABASE_URL`: PostgreSQL connection string (auto-configured)
+- `SESSION_SECRET`: Session encryption key (auto-configured)
 - `MORALIS_API_KEY`: Moralis API key for Solana blockchain data (server-side only, required)
 - `NEXT_PUBLIC_API_URL`: Base URL for API calls (optional)
 - `NODE_ENV`: Environment (development/production)
@@ -48,7 +67,26 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 ### Security Note
 **IMPORTANT**: The `MORALIS_API_KEY` environment variable is required and must be set as a Replit secret. This key is server-side only (no NEXT_PUBLIC_ prefix) to prevent exposure in client bundles. All Moralis API calls are routed through Next.js API routes to keep the key secure.
 
-## Recent Changes (Migration)
+## Recent Changes
+
+### October 29, 2025 - Backend Infrastructure (Phase 1)
+1. **Database Setup**:
+   - Created PostgreSQL database via Replit
+   - Set up Drizzle ORM with proper schema
+   - Created tables: users, sessions, favorites, matches, swipes, coinThemes
+   - Added `npm run db:push` script for schema migrations
+
+2. **Authentication Foundation**:
+   - Added Replit Auth integration (supports Google, GitHub, email/password)
+   - Created Express backend with passport authentication
+   - Set up session management with PostgreSQL storage
+   - Created database storage layer with full CRUD operations
+
+3. **Package Installations**:
+   - Installed with `--legacy-peer-deps` due to React 19:
+     - openid-client, passport, express-session
+     - memoizee, connect-pg-simple
+     - @neondatabase/serverless, drizzle-orm, drizzle-kit
 
 ### October 28, 2025 - Vercel to Replit Migration
 1. Updated package.json scripts to bind to port 5000 with host 0.0.0.0
@@ -88,6 +126,8 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 None specified yet.
 
 ## Features
+
+### Current (Implemented)
 - Swipe interface for discovering meme coins
 - Real-time data from Moralis API
 - Trending and new coins tracking
@@ -95,3 +135,32 @@ None specified yet.
 - Theme-based coin categorization
 - Price charts and analytics
 - Risk level indicators
+- Personal folder for starred coins (localStorage)
+- Matched folder for swiped coins (localStorage)
+
+### In Progress (Phase 1-5 Rollout)
+- **Phase 1**: Database + Authentication
+  - ✅ PostgreSQL database setup
+  - ✅ Database schema (users, favorites, matches, swipes, themes)
+  - ✅ Replit Auth integration
+  - ⏳ Auth UI and login flow
+
+- **Phase 2**: Core Features with Database
+  - Favorites API (star coins → save to database)
+  - Matches API (swipe right → save to database)
+  - Migrate localStorage to database
+  
+- **Phase 3**: Theme System
+  - Keyword-based auto-categorization
+  - Theme search/filtering
+  - Auto-tag new coins
+
+- **Phase 4**: Social Features
+  - Most Swiped tracking
+  - Trending coins display
+
+- **Phase 5**: Pro Features + Security
+  - Stripe subscriptions
+  - Rate limiting
+  - Anti-spam measures
+  - TanStack Query integration
