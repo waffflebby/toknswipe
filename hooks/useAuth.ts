@@ -1,50 +1,34 @@
-// Auth hook for managing user authentication state
-// Reference: Replit Auth blueprint
-// Note: Will be enhanced with TanStack Query in Phase 5
-
 "use client"
 
-import { useState, useEffect, useCallback } from "react";
-
-export interface AuthUser {
-  id: string;
-  email: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  profileImageUrl: string | null;
-  isPro: boolean;
-  createdAt: Date;
-}
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
+import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 export function useAuth() {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchUser = useCallback(async () => {
-    try {
-      const res = await fetch("/api/auth/user");
-      if (res.status === 401) {
-        setUser(null);
-      } else if (res.ok) {
-        const data = await res.json();
-        setUser(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const supabase = createClient()
 
   useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      setIsAuthenticated(!!session?.user)
+      setIsLoading(false)
+    })
 
-  return {
-    user,
-    isLoading,
-    isAuthenticated: !!user,
-    refetch: fetchUser,
-  };
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+      setIsAuthenticated(!!session?.user)
+      setIsLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  return { user, isLoading, isAuthenticated }
 }
