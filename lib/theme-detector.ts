@@ -2,95 +2,124 @@ import type { EnrichedCoin } from "./types"
 
 // Meme coin theme definitions
 export const MEME_THEMES = {
-  cat: {
-    id: "cat",
-    name: "Cat",
-    emoji: "🐱",
-    keywords: ["cat", "kitty", "meow", "feline", "neko", "kitten", "pussy"],
-  },
-  dog: {
-    id: "dog",
-    name: "Dog",
-    emoji: "🐶",
-    keywords: ["dog", "doge", "shib", "puppy", "woof", "inu", "hound", "pup"],
-  },
-  frog: {
-    id: "frog",
-    name: "Frog",
-    emoji: "🐸",
-    keywords: ["frog", "pepe", "kek", "ribbit", "toad", "amphibian"],
-  },
   ai: {
     id: "ai",
-    name: "AI",
+    name: "AI & Tech",
     emoji: "🤖",
-    keywords: ["ai", "gpt", "bot", "neural", "machine", "artificial", "intelligence", "robot"],
-  },
-  moon: {
-    id: "moon",
-    name: "Moon",
-    emoji: "🚀",
-    keywords: ["moon", "mars", "rocket", "space", "astronaut", "galaxy", "stellar", "launch"],
-  },
-  diamond: {
-    id: "diamond",
-    name: "Diamond",
-    emoji: "💎",
-    keywords: ["diamond", "hodl", "gem", "jewel", "crystal", "treasure"],
-  },
-  fire: {
-    id: "fire",
-    name: "Fire",
-    emoji: "🔥",
-    keywords: ["fire", "hot", "burn", "flame", "blaze", "inferno"],
-  },
-  king: {
-    id: "king",
-    name: "King",
-    emoji: "👑",
-    keywords: ["king", "queen", "royal", "emperor", "crown", "throne", "monarch"],
+    keywords: ["ai", "artificial", "intelligence", "robot", "bot", "neural", "machine", "gpt", "chatgpt", "openai", "tech", "cyber", "digital", "meta", "quantum"],
+    color: "bg-blue-100 text-blue-700 border-blue-300"
   },
   gaming: {
     id: "gaming",
     name: "Gaming",
     emoji: "🎮",
-    keywords: ["game", "play", "quest", "pixel", "arcade", "gamer", "esport"],
+    keywords: ["game", "gaming", "play", "gamer", "esport", "arcade", "console", "xbox", "playstation", "nintendo", "steam", "fps", "rpg", "mmo", "pixel", "quest"],
+    color: "bg-purple-100 text-purple-700 border-purple-300"
   },
-  food: {
-    id: "food",
-    name: "Food",
-    emoji: "🍕",
-    keywords: ["pizza", "burger", "taco", "sushi", "food", "eat", "snack", "meal"],
+  dog: {
+    id: "dog",
+    name: "Dog Coins",
+    emoji: "🐕",
+    keywords: ["dog", "doge", "shib", "inu", "puppy", "pup", "corgi", "husky", "retriever", "hound", "woof", "bark", "floki", "doggo"],
+    color: "bg-yellow-100 text-yellow-700 border-yellow-300"
   },
-  meme: {
-    id: "meme",
-    name: "Meme",
-    emoji: "😂",
-    keywords: ["meme", "lol", "kek", "wojak", "chad", "based", "dank"],
+  cat: {
+    id: "cat",
+    name: "Cat Coins",
+    emoji: "🐱",
+    keywords: ["cat", "kitten", "kitty", "meow", "feline", "neko", "tabby", "persian", "siamese", "grumpy", "garfield"],
+    color: "bg-pink-100 text-pink-700 border-pink-300"
+  },
+  pepe: {
+    id: "pepe",
+    name: "Pepe & Frogs",
+    emoji: "🐸",
+    keywords: ["pepe", "frog", "kek", "wojak", "apu", "feels", "ribbit", "toad", "amphibian"],
+    color: "bg-green-100 text-green-700 border-green-300"
   },
   elon: {
     id: "elon",
-    name: "Elon",
-    emoji: "🚗",
-    keywords: ["elon", "musk", "tesla", "spacex", "mars"],
+    name: "Elon & Space",
+    emoji: "🚀",
+    keywords: ["elon", "musk", "tesla", "spacex", "mars", "rocket", "moon", "x"],
+    color: "bg-gray-100 text-gray-700 border-gray-300"
   },
   trump: {
     id: "trump",
     name: "Trump",
     emoji: "🇺🇸",
     keywords: ["trump", "donald", "maga", "president"],
+    color: "bg-red-100 text-red-700 border-red-300"
+  },
+  defi: {
+    id: "defi",
+    name: "DeFi",
+    emoji: "💰",
+    keywords: ["defi", "finance", "swap", "stake", "yield", "farm", "liquidity", "dex", "protocol", "lending", "vault"],
+    color: "bg-emerald-100 text-emerald-700 border-emerald-300"
+  },
+  nft: {
+    id: "nft",
+    name: "NFT & Art",
+    emoji: "🖼️",
+    keywords: ["nft", "art", "collectible", "rare", "unique", "mint", "gallery", "drop", "metaverse"],
+    color: "bg-indigo-100 text-indigo-700 border-indigo-300"
+  },
+  sport: {
+    id: "sport",
+    name: "Sports",
+    emoji: "⚽",
+    keywords: ["sport", "football", "soccer", "basketball", "baseball", "tennis", "racing", "athlete", "team", "champion"],
+    color: "bg-orange-100 text-orange-700 border-orange-300"
+  },
+  food: {
+    id: "food",
+    name: "Food & Drink",
+    emoji: "🍕",
+    keywords: ["food", "pizza", "burger", "sushi", "taco", "beer", "wine", "coffee", "tea", "cake", "cookie", "banana", "apple", "eat", "snack", "meal"],
+    color: "bg-red-100 text-red-700 border-red-300"
   },
   anime: {
     id: "anime",
     name: "Anime",
     emoji: "🎌",
-    keywords: ["anime", "manga", "waifu", "otaku", "chan", "kun", "senpai"],
+    keywords: ["anime", "manga", "otaku", "waifu", "kawaii", "naruto", "pokemon", "goku", "japan", "ninja", "samurai", "chan", "kun", "senpai"],
+    color: "bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300"
+  },
+  meme: {
+    id: "meme",
+    name: "Meme Coins",
+    emoji: "😂",
+    keywords: ["meme", "based", "chad", "sigma", "gigachad", "dank", "lol", "lmao", "kek", "rekt", "lambo", "wen"],
+    color: "bg-cyan-100 text-cyan-700 border-cyan-300"
   },
   wojak: {
     id: "wojak",
     name: "Wojak",
     emoji: "😐",
     keywords: ["wojak", "feels", "doomer", "boomer", "zoomer"],
+    color: "bg-slate-100 text-slate-700 border-slate-300"
+  },
+  diamond: {
+    id: "diamond",
+    name: "Diamond Hands",
+    emoji: "💎",
+    keywords: ["diamond", "hodl", "gem", "jewel", "crystal", "treasure"],
+    color: "bg-teal-100 text-teal-700 border-teal-300"
+  },
+  fire: {
+    id: "fire",
+    name: "Fire",
+    emoji: "🔥",
+    keywords: ["fire", "hot", "burn", "flame", "blaze", "inferno"],
+    color: "bg-rose-100 text-rose-700 border-rose-300"
+  },
+  king: {
+    id: "king",
+    name: "Royalty",
+    emoji: "👑",
+    keywords: ["king", "queen", "royal", "emperor", "crown", "throne", "monarch"],
+    color: "bg-amber-100 text-amber-700 border-amber-300"
   },
 } as const
 
