@@ -3,6 +3,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* iOS-specific rendering optimizations for crisp display */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
 :root {
   /* More futuristic minimal palette with better contrast */
   --background: oklch(1 0 0); /* Pure white */
