@@ -50,15 +50,16 @@ export function SwipeCard({
   onDevMetricsTap,
   onScrollChange,
 }: SwipeCardProps) {
-  const [touchStart, setTouchStart] = useState(0)
-  const [touchEnd, setTouchEnd] = useState(0)
+  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 })
+  const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState(0)
   const [isExpanded, setIsExpanded] = useState(false)
   const [lastTap, setLastTap] = useState(0)
+  const [canSwipe, setCanSwipe] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
-  const scrollRef = useRef<HTMLDivElement>(null) // Added ref for scroll container
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null) // Added timeout ref
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const isPositiveChange = (coin.change24hNum ?? 0) >= 0
 
@@ -77,33 +78,64 @@ export function SwipeCard({
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX)
-    setIsDragging(true)
+    const touch = e.targetTouches[0]
+    const startX = touch.clientX
+    const startY = touch.clientY
+    
+    setTouchStart({ x: startX, y: startY })
+    
+    if (cardRef.current) {
+      const cardRect = cardRef.current.getBoundingClientRect()
+      const touchRelativeY = startY - cardRect.top
+      const cardHeight = cardRect.height
+      
+      if (touchRelativeY < cardHeight * 0.5) {
+        setCanSwipe(true)
+      } else {
+        setCanSwipe(false)
+      }
+    }
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return
-    const currentTouch = e.targetTouches[0].clientX
-    setTouchEnd(currentTouch)
-    const offset = currentTouch - touchStart
-    setDragOffset(offset)
+    const touch = e.targetTouches[0]
+    const currentX = touch.clientX
+    const currentY = touch.clientY
+    
+    setTouchEnd({ x: currentX, y: currentY })
+    
+    const deltaX = Math.abs(currentX - touchStart.x)
+    const deltaY = Math.abs(currentY - touchStart.y)
+    
+    if (!isDragging && (deltaX > 10 || deltaY > 10)) {
+      if (deltaX > deltaY && canSwipe) {
+        setIsDragging(true)
+      } else {
+        setCanSwipe(false)
+      }
+    }
+    
+    if (isDragging && canSwipe) {
+      const offset = currentX - touchStart.x
+      setDragOffset(offset)
+    }
   }
 
   const handleTouchEnd = () => {
-    setIsDragging(false)
     const swipeThreshold = 120
-    const touchDuration = Date.now() - (lastTap || 0)
-
+    
     const now = Date.now()
     if (now - lastTap < 300 && Math.abs(dragOffset) < 10) {
       setLastTap(0)
       setDragOffset(0)
+      setIsDragging(false)
+      setCanSwipe(false)
       onDoubleTap()
       return
     }
     setLastTap(now)
 
-    if (Math.abs(dragOffset) > swipeThreshold) {
+    if (isDragging && canSwipe && Math.abs(dragOffset) > swipeThreshold) {
       setIsExpanded(true)
       const direction = dragOffset > 0 ? "right" : "left"
 
@@ -111,9 +143,13 @@ export function SwipeCard({
         onSwipe(direction)
         setDragOffset(0)
         setIsExpanded(false)
+        setIsDragging(false)
+        setCanSwipe(false)
       }, 150)
     } else {
       setDragOffset(0)
+      setIsDragging(false)
+      setCanSwipe(false)
     }
   }
 
