@@ -19,9 +19,9 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "tsx server/index.ts",
+    "dev": "next dev -p 5000 -H 0.0.0.0",
     "lint": "next lint",
-    "start": "NODE_ENV=production tsx server/index.ts",
+    "start": "next start -p 5000 -H 0.0.0.0",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
