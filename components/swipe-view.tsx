@@ -31,7 +31,6 @@ import {
 } from "@/lib/storage"
 import { addToMatches, recordSwipe } from "@/lib/storage-db"
 import { useAuth } from "@/hooks/useAuth"
-import { LoginPromptDialog } from "@/components/login-prompt-dialog"
 import { toast } from "sonner"
 
 const JACKPOT_REWARDS: JackpotReward[] = [
@@ -102,7 +101,6 @@ export function SwipeView() {
   const [isScrolling, setIsScrolling] = useState(false) // Added state to track scrolling
   const [showWatchlist, setShowWatchlist] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   
   const { isAuthenticated } = useAuth()
 
@@ -547,12 +545,6 @@ export function SwipeView() {
       <WatchlistSheet open={showWatchlist} onOpenChange={setShowWatchlist} />
       <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />
       <RewardModal open={showRewardModal} onOpenChange={setShowRewardModal} onClaim={handleClaimReward} />
-      
-      <LoginPromptDialog 
-        open={showLoginPrompt} 
-        onOpenChange={setShowLoginPrompt}
-        action="swipe"
-      />
     </div>
   )
 }

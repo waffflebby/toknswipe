@@ -9,7 +9,6 @@ import { MEME_THEMES } from "@/lib/theme-detector"
 import { searchCoinsFromAPI } from "@/lib/api-client"
 import { addToFavorites, removeFromFavorites, getFavorites } from "@/lib/storage-db"
 import { useAuth } from "@/hooks/useAuth"
-import { LoginPromptDialog } from "@/components/login-prompt-dialog"
 import { toast } from "sonner"
 
 interface SearchBarProps {
@@ -29,7 +28,6 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
   const [searchResults, setSearchResults] = useState<EnrichedCoin[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [starredCoins, setStarredCoins] = useState<Set<string>>(new Set())
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const { isAuthenticated } = useAuth()
 
   useEffect(() => {
@@ -327,12 +325,6 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
           )}
         </div>
       )}
-      
-      <LoginPromptDialog 
-        open={showLoginPrompt} 
-        onOpenChange={setShowLoginPrompt}
-        action="star"
-      />
     </div>
   )
 }
