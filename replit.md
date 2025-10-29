@@ -75,6 +75,28 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ## Recent Changes
 
+### October 29, 2025 - Mobile Optimization Complete ✅
+1. **Viewport & Scaling Fixes**:
+   - ✅ Viewport meta tags prevent auto-zoom on input fields (user-scalable=no, maximum-scale=1)
+   - ✅ Input font-size set to 16px minimum to prevent iOS automatic zoom
+   - ✅ Mobile-first responsive design with proper touch targets
+
+2. **Dynamic Viewport Height (dvh)**:
+   - ✅ Replaced all `100vh` with `100dvh` for mobile browser chrome compatibility
+   - ✅ Fixes iPhone URL bar cutting off contract info
+   - ✅ Smooth transitions when browser chrome appears/disappears
+   - ✅ Applied to: body, html, mobile-layout, swipe-card components
+
+3. **Swipe Sensitivity Improvements**:
+   - ✅ Increased swipe threshold from 80px to 120px
+   - ✅ Reduced accidental swipes when scrolling through coin details
+   - ✅ Better distinction between scroll and swipe gestures
+
+4. **Header & Layout Fixes**:
+   - ✅ Header stays visible after login/navigation (flex shrink-0, z-index 50)
+   - ✅ Proper flex column layout prevents layout shifting
+   - ✅ Activity banner, search bar, and theme filters always accessible
+
 ### October 29, 2025 - Database Integration Complete ✅
 1. **Supabase Authentication**:
    - ✅ Migrated from Replit Auth to Supabase Auth
