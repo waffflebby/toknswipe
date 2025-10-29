@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { MEME_THEMES, type ThemeId, detectThemes } from '@/lib/theme-detector'
+import { FAMOUS_COINS_BY_THEME } from '@/lib/famous-coins'
+import { cache } from '@/lib/redis'
+
+const THEME_SEARCH_CACHE_TTL = 10 * 60 // 10 minutes
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,13 +17,32 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Check cache first
+    const cacheKey = `theme_search:${theme}`
+    const cached = await cache.get<any>(cacheKey)
+    if (cached) {
+      console.log(`[Theme Search] Cache hit for ${theme}`)
+      return NextResponse.json({
+        success: true,
+        theme,
+        coins: cached,
+        count: cached.length,
+        source: 'cache',
+      })
+    }
+
     const apiKey = process.env.MORALIS_API_KEY
     if (!apiKey) {
       console.error('[Theme Search] MORALIS_API_KEY not configured')
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      )
+      // Fallback to famous coins if API key missing
+      const famousCoins = FAMOUS_COINS_BY_THEME[theme as keyof typeof FAMOUS_COINS_BY_THEME] || []
+      return NextResponse.json({
+        success: true,
+        theme,
+        coins: famousCoins,
+        count: famousCoins.length,
+        source: 'fallback',
+      })
     }
 
     const response = await fetch(
@@ -34,15 +57,21 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       console.error('[Theme Search] Moralis API error:', response.status)
-      return NextResponse.json(
-        { error: 'Failed to fetch coins' },
-        { status: response.status }
-      )
+      // Fallback to famous coins on API error
+      const famousCoins = FAMOUS_COINS_BY_THEME[theme as keyof typeof FAMOUS_COINS_BY_THEME] || []
+      return NextResponse.json({
+        success: true,
+        theme,
+        coins: famousCoins,
+        count: famousCoins.length,
+        source: 'fallback',
+      })
     }
 
     const data = await response.json()
     const coins = data?.tokens || data || []
 
+    // Filter trending coins by theme
     const filteredCoins = coins.filter((coin: any) => {
       const enrichedCoin = {
         name: coin.name || '',
@@ -53,11 +82,25 @@ export async function GET(request: NextRequest) {
       return themes.includes(theme)
     })
 
+    console.log(`[Theme Search] Found ${filteredCoins.length} coins for theme: ${theme}`)
+
+    // If no trending coins found, use famous placeholder coins
+    let finalCoins = filteredCoins
+    if (filteredCoins.length === 0) {
+      const famousCoins = FAMOUS_COINS_BY_THEME[theme as keyof typeof FAMOUS_COINS_BY_THEME] || []
+      console.log(`[Theme Search] Using ${famousCoins.length} famous coins as fallback for theme: ${theme}`)
+      finalCoins = famousCoins
+    }
+
+    // Cache the result
+    await cache.set(cacheKey, finalCoins, THEME_SEARCH_CACHE_TTL)
+
     return NextResponse.json({
       success: true,
       theme,
-      coins: filteredCoins,
-      count: filteredCoins.length,
+      coins: finalCoins,
+      count: finalCoins.length,
+      source: filteredCoins.length > 0 ? 'moralis' : 'fallback',
     })
   } catch (error) {
     console.error('[Theme Search] Error:', error)

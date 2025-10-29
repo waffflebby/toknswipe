@@ -101,6 +101,7 @@ export function SwipeView() {
   const [isScrolling, setIsScrolling] = useState(false) // Added state to track scrolling
   const [showWatchlist, setShowWatchlist] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
+  const [retryAttempts, setRetryAttempts] = useState(0) // Track retry attempts
   
   const { isAuthenticated } = useAuth()
 
@@ -279,16 +280,39 @@ export function SwipeView() {
   const remainingSwipes = maxFreeSwipes - swipeCount
 
 
-  if (coins.length === 0) {
+  // Auto-redirect to home if no coins available after retries
+  useEffect(() => {
+    if (coins.length === 0 && !isLoading && retryAttempts > 0) {
+      const timer = setTimeout(() => {
+        toast.info("No coins found for this theme. Returning to trending feed...")
+        setFeedType("trending")
+        setSelectedTheme(null)
+        setRetryAttempts(0)
+      }, 2000) // 2 second delay before redirect
+      
+      return () => clearTimeout(timer)
+    }
+  }, [coins.length, isLoading, retryAttempts])
+
+  const handleRetry = () => {
+    setRetryAttempts(prev => prev + 1)
+    loadCoins()
+  }
+
+  if (coins.length === 0 && !isLoading) {
     return (
       <div className="flex h-full items-center justify-center p-6">
         <div className="text-center space-y-4">
           <p className="text-lg font-semibold">No coins available</p>
-          <p className="text-xs text-muted-foreground">Check your internet connection</p>
-          <Button onClick={loadCoins} className="gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Retry
-          </Button>
+          <p className="text-xs text-muted-foreground">
+            {retryAttempts > 0 ? "Redirecting to trending feed..." : "Check your internet connection or try a different theme"}
+          </p>
+          {retryAttempts === 0 && (
+            <Button onClick={handleRetry} className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Retry
+            </Button>
+          )}
         </div>
       </div>
     )
