@@ -75,28 +75,28 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ## Recent Changes
 
-### October 29, 2025 - Auth-Gated Interactions (Security Update) ✅
-1. **localStorage Removed - Authentication Required**:
-   - ✅ Completely removed localStorage fallback for guest users
-   - ✅ All interactions (swipes, favorites) require authentication
-   - ✅ Database-only persistence - no local data storage
+### October 29, 2025 - Friction-Free Guest Experience with Toast Notifications ✅
+1. **Guests Can Swipe & Star Without Blocking**:
+   - ✅ Removed authentication blocking - guests can swipe and star freely
+   - ✅ Actions work visually but don't save to database unless logged in
+   - ✅ Non-intrusive approach - try before you sign up
+
+2. **Helpful Toast Notifications**:
+   - ✅ Added Sonner toast system to app layout
+   - ✅ Swipes trigger info toast: "Sign in to save your swipes"
+   - ✅ Stars trigger info toast: "Sign in to save favorites"
+   - ✅ 3-second duration, dismissible, non-blocking
+
+3. **Database-Only Persistence**:
+   - ✅ lib/storage-db.ts: All functions return false/empty when unauthenticated
+   - ✅ No localStorage fallback - database only for logged-in users
    - ✅ Security: Prevents unauthorized data persistence
 
-2. **Subtle Login Prompts**:
-   - ✅ Created LoginPromptDialog component with benefits list
-   - ✅ Shows when guests try to swipe or star coins
-   - ✅ Easy to dismiss with "Maybe later" button
-   - ✅ Non-intrusive UX - doesn't block browsing
-
-3. **Browsable for Everyone**:
-   - ✅ Guests can view all coins, scroll, search
-   - ✅ Full UI remains accessible without login
-   - ✅ Only gated features: swipe actions and starring
-
-4. **Updated Functions**:
-   - ✅ lib/storage-db.ts: All functions return false if unauthenticated
-   - ✅ swipe-view.tsx: Checks auth before handleSwipe()
-   - ✅ search-bar.tsx: Checks auth before star/unstar
+4. **Optimal UX Flow**:
+   - ✅ Guests can browse, swipe, star, and explore all features
+   - ✅ Small notification informs them their actions won't be saved
+   - ✅ No blame, no friction - just helpful guidance
+   - ✅ Encourages sign-up without forcing it
 
 ### October 29, 2025 - Database Integration Complete (Phase 2) ✅
 1. **Database-Backed Storage System**:
