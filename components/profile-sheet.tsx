@@ -62,17 +62,9 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
       setBadges(userBadges.length > 0 ? userBadges : mockBadges)
       setTotalSwipes(getTotalSwipes())
       setSwipeProgress(getSwipeProgress())
-    }
-  }, [open])
-
-  // Cleanup when sheet closes
-  useEffect(() => {
-    if (!open) {
-      // Small delay to allow animation to complete
-      const timer = setTimeout(() => {
-        setShowSettings(false)
-      }, 200)
-      return () => clearTimeout(timer)
+    } else {
+      // Reset settings immediately when closing
+      setShowSettings(false)
     }
   }, [open])
 
