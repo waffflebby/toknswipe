@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
 import { searchCoinsFromAPI } from "@/lib/api-client"
-import { getPersonalList } from "@/lib/storage"
 import { addToFavorites, removeFromFavorites, getFavorites } from "@/lib/storage-db"
+import { useAuth } from "@/hooks/useAuth"
+import { LoginPromptDialog } from "@/components/login-prompt-dialog"
 
 interface SearchBarProps {
   coins: EnrichedCoin[]
@@ -27,6 +28,8 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
   const [searchResults, setSearchResults] = useState<EnrichedCoin[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [starredCoins, setStarredCoins] = useState<Set<string>>(new Set())
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     loadStarredCoins()
@@ -38,8 +41,7 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
       setStarredCoins(new Set(favorites.map(coin => coin.id)))
     } catch (error) {
       console.error('Error loading starred coins:', error)
-      const personalList = getPersonalList()
-      setStarredCoins(new Set(personalList.map(coin => coin.id)))
+      setStarredCoins(new Set())
     }
   }
 
@@ -189,6 +191,12 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={async (e) => {
                         e.stopPropagation()
+                        
+                        if (!isAuthenticated) {
+                          setShowLoginPrompt(true)
+                          return
+                        }
+                        
                         if (starredCoins.has(coin.id)) {
                           await removeFromFavorites(coin.id)
                           await loadStarredCoins()
@@ -247,6 +255,12 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
                     <button
                       onClick={async (e) => {
                         e.stopPropagation()
+                        
+                        if (!isAuthenticated) {
+                          setShowLoginPrompt(true)
+                          return
+                        }
+                        
                         if (starredCoins.has(coin.id)) {
                           await removeFromFavorites(coin.id)
                           await loadStarredCoins()
@@ -308,6 +322,12 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
           )}
         </div>
       )}
+      
+      <LoginPromptDialog 
+        open={showLoginPrompt} 
+        onOpenChange={setShowLoginPrompt}
+        action="star"
+      />
     </div>
   )
 }

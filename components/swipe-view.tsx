@@ -30,6 +30,8 @@ import {
   checkAndUnlockBadges,
 } from "@/lib/storage"
 import { addToMatches, recordSwipe } from "@/lib/storage-db"
+import { useAuth } from "@/hooks/useAuth"
+import { LoginPromptDialog } from "@/components/login-prompt-dialog"
 
 const JACKPOT_REWARDS: JackpotReward[] = [
   {
@@ -99,6 +101,9 @@ export function SwipeView() {
   const [isScrolling, setIsScrolling] = useState(false) // Added state to track scrolling
   const [showWatchlist, setShowWatchlist] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  
+  const { isAuthenticated } = useAuth()
 
   // Filter and sorting
   const [sortBy, setSortBy] = useState<"mcap" | "volume" | "holders" | "age">("mcap")
@@ -171,6 +176,11 @@ export function SwipeView() {
 
   const handleSwipe = (direction: "left" | "right") => {
     if (isSwipeAnimating || coins.length === 0) return
+    
+    if (!isAuthenticated) {
+      setShowLoginPrompt(true)
+      return
+    }
 
     if (swipeCount >= maxFreeSwipes) {
       setShowPaywall(true)
@@ -534,6 +544,12 @@ export function SwipeView() {
       <WatchlistSheet open={showWatchlist} onOpenChange={setShowWatchlist} />
       <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />
       <RewardModal open={showRewardModal} onOpenChange={setShowRewardModal} onClaim={handleClaimReward} />
+      
+      <LoginPromptDialog 
+        open={showLoginPrompt} 
+        onOpenChange={setShowLoginPrompt}
+        action="swipe"
+      />
     </div>
   )
 }

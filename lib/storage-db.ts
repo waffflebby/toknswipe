@@ -25,64 +25,70 @@ async function checkAuth(): Promise<boolean> {
 export async function getFavorites(): Promise<EnrichedCoin[]> {
   const isAuthenticated = await checkAuth()
   
-  if (isAuthenticated) {
-    try {
-      const response = await fetch('/api/favorites')
-      if (response.ok) {
-        const data = await response.json()
-        return data.favorites.map((fav: any) => fav.coinData as EnrichedCoin)
-      }
-    } catch (error) {
-      console.error('Error fetching favorites from DB:', error)
-    }
+  if (!isAuthenticated) {
+    return []
   }
   
-  return getPersonalListLocal()
+  try {
+    const response = await fetch('/api/favorites')
+    if (response.ok) {
+      const data = await response.json()
+      return data.favorites.map((fav: any) => fav.coinData as EnrichedCoin)
+    }
+  } catch (error) {
+    console.error('Error fetching favorites from DB:', error)
+  }
+  
+  return []
 }
 
-export async function addToFavorites(coin: EnrichedCoin): Promise<void> {
+export async function addToFavorites(coin: EnrichedCoin): Promise<boolean> {
   const isAuthenticated = await checkAuth()
   
-  if (isAuthenticated) {
-    try {
-      const response = await fetch('/api/favorites', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          coinMint: coin.id,
-          coinData: coin
-        })
-      })
-      
-      if (response.ok || response.status === 409) {
-        return
-      }
-    } catch (error) {
-      console.error('Error adding favorite to DB:', error)
-    }
+  if (!isAuthenticated) {
+    return false
   }
   
-  addToPersonalListLocal(coin)
+  try {
+    const response = await fetch('/api/favorites', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        coinMint: coin.id,
+        coinData: coin
+      })
+    })
+    
+    if (response.ok || response.status === 409) {
+      return true
+    }
+  } catch (error) {
+    console.error('Error adding favorite to DB:', error)
+  }
+  
+  return false
 }
 
-export async function removeFromFavorites(coinId: string): Promise<void> {
+export async function removeFromFavorites(coinId: string): Promise<boolean> {
   const isAuthenticated = await checkAuth()
   
-  if (isAuthenticated) {
-    try {
-      const response = await fetch(`/api/favorites?coinMint=${coinId}`, {
-        method: 'DELETE'
-      })
-      
-      if (response.ok || response.status === 404) {
-        return
-      }
-    } catch (error) {
-      console.error('Error removing favorite from DB:', error)
-    }
+  if (!isAuthenticated) {
+    return false
   }
   
-  removeFromPersonalListLocal(coinId)
+  try {
+    const response = await fetch(`/api/favorites?coinMint=${coinId}`, {
+      method: 'DELETE'
+    })
+    
+    if (response.ok || response.status === 404) {
+      return true
+    }
+  } catch (error) {
+    console.error('Error removing favorite from DB:', error)
+  }
+  
+  return false
 }
 
 export async function isInFavorites(coinId: string): Promise<boolean> {
@@ -93,81 +99,95 @@ export async function isInFavorites(coinId: string): Promise<boolean> {
 export async function getMatches(): Promise<EnrichedCoin[]> {
   const isAuthenticated = await checkAuth()
   
-  if (isAuthenticated) {
-    try {
-      const response = await fetch('/api/matches')
-      if (response.ok) {
-        const data = await response.json()
-        return data.matches.map((match: any) => match.coinData as EnrichedCoin)
-      }
-    } catch (error) {
-      console.error('Error fetching matches from DB:', error)
-    }
+  if (!isAuthenticated) {
+    return []
   }
   
-  return getWatchlistLocal()
+  try {
+    const response = await fetch('/api/matches')
+    if (response.ok) {
+      const data = await response.json()
+      return data.matches.map((match: any) => match.coinData as EnrichedCoin)
+    }
+  } catch (error) {
+    console.error('Error fetching matches from DB:', error)
+  }
+  
+  return []
 }
 
-export async function addToMatches(coin: EnrichedCoin): Promise<void> {
+export async function addToMatches(coin: EnrichedCoin): Promise<boolean> {
   const isAuthenticated = await checkAuth()
   
-  if (isAuthenticated) {
-    try {
-      const response = await fetch('/api/matches', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          coinMint: coin.id,
-          coinData: coin
-        })
-      })
-      
-      if (response.ok || response.status === 409) {
-        return
-      }
-    } catch (error) {
-      console.error('Error adding match to DB:', error)
-    }
+  if (!isAuthenticated) {
+    return false
   }
   
-  addToWatchlistLocal(coin)
+  try {
+    const response = await fetch('/api/matches', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        coinMint: coin.id,
+        coinData: coin
+      })
+    })
+    
+    if (response.ok || response.status === 409) {
+      return true
+    }
+  } catch (error) {
+    console.error('Error adding match to DB:', error)
+  }
+  
+  return false
 }
 
-export async function removeFromMatches(coinId: string): Promise<void> {
+export async function removeFromMatches(coinId: string): Promise<boolean> {
   const isAuthenticated = await checkAuth()
   
-  if (isAuthenticated) {
-    try {
-      const response = await fetch(`/api/matches?coinMint=${coinId}`, {
-        method: 'DELETE'
-      })
-      
-      if (response.ok || response.status === 404) {
-        return
-      }
-    } catch (error) {
-      console.error('Error removing match from DB:', error)
-    }
+  if (!isAuthenticated) {
+    return false
   }
   
-  removeFromWatchlistLocal(coinId)
+  try {
+    const response = await fetch(`/api/matches?coinMint=${coinId}`, {
+      method: 'DELETE'
+    })
+    
+    if (response.ok || response.status === 404) {
+      return true
+    }
+  } catch (error) {
+    console.error('Error removing match from DB:', error)
+  }
+  
+  return false
 }
 
-export async function recordSwipe(coinMint: string, direction: 'left' | 'right'): Promise<void> {
+export async function recordSwipe(coinMint: string, direction: 'left' | 'right'): Promise<boolean> {
   const isAuthenticated = await checkAuth()
   
-  if (isAuthenticated) {
-    try {
-      await fetch('/api/swipes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          coinMint,
-          direction
-        })
-      })
-    } catch (error) {
-      console.error('Error recording swipe:', error)
-    }
+  if (!isAuthenticated) {
+    return false
   }
+  
+  try {
+    const response = await fetch('/api/swipes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        coinMint,
+        direction
+      })
+    })
+    
+    if (response.ok) {
+      return true
+    }
+  } catch (error) {
+    console.error('Error recording swipe:', error)
+  }
+  
+  return false
 }

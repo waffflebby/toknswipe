@@ -75,6 +75,29 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ## Recent Changes
 
+### October 29, 2025 - Auth-Gated Interactions (Security Update) ✅
+1. **localStorage Removed - Authentication Required**:
+   - ✅ Completely removed localStorage fallback for guest users
+   - ✅ All interactions (swipes, favorites) require authentication
+   - ✅ Database-only persistence - no local data storage
+   - ✅ Security: Prevents unauthorized data persistence
+
+2. **Subtle Login Prompts**:
+   - ✅ Created LoginPromptDialog component with benefits list
+   - ✅ Shows when guests try to swipe or star coins
+   - ✅ Easy to dismiss with "Maybe later" button
+   - ✅ Non-intrusive UX - doesn't block browsing
+
+3. **Browsable for Everyone**:
+   - ✅ Guests can view all coins, scroll, search
+   - ✅ Full UI remains accessible without login
+   - ✅ Only gated features: swipe actions and starring
+
+4. **Updated Functions**:
+   - ✅ lib/storage-db.ts: All functions return false if unauthenticated
+   - ✅ swipe-view.tsx: Checks auth before handleSwipe()
+   - ✅ search-bar.tsx: Checks auth before star/unstar
+
 ### October 29, 2025 - Database Integration Complete (Phase 2) ✅
 1. **Database-Backed Storage System**:
    - ✅ Swipe tracking automatically saves to database when authenticated
