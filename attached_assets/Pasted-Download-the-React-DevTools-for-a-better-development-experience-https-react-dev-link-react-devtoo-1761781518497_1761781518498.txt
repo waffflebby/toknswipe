@@ -1,0 +1,37 @@
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+script.debug.js:1 [Vercel Web Analytics] Debug mode is enabled by default in development. No requests will be sent to the server.
+script.debug.js:1 [Vercel Web Analytics] Running queued event pageview Object
+script.debug.js:1 [Vercel Web Analytics] [pageview] https://fa891847-6d79-40c3-b7d5-c048f0f8e197-00-2kl4qewre7yp1.worf.replit.dev/ Object
+6swipe-view.tsx:112 [SwipeView] Computing coins, fetchedCoins: 0
+(index):1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">Understand this warning
+api-client.ts:9 [API Client] Fetching trending coins from: /api/trending
+3profile-sheet.tsx:85 [ProfileSheet] Sheet closed, state cleaned up
+21swipe-view.tsx:112 [SwipeView] Computing coins, fetchedCoins: 0
+api-client.ts:12 [API Client] Response status: 200
+api-client.ts:21 [API Client] Got result: Object
+api-client.ts:24 [API Client] Got 30 coins from memory-cache
+swipe-view.tsx:112 [SwipeView] Computing coins, fetchedCoins: 30
+swipe-view.tsx:138 [SwipeView] Computed coins: 30
+swipe-view.tsx:112 [SwipeView] Computing coins, fetchedCoins: 30
+swipe-view.tsx:138 [SwipeView] Computed coins: 30
+warn-once.js:16 Image with src "https://d23exngyjlavgo.cloudfront.net/solana_6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN" was detected as the Largest Contentful Paint (LCP). Please add the "priority" property if this image is above the fold.
+Read more: https://nextjs.org/docs/api-reference/next/image#priority
+warnOnce @ warn-once.js:16Understand this warning
+2index.mjs:477 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+DescriptionWarning.useEffect @ index.mjs:477Understand this warning
+hot-reloader-client.js:242 [Fast Refresh] rebuilding
+hot-reloader-client.js:74 [Fast Refresh] done in 1286ms
+profile-sheet.tsx:47 [ProfileSheet] onOpenChange called with: false
+profile-sheet.tsx:50 [ProfileSheet] State update successful
+profile-sheet.tsx:85 [ProfileSheet] Sheet closed, state cleaned up
+hot-reloader-client.js:242 [Fast Refresh] rebuilding
+hot-reloader-client.js:74 [Fast Refresh] done in 1054ms
+hot-reloader-client.js:242 [Fast Refresh] rebuilding
+hot-reloader-client.js:74 [Fast Refresh] done in 1599ms
+(index):1 The resource https://fa891847-6d79-40c3-b7d5-c048f0f8e197-00-2kl4qewre7yp1.worf.replit.dev/_next/static/media/5b01f339abf2f1a5.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+(index):1 The resource https://fa891847-6d79-40c3-b7d5-c048f0f8e197-00-2kl4qewre7yp1.worf.replit.dev/_next/static/media/028c0d39d2e8f589-s.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+(index):1 The resource https://fa891847-6d79-40c3-b7d5-c048f0f8e197-00-2kl4qewre7yp1.worf.replit.dev/_next/static/media/5b01f339abf2f1a5.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+(index):1 The resource https://fa891847-6d79-40c3-b7d5-c048f0f8e197-00-2kl4qewre7yp1.worf.replit.dev/_next/static/media/028c0d39d2e8f589-s.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+2hot-reloader-client.js:242 [Fast Refresh] rebuilding
+hot-reloader-client.js:74 [Fast Refresh] done in 195ms
+hot-reloader-client.js:74 [Fast Refresh] done in 529ms
