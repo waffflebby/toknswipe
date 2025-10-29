@@ -299,7 +299,20 @@ export function SwipeView() {
     loadCoins()
   }
 
-  if (coins.length === 0 && !isLoading) {
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center p-6">
+        <div className="text-center space-y-4">
+          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground mx-auto" />
+          <p className="text-sm text-muted-foreground">Loading coins...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show empty state
+  if (coins.length === 0) {
     return (
       <div className="flex h-full items-center justify-center p-6">
         <div className="text-center space-y-4">

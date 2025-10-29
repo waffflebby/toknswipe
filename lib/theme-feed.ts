@@ -1,6 +1,7 @@
 // Combine famous coins + trending coins for theme swiping
 import type { EnrichedCoin } from "./types"
-import { FAMOUS_COINS_BY_THEME } from "./theme-coins"
+import { FAMOUS_COINS_BY_THEME as FAMOUS_COIN_OBJECTS } from "./famous-coins"
+import { FAMOUS_COINS_BY_THEME as FAMOUS_COIN_KEYWORDS } from "./theme-coins"
 
 export type ThemeFeedType = "famous" | "trending" | "all"
 
@@ -9,7 +10,8 @@ export function getThemeFeed(
   trendingCoins: EnrichedCoin[],
   feedType: ThemeFeedType = "all"
 ): EnrichedCoin[] {
-  const keywords = FAMOUS_COINS_BY_THEME[themeId] || []
+  const keywords = FAMOUS_COIN_KEYWORDS[themeId] || []
+  const placeholderCoins = FAMOUS_COIN_OBJECTS[themeId] || []
 
   // Famous coins - filter by keywords
   const famousCoins = trendingCoins.filter((coin) => {
@@ -31,18 +33,23 @@ export function getThemeFeed(
   let result: EnrichedCoin[] = []
 
   if (feedType === "famous") {
-    result = famousCoins
+    result = [...famousCoins, ...placeholderCoins]
   } else if (feedType === "trending") {
-    result = trendingForTheme
+    result = [...trendingForTheme, ...placeholderCoins]
   } else {
-    // "all" - combine and deduplicate
-    const combined = [...famousCoins, ...trendingForTheme]
+    // "all" - combine everything with dedupe
+    const combined = [...famousCoins, ...trendingForTheme, ...placeholderCoins]
     const seen = new Set<string>()
     result = combined.filter((coin) => {
       if (seen.has(coin.mint)) return false
       seen.add(coin.mint)
       return true
     })
+  }
+
+  // If no coins found at all, return placeholder coins
+  if (result.length === 0) {
+    result = placeholderCoins
   }
 
   // Sort by MCap descending
