@@ -75,6 +75,31 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ## Recent Changes
 
+### October 29, 2025 - Watchlist Folder Separation Fix ✅
+1. **Fixed Folder Logic**:
+   - ✅ Starred coins (search) now only go to Personal folder
+   - ✅ Swiped right coins now only go to Matched folder
+   - ✅ Folders are completely separate - no cross-contamination
+   - ✅ Delete from Personal only removes from favorites table
+   - ✅ Delete from Matched only removes from matches table
+
+2. **Improved UX**:
+   - ✅ Both folders show price, 24h change %, and full coin details
+   - ✅ Consistent card display across all folders
+   - ✅ Fixed laggy/glitching folder issue
+
+3. **Database Integration**:
+   - ✅ Personal folder loads from `favorites` table (Supabase)
+   - ✅ Matched folder loads from `matches` table (Supabase)
+   - ✅ Proper data separation at database level
+
+### October 29, 2025 - Mobile Display Optimization ✅
+1. **iPhone Rendering Fixes**:
+   - ✅ Fixed blurry text on iPhone with font smoothing
+   - ✅ Added iOS-specific antialiasing for crisp display
+   - ✅ Optimized viewport settings for high-DPI screens
+   - ✅ Text rendering set to optimizeLegibility
+
 ### October 29, 2025 - Friction-Free Guest Experience with Toast Notifications ✅
 1. **Guests Can Swipe & Star Without Blocking**:
    - ✅ Removed authentication blocking - guests can swipe and star freely
