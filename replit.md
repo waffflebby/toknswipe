@@ -28,10 +28,11 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ### Port Configuration (Replit-specific)
 - Development server runs on port 5000 with host 0.0.0.0
+- Custom Express server runs Next.js programmatically
 - Scripts configured in package.json:
-  - `npm run dev`: Starts dev server on port 5000
-  - `npm run start`: Starts production server on port 5000
-  - `npm run build`: Builds the application
+  - `npm run dev`: Starts custom server with tsx (server/index.ts)
+  - `npm run start`: Starts production server with tsx
+  - `npm run build`: Builds the Next.js application
 
 ### Next.js Configuration
 - TypeScript build errors ignored (for development)
@@ -69,24 +70,33 @@ A Tinder-style swipe interface for discovering and tracking meme coins on Solana
 
 ## Recent Changes
 
-### October 29, 2025 - Backend Infrastructure (Phase 1)
+### October 29, 2025 - Phase 1 Complete: Authentication System ✅
 1. **Database Setup**:
    - Created PostgreSQL database via Replit
    - Set up Drizzle ORM with proper schema
    - Created tables: users, sessions, favorites, matches, swipes, coinThemes
    - Added `npm run db:push` script for schema migrations
 
-2. **Authentication Foundation**:
-   - Added Replit Auth integration (supports Google, GitHub, email/password)
-   - Created Express backend with passport authentication
-   - Set up session management with PostgreSQL storage
-   - Created database storage layer with full CRUD operations
+2. **Authentication System (COMPLETE)**:
+   - ✅ Custom Express server running alongside Next.js
+   - ✅ Replit Auth integration (supports Google, GitHub, email/password login)
+   - ✅ Passport.js authentication with OIDC strategy
+   - ✅ Session management with PostgreSQL storage (connect-pg-simple)
+   - ✅ Secure HTTPS-only session cookies with 1-week TTL
+   - ✅ Token refresh mechanism for expired access tokens
+   - ✅ Database storage layer with full CRUD operations
+   - ✅ Auth routes: `/api/login`, `/api/logout`, `/api/callback`, `/api/auth/user`
+   - ✅ Protected route middleware (`isAuthenticated`)
+   - ✅ Login UI component with avatar dropdown
+   - ✅ useAuth hook for client-side auth state
+   - Server architecture: tsx runs server/index.ts → Express + Next.js hybrid
 
 3. **Package Installations**:
    - Installed with `--legacy-peer-deps` due to React 19:
      - openid-client, passport, express-session
      - memoizee, connect-pg-simple
      - @neondatabase/serverless, drizzle-orm, drizzle-kit
+     - tsx (for TypeScript server execution)
 
 ### October 28, 2025 - Vercel to Replit Migration
 1. Updated package.json scripts to bind to port 5000 with host 0.0.0.0
@@ -139,11 +149,12 @@ None specified yet.
 - Matched folder for swiped coins (localStorage)
 
 ### In Progress (Phase 1-5 Rollout)
-- **Phase 1**: Database + Authentication
+- **Phase 1**: Database + Authentication ✅ COMPLETE
   - ✅ PostgreSQL database setup
   - ✅ Database schema (users, favorites, matches, swipes, themes)
-  - ✅ Replit Auth integration
-  - ⏳ Auth UI and login flow
+  - ✅ Replit Auth integration with Google/GitHub/email login
+  - ✅ Auth UI with login button and user profile dropdown
+  - ✅ Session persistence and user profile storage
 
 - **Phase 2**: Core Features with Database
   - Favorites API (star coins → save to database)
