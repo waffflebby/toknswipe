@@ -1,0 +1,159 @@
+There's a JavaScript syntax error preventing your code from running at all. Let me identify the likely culprits:
+Common Syntax Errors with TanStack Query
+1. Invalid JSON in API Response
+The error {"message":"Invalid or unexpected token"} typically means:
+
+Your API is returning malformed JSON
+There's a BOM (Byte Order Mark) or hidden character
+The response has trailing commas or unescaped characters
+
+Check your API endpoint:
+typescript// In your /api/trending endpoint, verify the response
+export async function GET() {
+  try {
+    const coins = await fetchCoins();
+    
+    // Log the raw data to check for issues
+    console.log('[API] Returning coins:', coins.length);
+    
+    // Make sure you're returning proper JSON
+    return Response.json(coins); // NOT Response.json({ coins })
+    
+  } catch (error) {
+    console.error('[API] Error:', error);
+    return Response.json({ error: 'Failed to fetch' }, { status: 500 });
+  }
+}
+2. TanStack Query Hook Syntax Error
+Check your useCoins hook for these issues:
+typescript// ❌ WRONG - Common syntax errors
+export const useCoins = () => {
+  return useQuery({
+    queryKey: ['coins'],
+    queryFn: fetchCoins,  // Missing await or incorrect return
+  })
+}
+
+// ✅ CORRECT
+export const useCoins = () => {
+  return useQuery({
+    queryKey: ['coins'],
+    queryFn: async () => {
+      const response = await fetch('/api/trending');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch coins');
+      }
+      
+      const data = await response.json(); // This is where syntax errors appear
+      console.log('[useCoins] Fetched:', data?.length || 0, 'coins');
+      
+      return Array.isArray(data) ? data : [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+};
+3. SwipeView Implementation Check
+typescriptconst SwipeView = () => {
+  const { data: fetchedCoins, isLoading, error, isError } = useCoins();
+  
+  // Critical debug - check what we're getting
+  console.log('[SwipeView] Query state:', {
+    fetchedCoins: fetchedCoins?.length || 0,
+    isLoading,
+    isError,
+    error: error?.message,
+    rawData: fetchedCoins
+  });
+
+  const coins = useMemo(() => {
+    console.log('[SwipeView] Computing coins, fetchedCoins:', fetchedCoins?.length || 0);
+    
+    if (!fetchedCoins || !Array.isArray(fetchedCoins)) {
+      console.warn('[SwipeView] Invalid fetchedCoins:', typeof fetchedCoins);
+      return [];
+    }
+    
+    if (fetchedCoins.length === 0) {
+      console.warn('[SwipeView] fetchedCoins is empty array');
+      return [];
+    }
+    
+    return [...fetchedCoins].sort(() => Math.random() - 0.5);
+  }, [fetchedCoins]);
+
+  if (isLoading) {
+    return <div className="p-4">Loading coins...</div>;
+  }
+  
+  if (isError) {
+    return <div className="p-4 text-red-500">Error: {error?.message}</div>;
+  }
+  
+  if (coins.length === 0) {
+    return <div className="p-4">No coins available</div>;
+  }
+
+  return (
+    <div className="coin-feed">
+      {coins.map(coin => (
+        <CoinCard key={coin.id} coin={coin} />
+      ))}
+    </div>
+  );
+};
+Debugging Steps
+Step 1: Test API Response Manually
+bashcurl http://localhost:3000/api/trending
+Look for:
+
+Valid JSON (use JSONLint)
+No trailing commas
+Proper quotes (not smart quotes)
+No BOM characters
+
+Step 2: Add Error Boundary
+typescriptimport { QueryErrorResetBoundary } from '@tanstack/react-query';
+import { ErrorBoundary } from 'react-error-boundary';
+
+// Wrap your SwipeView
+<QueryErrorResetBoundary>
+  {({ reset }) => (
+    <ErrorBoundary
+      onReset={reset}
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <div>
+          <p>Error: {error.message}</p>
+          <pre>{JSON.stringify(error, null, 2)}</pre>
+          <button onClick={resetErrorBoundary}>Try again</button>
+        </div>
+      )}
+    >
+      <SwipeView />
+    </ErrorBoundary>
+  )}
+</QueryErrorResetBoundary>
+Step 3: Check Network Tab
+Open DevTools → Network → Find the /api/trending request:
+
+Click on it
+Look at Response tab
+Check for syntax errors in the raw response
+
+Most Likely Issue
+Based on fetchedCoins: 0 appearing multiple times, your API is probably returning:
+
+A number instead of an array
+{ coins: [...] } instead of [...]
+Malformed JSON that's failing to parse
+
+Fix your API to return a plain array:
+typescript// API route
+return Response.json(coins); // coins should be Coin[], not { coins: Coin[] }
+Or adjust your hook:
+typescript// If API returns { coins: [...] }
+queryFn: async () => {
+  const response = await fetch('/api/trending');
+  const data = await response.json();
+  return data.coins || []; // Extract the coins array
