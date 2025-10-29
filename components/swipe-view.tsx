@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { SwipeCard } from "@/components/swipe-card"
 import { CoinDetailModal } from "@/components/coin-detail-modal"
 import { CoinInsightsSheet } from "@/components/coin-insights-sheet"
@@ -102,47 +102,48 @@ export function SwipeView() {
   const [retryAttempts, setRetryAttempts] = useState(0)
   
   const { isAuthenticated } = useAuth()
-  const { coins: fetchedCoins, isLoading } = useCoins(feedType, selectedTheme)
+  const { coins: fetchedCoins, isLoading, error } = useCoins(feedType, selectedTheme)
   const { addMatch } = useMatches()
 
   const [sortBy, setSortBy] = useState<"mcap" | "volume" | "holders" | "age">("mcap")
   const [showSortMenu, setShowSortMenu] = useState(false)
-  const [coins, setCoins] = useState<EnrichedCoin[]>([])
-  const [allCoins, setAllCoins] = useState<EnrichedCoin[]>([])
 
-  useEffect(() => {
-    if (fetchedCoins.length > 0) {
-      const sorted = sortCoins(fetchedCoins)
-      setCoins(sorted)
-      setAllCoins(sorted)
-      setCurrentIndex(0)
-    }
-  }, [fetchedCoins, sortBy])
-
-  // Sort coins by selected filter
-  const sortCoins = (coinsToSort: EnrichedCoin[]) => {
-    const sorted = [...coinsToSort]
+  const coins = useMemo(() => {
+    console.log('[SwipeView] Computing coins, fetchedCoins:', fetchedCoins?.length)
+    if (!fetchedCoins || fetchedCoins.length === 0) return []
+    
+    const sorted = [...fetchedCoins]
     switch (sortBy) {
       case "mcap":
-        return sorted.sort((a, b) => b.marketCapUsd - a.marketCapUsd)
+        sorted.sort((a, b) => b.marketCapUsd - a.marketCapUsd)
+        break
       case "volume":
-        return sorted.sort((a, b) => {
+        sorted.sort((a, b) => {
           const volA = parseFloat(a.volume24h.replace(/[$,]/g, "")) || 0
           const volB = parseFloat(b.volume24h.replace(/[$,]/g, "")) || 0
           return volB - volA
         })
+        break
       case "holders":
-        return sorted.sort((a, b) => (b.holders || 0) - (a.holders || 0))
+        sorted.sort((a, b) => (b.holders || 0) - (a.holders || 0))
+        break
       case "age":
-        return sorted.sort((a, b) => {
+        sorted.sort((a, b) => {
           const dateA = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as any).getTime()
           const dateB = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt as any).getTime()
           return dateA - dateB
         })
-      default:
-        return sorted
+        break
     }
-  }
+    console.log('[SwipeView] Computed coins:', sorted.length)
+    return sorted
+  }, [fetchedCoins, sortBy])
+
+  useEffect(() => {
+    if (coins.length > 0 && currentIndex >= coins.length) {
+      setCurrentIndex(0)
+    }
+  }, [coins.length, currentIndex])
 
   useEffect(() => {
     setIsMounted(true)
@@ -351,7 +352,7 @@ export function SwipeView() {
 
         <div className="border-t border-b border-gray-200/50 dark:border-neutral-800 py-2 px-4">
           <SearchBar
-            coins={allCoins}
+            coins={coins}
             onSelectCoin={(coin) => {
               setSelectedCoin(coin)
               setShowInsightsSheet(true)
