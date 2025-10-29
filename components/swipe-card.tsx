@@ -91,7 +91,7 @@ export function SwipeCard({
 
   const handleTouchEnd = () => {
     setIsDragging(false)
-    const swipeThreshold = 80
+    const swipeThreshold = 120
     const touchDuration = Date.now() - (lastTap || 0)
 
     const now = Date.now()
@@ -138,7 +138,7 @@ export function SwipeCard({
   }
 
   return (
-    <div className="relative h-[calc(100vh-200px)] w-full">
+    <div className="relative h-[calc(100dvh-200px)] md:h-[calc(100vh-200px)] w-full">
       <Card
         ref={cardRef}
         className={cn(

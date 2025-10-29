@@ -15,9 +15,15 @@ const roboto = Roboto({
 })
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
+  title: "ToknSwipe",
+  description: "Discover meme coins on Solana",
   generator: "v0.app",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 }
 
 export default function RootLayout({
@@ -27,6 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+      </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${roboto.variable}`}>
         <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
         <Analytics />

@@ -117,7 +117,7 @@ export function SwipeView() {
           return volB - volA
         })
       case "holders":
-        return sorted.sort((a, b) => b.holders - a.holders)
+        return sorted.sort((a, b) => (b.holders || 0) - (a.holders || 0))
       case "age":
         return sorted.sort((a, b) => {
           const dateA = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt as any).getTime()

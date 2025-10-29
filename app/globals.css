@@ -136,16 +136,23 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overscroll-behavior: none;
-    overflow: hidden;
+    min-height: 100dvh;
+    min-height: 100vh;
   }
 
   /* Enhanced mobile-first optimizations */
   html {
     -webkit-tap-highlight-color: transparent;
-    touch-action: pan-y;
-    /* Lock viewport for mobile app feel */
-    overflow: hidden;
-    height: 100%;
+    touch-action: manipulation;
+    height: 100dvh;
+    height: 100vh;
+  }
+
+  /* Prevent iOS zoom on input focus */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
   }
 
   /* Better typography hierarchy with smaller mobile-optimized sizes */
