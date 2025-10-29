@@ -250,50 +250,46 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-4 text-center relative">
-                <span className="absolute top-2 right-2 text-[9px] text-gray-400 font-medium">Coming Soon</span>
-                <Zap className="h-5 w-5 text-yellow-500 mx-auto mb-2 opacity-50" />
-                <p className="font-numbers font-bold text-lg text-muted-foreground">{totalSwipes}</p>
+              <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-4 text-center">
+                <Zap className="h-5 w-5 text-yellow-500 mx-auto mb-2" />
+                <p className="font-numbers font-bold text-lg">{totalSwipes}</p>
                 <p className="text-xs text-gray-500 mt-1">Swipes</p>
               </div>
-              <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-4 text-center relative">
-                <span className="absolute top-2 right-2 text-[9px] text-gray-400 font-medium">Coming Soon</span>
-                <Heart className="h-5 w-5 text-red-500 mx-auto mb-2 opacity-50" />
-                <p className="font-numbers font-bold text-lg text-muted-foreground">--</p>
+              <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-4 text-center">
+                <Heart className="h-5 w-5 text-red-500 mx-auto mb-2" />
+                <p className="font-numbers font-bold text-lg">--</p>
                 <p className="text-xs text-gray-500 mt-1">Matches</p>
               </div>
-              <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-4 text-center relative">
-                <span className="absolute top-2 right-2 text-[9px] text-gray-400 font-medium">Coming Soon</span>
-                <TrendingUp className="h-5 w-5 text-green-500 mx-auto mb-2 opacity-50" />
-                <p className="font-numbers font-bold text-lg text-muted-foreground">--</p>
+              <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-4 text-center">
+                <TrendingUp className="h-5 w-5 text-green-500 mx-auto mb-2" />
+                <p className="font-numbers font-bold text-lg">--</p>
                 <p className="text-xs text-gray-500 mt-1">Streak</p>
               </div>
             </div>
 
             {/* PRO Section */}
             {isPro ? (
-              <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-5 relative">
-                <span className="absolute top-3 right-3 text-[9px] text-gray-400 font-medium">Coming Soon</span>
+              <div className="bg-white dark:bg-black border border-gray-100 dark:border-neutral-800 rounded-xl p-5">
                 <div className="flex flex-col items-center text-center gap-2">
-                  <div className="flex items-center gap-2 opacity-50">
+                  <div className="flex items-center gap-2">
                     <Crown className="h-6 w-6 text-yellow-500" />
                     <Sparkles className="h-5 w-5 text-yellow-500" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-base mb-1 text-yellow-600/70">PRO Member</h3>
+                    <h3 className="font-bold text-base mb-1 text-yellow-600">PRO Member</h3>
                     <p className="text-[11px] text-muted-foreground mb-1">
                       Unlimited swipes, advanced filters, and exclusive features
                     </p>
                     {proSince && (
-                      <p className="text-xs text-muted-foreground/70">
+                      <p className="text-xs text-muted-foreground">
                         Active since {proSince.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
                       </p>
                     )}
                   </div>
                   <Button
                     variant="outline"
-                    className="bg-white/80 hover:bg-gray-100 text-gray-700 font-medium text-xs h-8 px-5 border-gray-200/50 hover:border-gray-300 hover:shadow-sm transition-all opacity-50 cursor-not-allowed"
-                    disabled
+                    className="bg-white/80 hover:bg-gray-100 text-gray-700 font-medium text-xs h-8 px-5 border-gray-200/50 hover:border-gray-300 hover:shadow-sm transition-all"
+                    onClick={handleManageSubscription}
                   >
                     Manage Subscription
                   </Button>
