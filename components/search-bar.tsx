@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import type { EnrichedCoin } from "@/lib/types"
 import { MEME_THEMES } from "@/lib/theme-detector"
-import { searchCoinsFromAPI } from "@/lib/api-client"
 import { useFavorites } from "@/hooks/useFavorites"
 import { useAuth } from "@/hooks/useAuth"
+import { useSearch } from "@/hooks/useSearch"
 import { toast } from "sonner"
 
 interface SearchBarProps {
@@ -25,33 +25,14 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const [searchResults, setSearchResults] = useState<EnrichedCoin[]>([])
-  const [isSearching, setIsSearching] = useState(false)
   const { isAuthenticated } = useAuth()
   const { favorites, addFavorite, removeFavorite } = useFavorites()
+  const { tokens: searchResults, isSearching } = useSearch(query)
   
   const starredCoins = useMemo(() => 
     new Set(favorites.map(coin => coin.id)), 
     [favorites]
   )
-
-  // Search via Moralis API
-  useEffect(() => {
-    if (!query.trim()) {
-      setSearchResults([])
-      return
-    }
-
-    const performSearch = async () => {
-      setIsSearching(true)
-      const results = await searchCoinsFromAPI(query)
-      setSearchResults(results.tokens || [])
-      setIsSearching(false)
-    }
-
-    const timeout = setTimeout(performSearch, 300)
-    return () => clearTimeout(timeout)
-  }, [query])
 
   // Filter local coins and themes
   const filteredCoins = query.trim()
@@ -70,10 +51,14 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
       ).slice(0, 2)
     : []
 
-  // Combine results: local coins first, then search results, then themes
+  // Combine results: local coins first, then search results (deduplicated), then themes
+  const uniqueSearchResults = searchResults.filter(
+    r => !filteredCoins.some(c => c.mint === r.mint || c.id === r.id)
+  )
+  
   const allResults = [
     ...filteredCoins,
-    ...searchResults.filter(r => !filteredCoins.some(c => c.mint === r.mint)),
+    ...uniqueSearchResults,
     ...filteredThemes.map(t => ({ ...t, isTheme: true }))
   ]
 
@@ -170,9 +155,9 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
             <div className="p-2.5">
               <p className="text-[9px] font-bold text-gray-500 uppercase tracking-wider px-2 mb-1.5">💰 Coins</p>
               <div className="space-y-0.5">
-                {filteredCoins.map((coin) => (
+                {filteredCoins.map((coin, idx) => (
                   <div
-                    key={coin.id}
+                    key={`local-${coin.mint || coin.id}-${idx}`}
                     className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-lg transition-all border border-transparent hover:border-gray-200 dark:hover:border-neutral-700 hover:shadow-sm"
                   >
                     <img
@@ -219,9 +204,9 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
             <div className={cn("p-2.5", filteredCoins.length > 0 && "border-t border-gray-100")}>
               <p className="text-[9px] font-bold text-gray-500 uppercase tracking-wider px-2 mb-1.5">🔍 Search Results</p>
               <div className="space-y-0.5">
-                {searchResults.filter(r => !filteredCoins.some(c => c.mint === r.mint)).map((coin) => (
+                {uniqueSearchResults.map((coin, idx) => (
                   <div
-                    key={coin.mint}
+                    key={`search-${coin.mint || coin.id}-${idx}`}
                     className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-50 dark:hover:bg-neutral-800 rounded-lg transition-all border border-transparent hover:border-gray-200 dark:hover:border-neutral-700 hover:shadow-sm"
                   >
                     <img
