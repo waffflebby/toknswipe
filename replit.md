@@ -16,6 +16,13 @@ None specified yet.
   - Created `/api/folders` endpoints for folder management (list, create, delete)
   - Created `/api/folders/[id]/coins` endpoints for coin management (add, remove, list coins in folder)
   - Helper functions in `lib/folder-helpers.ts` for system folder initialization
+  - **UI Integration Complete**: WatchlistSheet now fully connected to folder APIs
+    - Replaced localStorage with database API calls for custom folders
+    - "New" button creates folders via POST /api/folders
+    - Custom folder tabs dynamically render from database with emoji support
+    - Dropdown menu allows adding coins to any custom folder
+    - Delete folder option available in dropdown when viewing custom folder
+    - Remove coin works for both system folders (matched/personal) and custom folders
 - **Previous Updates**:
   - Subtle Loading Overlay with blur background and purple spinner
   - Real Images for Famous Coins (POPCAT, MEW, BONK, WIF) with Cloudfront CDN URLs
