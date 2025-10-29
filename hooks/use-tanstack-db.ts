@@ -1,14 +1,14 @@
 'use client'
 
-import { useLiveQuery, from } from '@tanstack/react-db'
+import { useLiveQuery } from '@tanstack/react-db'
+import { eq } from '@tanstack/db'
 import { favoritesCollection, matchesCollection, FavoriteItem, MatchItem } from '@/lib/tanstack-db'
 import { useQueryClient } from '@tanstack/react-query'
 
 // Hook for favorites with live reactivity
 export function useFavorites() {
-  const favorites = useLiveQuery(() =>
-    from(favoritesCollection)
-      .select()
+  const { data: favorites } = useLiveQuery((q) =>
+    q.from({ favorites: favoritesCollection })
   )
   
   return favorites || []
@@ -16,9 +16,8 @@ export function useFavorites() {
 
 // Hook for matches with live reactivity
 export function useMatches() {
-  const matches = useLiveQuery(() =>
-    from(matchesCollection)
-      .select()
+  const { data: matches } = useLiveQuery((q) =>
+    q.from({ matches: matchesCollection })
   )
   
   return matches || []

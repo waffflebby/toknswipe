@@ -25,6 +25,10 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
     
     const validationResult = tagThemeSchema.safeParse(body)
@@ -39,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     const detectedThemes = detectThemes(coinData)
 
-    if (user && detectedThemes.length > 0) {
+    if (detectedThemes.length > 0) {
       for (const theme of detectedThemes) {
         const existing = await db
           .select()
