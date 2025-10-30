@@ -98,7 +98,7 @@ export function SwipeView() {
   const [isScrolling, setIsScrolling] = useState(false)
   const [showWatchlist, setShowWatchlist] = useState(false)
   const [retryAttempts, setRetryAttempts] = useState(0)
-  
+
   const { isAuthenticated } = useAuth()
   const { coins: fetchedCoins, isLoading, error } = useCoins(feedType, selectedTheme)
   const { addMatch } = useMatches()
@@ -109,7 +109,7 @@ export function SwipeView() {
   const coins = useMemo(() => {
     console.log('[SwipeView] Computing coins, fetchedCoins:', fetchedCoins?.length)
     if (!fetchedCoins || fetchedCoins.length === 0) return []
-    
+
     const sorted = [...fetchedCoins]
     switch (sortBy) {
       case "mcap":
@@ -190,7 +190,7 @@ export function SwipeView() {
     }
 
     recordSwipe(currentCoin.id, direction)
-    
+
     if (!isAuthenticated) {
       toast.info("Sign in to save your swipes", {
         description: "Your swipes won't be saved unless you create an account",
@@ -271,7 +271,7 @@ export function SwipeView() {
         setSelectedTheme(null)
         setRetryAttempts(0)
       }, 2000) // 2 second delay before redirect
-      
+
       return () => clearTimeout(timer)
     }
   }, [coins.length, isLoading, retryAttempts])
@@ -318,7 +318,11 @@ export function SwipeView() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <h1 className="text-sm font-bold tracking-tighter">CoinSwipe</h1>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                ToknSwipe
+              </span>
+            </div>
             <p className="text-[9px] text-muted-foreground font-medium">
               {remainingSwipes}/{maxFreeSwipes}
             </p>
@@ -558,7 +562,7 @@ export function SwipeView() {
       <AdvancedFilterModal open={showFilters} onOpenChange={setShowFilters} />
       <WatchlistSheet open={showWatchlist} onOpenChange={setShowWatchlist} />
       <RewardModal open={showRewardModal} onOpenChange={setShowRewardModal} onClaim={handleClaimReward} />
-      
+
       {isMounted && isLoading && (
         <div className="absolute inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm flex items-center justify-center z-[100] transition-all">
           <div className="bg-white/95 dark:bg-neutral-900/95 rounded-2xl p-6 shadow-2xl border border-gray-200/50 dark:border-neutral-800">
