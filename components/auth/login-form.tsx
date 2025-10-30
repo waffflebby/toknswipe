@@ -101,7 +101,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSendOTP} className="space-y-4 w-full max-w-sm">
       <div className="text-center space-y-2">
-        <h2 className="text-lg font-semibold">Welcome to CoinSwipe</h2>
+        <h2 className="text-lg font-semibold">Welcome to ToknSwipe</h2>
         <p className="text-sm text-muted-foreground">
           Sign in with your email to get started
         </p>

@@ -58,7 +58,7 @@ export function RewardModal({ open, onOpenChange, onClaim }: RewardModalProps) {
   }, [open])
 
   const handleShare = () => {
-    const text = "Just won $25 in $BONK from @CoinSwipe! 🎉"
+    const text = "Just won $25 in $BONK from @ToknSwipe! 🎉"
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
     window.open(url, "_blank")
   }

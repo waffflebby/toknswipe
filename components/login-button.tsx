@@ -57,7 +57,7 @@ export function LoginButton() {
         <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
           <DialogContent className="sm:max-w-md">
             <VisuallyHidden>
-              <DialogTitle>Log in to CoinSwipe</DialogTitle>
+              <DialogTitle>Log in to ToknSwipe</DialogTitle>
             </VisuallyHidden>
             <LoginForm />
           </DialogContent>

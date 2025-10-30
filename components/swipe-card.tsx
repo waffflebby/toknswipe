@@ -221,7 +221,7 @@ export function SwipeCard({
           onScroll={handleScroll}
         >
           {/* Hero Section - Big $TICKER */}
-          <div className="text-center px-6 py-4 border-b border-gray-100">
+          <div className="text-center px-6 py-4 border-b border-gray-100 dark:border-neutral-800">
             <h1 className="text-2xl font-bold tracking-tight mb-1 font-sans">${coin.symbol}</h1>
             <p className="text-xs text-gray-500 mb-3">{coin.name}</p>
             <div className="flex items-center justify-center gap-6 py-1 mb-3">
