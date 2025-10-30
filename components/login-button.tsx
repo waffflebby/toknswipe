@@ -110,12 +110,10 @@ export function LoginButton() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      {showProfile && (
-        <ProfileSheet 
-          open={showProfile} 
-          onOpenChange={setShowProfile} 
-        />
-      )}
+      <ProfileSheet 
+        open={showProfile} 
+        onOpenChange={setShowProfile} 
+      />
     </>
   )
 }
