@@ -320,7 +320,7 @@ export function SwipeView() {
             )}
             <div className="flex items-center gap-2">
               <span className="text-sm font-roboto font-medium tracking-tight text-gray-900 dark:text-white">
-                CoinSwipe
+                ToknSwipe
               </span>
             </div>
             <p className="text-[9px] text-muted-foreground font-medium">
