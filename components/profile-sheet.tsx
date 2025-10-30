@@ -7,8 +7,7 @@ import { User, LogOut, Settings, Moon, Sun } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
-import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
+import { useDarkMode } from "@/hooks/use-dark-mode"
 
 interface ProfileSheetProps {
   open: boolean
@@ -16,12 +15,7 @@ interface ProfileSheetProps {
 }
 
 export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const { isDark, toggleDarkMode } = useDarkMode()
 
   const handleLogout = async () => {
     try {
@@ -34,10 +28,6 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
       console.error("Logout error:", error)
       toast.error("Failed to log out")
     }
-  }
-
-  const toggleDarkMode = () => {
-    setTheme(theme === "dark" ? "light" : "dark")
   }
 
   return (
@@ -74,7 +64,7 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
             {/* Dark Mode Toggle */}
             <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-neutral-900 transition-colors">
               <div className="flex items-center gap-3">
-                {mounted && theme === "dark" ? (
+                {isDark ? (
                   <Moon className="h-5 w-5 text-purple-500" />
                 ) : (
                   <Sun className="h-5 w-5 text-amber-500" />
@@ -82,14 +72,14 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
                 <div>
                   <p className="text-sm font-medium">Dark Mode</p>
                   <p className="text-xs text-muted-foreground">
-                    {mounted && theme === "dark" ? "Enabled" : "Disabled"}
+                    {isDark ? "Enabled" : "Disabled"}
                   </p>
                 </div>
               </div>
               <Switch
-                checked={mounted && theme === "dark"}
+                checked={isDark}
                 onCheckedChange={toggleDarkMode}
-                className="data-[state=checked]:bg-purple-500"
+                className="data-[state=checked]:bg-purple-500 dark:data-[state=checked]:bg-purple-400 scale-125"
               />
             </div>
           </div>
