@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { AlertTriangle, Clock, Activity, Users, Globe, PenTool } from "lucide-react"
 import Image from "next/image"
@@ -57,11 +57,39 @@ export function SwipeCard({
   const [isExpanded, setIsExpanded] = useState(false)
   const [lastTap, setLastTap] = useState(0)
   const [canSwipe, setCanSwipe] = useState(false)
+  const [showHint, setShowHint] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const isPositiveChange = (coin.change24hNum ?? 0) >= 0
+
+  useEffect(() => {
+    const hasSeenHint = localStorage.getItem("toknswipe_image_hint_seen")
+    if (!hasSeenHint) {
+      const timer = setTimeout(() => {
+        setShowHint(true)
+      }, 1000)
+
+      const hideTimer = setTimeout(() => {
+        setShowHint(false)
+        localStorage.setItem("toknswipe_image_hint_seen", "true")
+      }, 6000)
+
+      return () => {
+        clearTimeout(timer)
+        clearTimeout(hideTimer)
+      }
+    }
+  }, [])
+
+  const handleImageClickWithHint = (e: React.MouseEvent) => {
+    if (showHint) {
+      setShowHint(false)
+      localStorage.setItem("toknswipe_image_hint_seen", "true")
+    }
+    handleImageClick(e)
+  }
 
   const handleScroll = () => {
     if (onScrollChange) {
@@ -195,7 +223,7 @@ export function SwipeCard({
         {/* Image Section with Launch Badge - Centered */}
         <div
           className="relative h-[40%] w-full bg-white dark:bg-black border-b border-gray-100 dark:border-neutral-800 shrink-0 cursor-pointer active:opacity-90 transition-opacity flex items-center justify-center p-4 overflow-hidden"
-          onClick={handleImageClick}
+          onClick={handleImageClickWithHint}
         >
           {/* Launch Badge - Top Left */}
           {coin.launchpad && (
@@ -203,6 +231,22 @@ export function SwipeCard({
               {coin.launchpad.toUpperCase()}
             </div>
           )}
+          
+          {/* Onboarding Hint Bubble */}
+          {showHint && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none animate-in fade-in-0 zoom-in-95 duration-500">
+              <div className="relative bg-purple-500 text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-purple-400/50">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                  <p className="text-sm font-medium whitespace-nowrap">
+                    Tap for charts & insights
+                  </p>
+                </div>
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-purple-500 rotate-45 border-r border-b border-purple-400/50" />
+              </div>
+            </div>
+          )}
+
           {/* Centered Image */}
           <div className="flex items-center justify-center">
             <Image
