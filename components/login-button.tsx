@@ -27,6 +27,7 @@ export function LoginButton() {
   const { user, isLoading, isAuthenticated } = useAuth()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const supabase = createClient()
 
   const handleLogout = async () => {
@@ -70,7 +71,7 @@ export function LoginButton() {
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="gap-2">
             <Avatar className="h-7 w-7">
@@ -94,6 +95,7 @@ export function LoginButton() {
           <DropdownMenuItem 
             onClick={(e) => {
               e.preventDefault()
+              setDropdownOpen(false)
               setShowProfile(true)
             }}
           >
