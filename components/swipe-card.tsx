@@ -235,14 +235,14 @@ export function SwipeCard({
           {/* Onboarding Hint Bubble */}
           {showHint && (
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none animate-in fade-in-0 zoom-in-95 duration-500">
-              <div className="relative bg-purple-500 text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-purple-400/50">
+              <div className="relative bg-white/95 dark:bg-neutral-900/95 backdrop-blur-sm text-gray-900 dark:text-white px-3.5 py-2 rounded-xl shadow-lg border border-gray-200/80 dark:border-neutral-700/80">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                  <p className="text-sm font-medium whitespace-nowrap">
+                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse" />
+                  <p className="text-xs font-medium whitespace-nowrap">
                     Tap for charts & insights
                   </p>
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-purple-500 rotate-45 border-r border-b border-purple-400/50" />
+                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/95 dark:bg-neutral-900/95 rotate-45 border-r border-b border-gray-200/80 dark:border-neutral-700/80" />
               </div>
             </div>
           )}
