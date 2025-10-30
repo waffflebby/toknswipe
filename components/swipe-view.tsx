@@ -319,7 +319,7 @@ export function SwipeView() {
               </Button>
             )}
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <span className="text-sm font-roboto font-medium tracking-tight text-gray-900 dark:text-white">
                 CoinSwipe
               </span>
             </div>
