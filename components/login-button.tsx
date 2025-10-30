@@ -91,7 +91,12 @@ export function LoginButton() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setShowProfile(true)}>
+          <DropdownMenuItem 
+            onClick={(e) => {
+              e.preventDefault()
+              setShowProfile(true)
+            }}
+          >
             <User className="mr-2 h-4 w-4" />
             Profile
           </DropdownMenuItem>
@@ -105,10 +110,12 @@ export function LoginButton() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <ProfileSheet 
-        open={showProfile} 
-        onOpenChange={setShowProfile} 
-      />
+      {showProfile && (
+        <ProfileSheet 
+          open={showProfile} 
+          onOpenChange={setShowProfile} 
+        />
+      )}
     </>
   )
 }

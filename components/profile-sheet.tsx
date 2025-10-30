@@ -26,6 +26,9 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
     }
   }
 
+  // Don't render anything if not open - prevents overlay issues
+  if (!open) return null
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="h-[40vh] p-0 bg-white dark:bg-black rounded-t-2xl">
