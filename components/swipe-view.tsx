@@ -17,7 +17,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { COIN_THEMES } from "@/lib/types"
 import { ActivityBanner } from "@/components/activity-banner"
 import { WatchlistSheet } from "@/components/watchlist-sheet"
-import { ProfileSheet } from "@/components/profile-sheet"
 import { RewardModal } from "@/components/reward-modal"
 import { SearchBar } from "@/components/search-bar"
 import { LoginButton } from "@/components/login-button"
@@ -98,7 +97,6 @@ export function SwipeView() {
   const [swipeEffect, setSwipeEffect] = useState<"like" | "dislike" | null>(null)
   const [isScrolling, setIsScrolling] = useState(false)
   const [showWatchlist, setShowWatchlist] = useState(false)
-  const [showProfile, setShowProfile] = useState(false)
   const [retryAttempts, setRetryAttempts] = useState(0)
   
   const { isAuthenticated } = useAuth()
@@ -559,7 +557,6 @@ export function SwipeView() {
       <JackpotModal open={showJackpot} onOpenChange={setShowJackpot} reward={currentReward} />
       <AdvancedFilterModal open={showFilters} onOpenChange={setShowFilters} />
       <WatchlistSheet open={showWatchlist} onOpenChange={setShowWatchlist} />
-      <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />
       <RewardModal open={showRewardModal} onOpenChange={setShowRewardModal} onClaim={handleClaimReward} />
       
       {isMounted && isLoading && (
