@@ -326,7 +326,7 @@ export function SwipeCard({
 
           </div>
 
-          <div className="pt-1 border-t border-white/20">
+          <div className="pt-1">
             <p className="text-[9px] text-muted-foreground text-center truncate">
               Creator: <span className="font-mono font-medium text-[8px]">{coin.creator}</span>
             </p>
