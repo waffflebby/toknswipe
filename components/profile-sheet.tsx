@@ -2,10 +2,13 @@
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { User, LogOut } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+import { User, LogOut, Settings, Moon, Sun } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 
 interface ProfileSheetProps {
   open: boolean
@@ -13,6 +16,13 @@ interface ProfileSheetProps {
 }
 
 export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const handleLogout = async () => {
     try {
       const supabase = createClient()
@@ -26,9 +36,13 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
     }
   }
 
+  const toggleDarkMode = () => {
+    setTheme(theme === "dark" ? "light" : "dark")
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[40vh] p-0 bg-white dark:bg-black rounded-t-2xl">
+      <SheetContent side="bottom" className="h-[50vh] p-0 bg-white dark:bg-black rounded-t-2xl">
         <SheetHeader className="bg-white dark:bg-black border-b border-gray-100 dark:border-neutral-800 px-6 py-4">
           <SheetTitle className="text-lg font-bold flex items-center gap-2">
             <User className="h-5 w-5" />
@@ -45,6 +59,38 @@ export function ProfileSheet({ open, onOpenChange }: ProfileSheetProps) {
             <div>
               <h3 className="font-bold text-base">Crypto Trader</h3>
               <p className="text-xs text-muted-foreground">Member since 2025</p>
+            </div>
+          </div>
+
+          <Separator className="bg-gray-200 dark:bg-neutral-800" />
+
+          {/* Settings Section */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+              <Settings className="h-4 w-4" />
+              <span>Settings</span>
+            </div>
+
+            {/* Dark Mode Toggle */}
+            <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-neutral-900 transition-colors">
+              <div className="flex items-center gap-3">
+                {mounted && theme === "dark" ? (
+                  <Moon className="h-5 w-5 text-purple-500" />
+                ) : (
+                  <Sun className="h-5 w-5 text-amber-500" />
+                )}
+                <div>
+                  <p className="text-sm font-medium">Dark Mode</p>
+                  <p className="text-xs text-muted-foreground">
+                    {mounted && theme === "dark" ? "Enabled" : "Disabled"}
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={mounted && theme === "dark"}
+                onCheckedChange={toggleDarkMode}
+                className="data-[state=checked]:bg-purple-500"
+              />
             </div>
           </div>
 
