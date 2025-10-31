@@ -74,8 +74,26 @@ export async function GET(request: Request) {
             const priceUsd = parseFloat(token.usdPrice || token.price_usd || "0")
             const marketCapUsd = parseFloat(token.marketCap || token.market_cap_usd || "0")
             const liquidityUsd = parseFloat(token.liquidityUsd || token.liquidity_usd || "0")
-            const volume24h = parseFloat(token.totalVolume?.["24h"] || token["24h_volume"] || "0")
+            const volume24hNum = parseFloat(token.totalVolume?.["24h"] || token["24h_volume"] || "0")
             const change24hNum = parseFloat(token.pricePercentChange?.["24h"] || "0")
+            const holders = token.holders || 0
+            
+            // Format helpers
+            const formatPrice = (price: number) => {
+              if (price === 0) return "$0.00"
+              if (price < 0.000001) return `$${price.toExponential(2)}`
+              if (price < 0.01) return `$${price.toFixed(6)}`
+              if (price < 1) return `$${price.toFixed(4)}`
+              return `$${price.toFixed(2)}`
+            }
+            
+            const formatValue = (value: number) => {
+              if (value === 0) return "N/A"
+              if (value >= 1000000000) return `$${(value / 1000000000).toFixed(2)}B`
+              if (value >= 1000000) return `$${(value / 1000000).toFixed(2)}M`
+              if (value >= 1000) return `$${(value / 1000).toFixed(2)}K`
+              return `$${value.toFixed(0)}`
+            }
             
             return {
               id: token.address || token.tokenAddress,
@@ -85,20 +103,25 @@ export async function GET(request: Request) {
               image: token.logo || token.image || "/placeholder.svg",
               priceUsd,
               marketCapUsd,
-              holders: token.holders || 0,
               liquidityUsd,
-              volume24h,
+              volume24hNum,
               change24hNum,
-              // Add formatted fields
-              price: priceUsd > 0 ? `$${priceUsd < 0.01 ? priceUsd.toFixed(6) : priceUsd.toFixed(2)}` : "$0.00",
-              marketCap: marketCapUsd > 1000000 ? `$${(marketCapUsd / 1000000).toFixed(2)}M` : marketCapUsd > 1000 ? `$${(marketCapUsd / 1000).toFixed(2)}K` : `$${marketCapUsd.toFixed(0)}`,
-              liquidity: liquidityUsd > 1000000 ? `$${(liquidityUsd / 1000000).toFixed(2)}M` : liquidityUsd > 1000 ? `$${(liquidityUsd / 1000).toFixed(2)}K` : `$${liquidityUsd.toFixed(0)}`,
+              holders,
+              // Formatted display fields
+              price: formatPrice(priceUsd),
+              marketCap: formatValue(marketCapUsd),
+              liquidity: formatValue(liquidityUsd),
+              volume24h: formatValue(volume24hNum),
               change24h: `${change24hNum >= 0 ? '+' : ''}${change24hNum.toFixed(2)}%`,
               age: "N/A",
+              description: `${token.name || "Unknown token"} on Solana${holders > 0 ? `. ${holders.toLocaleString()} holders` : ""}`,
+              creator: (token.address || token.tokenAddress || "").slice(0, 6) + "..." + (token.address || token.tokenAddress || "").slice(-4),
+              createdAt: new Date(),
+              isVerified: liquidityUsd > 50000 && marketCapUsd > 1000000,
               riskLevel: liquidityUsd < 10000 ? "high" : liquidityUsd < 100000 ? "medium" : "low",
               launchpad: "unknown",
-              creator: "Unknown",
               theme: [],
+              themes: [],
             }
           })
 
