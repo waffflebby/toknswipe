@@ -83,12 +83,41 @@ export async function GET(request: Request) {
           }
 
           // Enrich tokens with complete metadata
-          const enrichedTokens = tokens.map((token: any) => {
+          // Fetch metadata for each token to get complete price/market data
+          const enrichedTokens = await Promise.all(tokens.map(async (token: any) => {
             // Moralis search returns tokenAddress, not address
             const address = token.tokenAddress || token.address || ""
             
-            // Try multiple possible field names for each value
+            // Fetch full token metadata including price
+            let metadata: any = {}
+            if (address) {
+              try {
+                const metadataResponse = await fetch(
+                  `https://solana-gateway.moralis.io/token/mainnet/${address}/metadata`,
+                  {
+                    headers: {
+                      accept: "application/json",
+                      "X-API-Key": MORALIS_API_KEY,
+                    },
+                  }
+                )
+                
+                if (metadataResponse.ok) {
+                  metadata = await metadataResponse.json()
+                  console.log(`[API] Got metadata for ${token.symbol}:`, {
+                    price: metadata.usdPrice,
+                    marketCap: metadata.marketCap,
+                    holders: metadata.holders
+                  })
+                }
+              } catch (err) {
+                console.error(`[API] Error fetching metadata for ${address}:`, err)
+              }
+            }
+            
+            // Try multiple possible field names for each value, preferring metadata
             const priceUsd = parseFloat(
+              metadata.usdPrice ||
               token.usdPrice || 
               token.price_usd || 
               token.priceUsd || 
@@ -97,6 +126,7 @@ export async function GET(request: Request) {
               "0"
             )
             const marketCapUsd = parseFloat(
+              metadata.marketCap ||
               token.marketCap || 
               token.market_cap_usd || 
               token.marketCapUsd || 
@@ -105,12 +135,14 @@ export async function GET(request: Request) {
               "0"
             )
             const liquidityUsd = parseFloat(
+              metadata.liquidityUsd ||
               token.liquidityUsd || 
               token.liquidity_usd || 
               token.liquidity ||
               "0"
             )
             const volume24hNum = parseFloat(
+              metadata.totalVolume?.["24h"] ||
               token.totalVolume?.["24h"] || 
               token.volume24h || 
               token["24h_volume"] ||
@@ -118,6 +150,7 @@ export async function GET(request: Request) {
               "0"
             )
             const change24hNum = parseFloat(
+              metadata.pricePercentChange?.["24h"] ||
               token.pricePercentChange?.["24h"] || 
               token.priceChange24h ||
               token.price_change_percentage_24h ||
@@ -125,6 +158,7 @@ export async function GET(request: Request) {
               "0"
             )
             const holders = parseInt(
+              metadata.holders ||
               token.holders || 
               token.holderCount || 
               token.holder_count ||
@@ -151,9 +185,9 @@ export async function GET(request: Request) {
             const formatted = {
               id: address,
               mint: address,
-              name: token.name || "Unknown",
-              symbol: token.symbol || "???",
-              image: token.logo || token.image || "/placeholder.svg",
+              name: metadata.name || token.name || "Unknown",
+              symbol: metadata.symbol || token.symbol || "???",
+              image: metadata.logo || token.logo || token.image || "/placeholder.svg",
               // Raw numeric values
               priceUsd,
               marketCapUsd,
@@ -185,7 +219,7 @@ export async function GET(request: Request) {
             })
             
             return formatted
-          })
+          }))
 
           // Cache results
           setCached(`search_tokens_${query.toLowerCase()}`, enrichedTokens, SEARCH_CACHE_TTL)
