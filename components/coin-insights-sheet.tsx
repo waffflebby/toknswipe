@@ -75,7 +75,7 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
   useEffect(() => {
     async function loadHolders() {
       if (!coin || !open || !topHoldersOpen) return
-      
+
       setLoadingHolders(true)
       try {
         const holdersData = await fetchTokenHoldersFromAPI(coin.mint)
@@ -256,7 +256,7 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
 
                   <div className="space-y-3">
                     <h3 className="text-xs font-semibold uppercase tracking-wide text-black dark:text-white">Advanced</h3>
-                    
+
                     <div className="grid grid-cols-2 gap-3">
                       {coin.txns24h && (
                         <div className="space-y-1">
@@ -326,12 +326,15 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
                         Solscan
                       </a>
                       <a
-                        href={`https://twitter.com/search?q=${coin.symbol}`}
+                        href={`https://twitter.com/search?q=%24${coin.symbol}&src=typed_query&f=live`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 min-w-[100px] text-center px-3 py-2 text-xs font-medium rounded-md bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors text-black dark:text-white"
+                        className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-neutral-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
                       >
-                        Twitter
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                        Search ${coin.symbol}
                       </a>
                       {coin.website && (
                         <a

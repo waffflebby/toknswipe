@@ -46,14 +46,14 @@ function generateMockChartData(change24h: number): number[] {
     const data: number[] = []
     const baseValue = 100
     const safeChange = Number.isFinite(change24h) ? change24h : 0
-    
+
     for (let i = 0; i < points; i++) {
       const progress = i / (points - 1)
       const trend = baseValue * (1 + (safeChange / 100) * progress)
       const noise = (Math.random() - 0.5) * (Math.abs(safeChange) * 0.3)
       data.push(Math.max(0, trend + noise))
     }
-    
+
     return data
   } catch (error) {
     console.error("Error generating chart data:", error)
@@ -123,13 +123,13 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
 
   const handleRemove = async (coinId: string, folderId: string) => {
     const customFolder = customFolders.find(f => f.id === folderId)
-    
+
     if (customFolder) {
       try {
         const response = await fetch(`/api/folders/${folderId}/coins?coinMint=${coinId}`, {
           method: 'DELETE'
         })
-        
+
         if (!response.ok) {
           console.error('Failed to remove coin from folder:', response.status)
         }
@@ -159,7 +159,7 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: newListName.trim() })
         })
-        
+
         if (response.ok) {
           await loadFolders()
           setNewListName("")
@@ -181,7 +181,7 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
           coinData: coin
         })
       })
-      
+
       if (response.ok || response.status === 409) {
         await loadFolderCoins(folderId)
       }
@@ -195,7 +195,7 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
       const response = await fetch(`/api/folders/${folderId}`, {
         method: 'DELETE'
       })
-      
+
       if (response.ok) {
         await loadFolders()
         if (activeTab === folderId) {
@@ -219,7 +219,7 @@ export function WatchlistSheet({ open, onOpenChange }: WatchlistSheetProps) {
     }
     if (tab === "matched") return watchlistCoins
     if (tab === "personal") return personalCoins
-    
+
     const folder = customFolders.find(f => f.id === tab)
     if (folder) {
       if (!folderCoins[tab]) {
@@ -542,12 +542,14 @@ function CoinCard({
                 Website
               </a>
               <a
-                href={`https://twitter.com/search?q=${coin.symbol}`}
+                href={`https://twitter.com/search?q=%24${coin.symbol}&src=typed_query&f=live`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-2 py-1.5 text-[10px] font-medium rounded-md bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors text-black dark:text-white"
+                className="flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-medium hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
               >
-                <Twitter className="h-3 w-3" />
+                <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
                 Twitter
               </a>
             </div>

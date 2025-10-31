@@ -26,14 +26,14 @@ function generateMockChartData(change24h: number): number[] {
     const data: number[] = []
     const baseValue = 100
     const safeChange = Number.isFinite(change24h) ? change24h : 0
-    
+
     for (let i = 0; i < points; i++) {
       const progress = i / (points - 1)
       const trend = baseValue * (1 + (safeChange / 100) * progress)
       const noise = (Math.random() - 0.5) * (Math.abs(safeChange) * 0.3)
       data.push(Math.max(0, trend + noise))
     }
-    
+
     return data
   } catch (error) {
     console.error("Error generating chart data:", error)
@@ -109,14 +109,14 @@ export function SwipeCard({
     const touch = e.targetTouches[0]
     const startX = touch.clientX
     const startY = touch.clientY
-    
+
     setTouchStart({ x: startX, y: startY })
-    
+
     if (cardRef.current) {
       const cardRect = cardRef.current.getBoundingClientRect()
       const touchRelativeY = startY - cardRect.top
       const cardHeight = cardRect.height
-      
+
       if (touchRelativeY < cardHeight * 0.5) {
         setCanSwipe(true)
       } else {
@@ -129,12 +129,12 @@ export function SwipeCard({
     const touch = e.targetTouches[0]
     const currentX = touch.clientX
     const currentY = touch.clientY
-    
+
     setTouchEnd({ x: currentX, y: currentY })
-    
+
     const deltaX = Math.abs(currentX - touchStart.x)
     const deltaY = Math.abs(currentY - touchStart.y)
-    
+
     if (!isDragging && (deltaX > 10 || deltaY > 10)) {
       if (deltaX > deltaY && canSwipe) {
         setIsDragging(true)
@@ -142,7 +142,7 @@ export function SwipeCard({
         setCanSwipe(false)
       }
     }
-    
+
     if (isDragging && canSwipe) {
       const offset = currentX - touchStart.x
       setDragOffset(offset)
@@ -151,7 +151,7 @@ export function SwipeCard({
 
   const handleTouchEnd = () => {
     const swipeThreshold = 120
-    
+
     const now = Date.now()
     if (now - lastTap < 300 && Math.abs(dragOffset) < 10) {
       setLastTap(0)
@@ -231,7 +231,7 @@ export function SwipeCard({
               {coin.launchpad.toUpperCase()}
             </div>
           )}
-          
+
           {/* Onboarding Hint Bubble */}
           {showHint && (
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none animate-in fade-in-0 zoom-in-95 duration-500">
@@ -354,7 +354,7 @@ export function SwipeCard({
             </a>
 
             <a
-              href={`https://twitter.com/search?q=${coin.symbol}`}
+              href={`https://twitter.com/search?q=%24${coin.symbol}&src=typed_query&f=live`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
