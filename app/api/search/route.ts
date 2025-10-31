@@ -69,20 +69,38 @@ export async function GET(request: Request) {
 
           console.log(`[API] Found ${tokens.length} tokens for: ${query}`)
 
-          // Enrich tokens with basic info
-          const enrichedTokens = tokens.map((token: any) => ({
-            id: token.address || token.tokenAddress,
-            mint: token.address || token.tokenAddress,
-            name: token.name || "Unknown",
-            symbol: token.symbol || "???",
-            image: token.logo || token.image || "/placeholder.svg",
-            priceUsd: parseFloat(token.usdPrice || token.price_usd || "0"),
-            marketCapUsd: parseFloat(token.marketCap || token.market_cap_usd || "0"),
-            holders: token.holders || 0,
-            liquidityUsd: parseFloat(token.liquidityUsd || token.liquidity_usd || "0"),
-            volume24h: token.totalVolume?.["24h"] || token["24h_volume"] || 0,
-            change24hNum: parseFloat(token.pricePercentChange?.["24h"] || "0"),
-          }))
+          // Enrich tokens with complete metadata
+          const enrichedTokens = tokens.map((token: any) => {
+            const priceUsd = parseFloat(token.usdPrice || token.price_usd || "0")
+            const marketCapUsd = parseFloat(token.marketCap || token.market_cap_usd || "0")
+            const liquidityUsd = parseFloat(token.liquidityUsd || token.liquidity_usd || "0")
+            const volume24h = parseFloat(token.totalVolume?.["24h"] || token["24h_volume"] || "0")
+            const change24hNum = parseFloat(token.pricePercentChange?.["24h"] || "0")
+            
+            return {
+              id: token.address || token.tokenAddress,
+              mint: token.address || token.tokenAddress,
+              name: token.name || "Unknown",
+              symbol: token.symbol || "???",
+              image: token.logo || token.image || "/placeholder.svg",
+              priceUsd,
+              marketCapUsd,
+              holders: token.holders || 0,
+              liquidityUsd,
+              volume24h,
+              change24hNum,
+              // Add formatted fields
+              price: priceUsd > 0 ? `$${priceUsd < 0.01 ? priceUsd.toFixed(6) : priceUsd.toFixed(2)}` : "$0.00",
+              marketCap: marketCapUsd > 1000000 ? `$${(marketCapUsd / 1000000).toFixed(2)}M` : marketCapUsd > 1000 ? `$${(marketCapUsd / 1000).toFixed(2)}K` : `$${marketCapUsd.toFixed(0)}`,
+              liquidity: liquidityUsd > 1000000 ? `$${(liquidityUsd / 1000000).toFixed(2)}M` : liquidityUsd > 1000 ? `$${(liquidityUsd / 1000).toFixed(2)}K` : `$${liquidityUsd.toFixed(0)}`,
+              change24h: `${change24hNum >= 0 ? '+' : ''}${change24hNum.toFixed(2)}%`,
+              age: "N/A",
+              riskLevel: liquidityUsd < 10000 ? "high" : liquidityUsd < 100000 ? "medium" : "low",
+              launchpad: "unknown",
+              creator: "Unknown",
+              theme: [],
+            }
+          })
 
           // Cache results
           setCached(`search_tokens_${query.toLowerCase()}`, enrichedTokens, SEARCH_CACHE_TTL)

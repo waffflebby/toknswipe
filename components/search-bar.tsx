@@ -109,7 +109,25 @@ export function SearchBar({ coins, onSelectCoin, onSelectTheme, placeholder = "S
     if (isStarred) {
       removeFavorite(coin.id)
     } else {
-      addFavorite(coin)
+      // Enrich the coin with missing metadata before adding
+      const enrichedCoin: EnrichedCoin = {
+        ...coin,
+        // Ensure all required fields are present with defaults if missing
+        price: coin.price || "$0.00",
+        marketCap: coin.marketCap || "N/A",
+        change24h: coin.change24h || "0.00%",
+        change24hNum: coin.change24hNum ?? 0,
+        volume24h: coin.volume24h || "N/A",
+        liquidity: coin.liquidity || "N/A",
+        holders: coin.holders || 0,
+        age: coin.age || "N/A",
+        riskLevel: coin.riskLevel || "medium",
+        launchpad: coin.launchpad || "unknown",
+        creator: coin.creator || "Unknown",
+        theme: coin.theme || [],
+        image: coin.image || "/placeholder.svg",
+      }
+      addFavorite(enrichedCoin)
     }
     
     if (!isAuthenticated) {
