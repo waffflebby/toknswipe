@@ -68,19 +68,24 @@ export async function GET(request: Request) {
           const tokens = Array.isArray(data) ? data : data.result || []
 
           console.log(`[API] Found ${tokens.length} tokens for: ${query}`)
+          
+          // Debug: log first token if available
+          if (tokens.length > 0) {
+            console.log(`[API] Sample token data:`, JSON.stringify(tokens[0], null, 2))
+          }
 
           // Enrich tokens with complete metadata
           const enrichedTokens = tokens.map((token: any) => {
-            const priceUsd = parseFloat(token.usdPrice || token.price_usd || "0")
-            const marketCapUsd = parseFloat(token.marketCap || token.market_cap_usd || "0")
+            const priceUsd = parseFloat(token.usdPrice || token.price_usd || token.priceUsd || "0")
+            const marketCapUsd = parseFloat(token.marketCap || token.market_cap_usd || token.marketCapUsd || "0")
             const liquidityUsd = parseFloat(token.liquidityUsd || token.liquidity_usd || "0")
-            const volume24hNum = parseFloat(token.totalVolume?.["24h"] || token["24h_volume"] || "0")
-            const change24hNum = parseFloat(token.pricePercentChange?.["24h"] || "0")
-            const holders = token.holders || 0
+            const volume24hNum = parseFloat(token.totalVolume?.["24h"] || token.volume24h || token["24h_volume"] || "0")
+            const change24hNum = parseFloat(token.pricePercentChange?.["24h"] || token.priceChange24h || "0")
+            const holders = parseInt(token.holders || token.holderCount || "0")
             
             // Format helpers
             const formatPrice = (price: number) => {
-              if (price === 0) return "$0.00"
+              if (!price || isNaN(price) || price === 0) return "$0.00"
               if (price < 0.000001) return `$${price.toExponential(2)}`
               if (price < 0.01) return `$${price.toFixed(6)}`
               if (price < 1) return `$${price.toFixed(4)}`
@@ -88,19 +93,20 @@ export async function GET(request: Request) {
             }
             
             const formatValue = (value: number) => {
-              if (value === 0) return "N/A"
+              if (!value || isNaN(value) || value === 0) return "N/A"
               if (value >= 1000000000) return `$${(value / 1000000000).toFixed(2)}B`
               if (value >= 1000000) return `$${(value / 1000000).toFixed(2)}M`
               if (value >= 1000) return `$${(value / 1000).toFixed(2)}K`
-              return `$${value.toFixed(0)}`
+              return `$${value.toFixed(2)}`
             }
             
-            return {
+            const formatted = {
               id: token.address || token.tokenAddress,
               mint: token.address || token.tokenAddress,
               name: token.name || "Unknown",
               symbol: token.symbol || "???",
               image: token.logo || token.image || "/placeholder.svg",
+              // Raw numeric values
               priceUsd,
               marketCapUsd,
               liquidityUsd,
@@ -123,6 +129,14 @@ export async function GET(request: Request) {
               theme: [],
               themes: [],
             }
+            
+            console.log(`[API] Formatted coin ${token.symbol}:`, {
+              price: formatted.price,
+              marketCap: formatted.marketCap,
+              change24h: formatted.change24h
+            })
+            
+            return formatted
           })
 
           // Cache results
