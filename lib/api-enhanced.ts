@@ -342,6 +342,37 @@ function detectLaunchpad(tokenAddress: string): "pumpfun" | "raydium" | "bonk" |
   return 'raydium'
 }
 
+// Fetch top holder weight percentage from Moralis
+async function fetchTopHolderWeight(tokenAddress: string): Promise<number | undefined> {
+  try {
+    const response = await fetch(
+      `https://solana-gateway.moralis.io/token/mainnet/${tokenAddress}/top-holders?limit=1`,
+      {
+        headers: {
+          accept: "application/json",
+          "X-API-Key": MORALIS_API_KEY,
+        },
+      }
+    )
+
+    if (!response.ok) {
+      return undefined
+    }
+
+    const data = await response.json()
+    
+    if (data?.result && data.result.length > 0) {
+      const topHolder = data.result[0]
+      return topHolder.percentage_relative_to_total_supply || undefined
+    }
+
+    return undefined
+  } catch (error) {
+    console.error(`[Moralis] Error fetching top holder for ${tokenAddress}:`, error)
+    return undefined
+  }
+}
+
 // Enrich Moralis trending token (new API structure)
 async function enrichTrendingToken(token: any): Promise<EnrichedCoin> {
   console.log("[Moralis] Enriching trending token:", {
@@ -371,6 +402,9 @@ async function enrichTrendingToken(token: any): Promise<EnrichedCoin> {
   const ageInHours = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60)
   const age = calculateAge(token.createdAt)
 
+  // Fetch top holder weight % (non-blocking)
+  const topHolderWeight = await fetchTopHolderWeight(token.tokenAddress)
+
   const enrichedCoin = {
     id: token.tokenAddress,
     mint: token.tokenAddress,
@@ -389,7 +423,7 @@ async function enrichTrendingToken(token: any): Promise<EnrichedCoin> {
     age,
     liquidity: formatMarketCap(liquidityUsd),
     volume24h: formatMarketCap(volume24h),
-    txns24h: token.transactions?.["24h"] || 0,
+    topHolderWeight,
     holders,
     isVerified: liquidityUsd > 50000 && marketCapUsd > 1000000,
     riskLevel,

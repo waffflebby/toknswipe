@@ -91,7 +91,7 @@ export interface EnrichedCoin {
   age: string
   liquidity: string
   volume24h: string
-  txns24h: number
+  topHolderWeight?: number
   holders?: number
   website?: string
   twitter?: string
