@@ -73,6 +73,13 @@ export async function GET(request: Request) {
           if (tokens.length > 0) {
             console.log(`[API] Sample token data:`, JSON.stringify(tokens[0], null, 2))
             console.log(`[API] Available fields:`, Object.keys(tokens[0]))
+            console.log(`[API] Token address field:`, token.tokenAddress || token.address)
+            console.log(`[API] Token price fields:`, {
+              usdPrice: tokens[0].usdPrice,
+              price_usd: tokens[0].price_usd,
+              priceUsd: tokens[0].priceUsd,
+              price: tokens[0].price
+            })
           }
 
           // Enrich tokens with complete metadata
@@ -192,6 +199,10 @@ export async function GET(request: Request) {
       source: results.tokens.length > 0 ? "moralis" : "cache",
       timestamp: Date.now(),
       query,
+      debug: results.tokens.length > 0 ? {
+        sampleToken: results.tokens[0],
+        availableFields: Object.keys(results.tokens[0] || {}),
+      } : undefined,
     })
   } catch (error) {
     console.error("[API] Search error:", error)

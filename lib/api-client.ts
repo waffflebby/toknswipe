@@ -122,6 +122,13 @@ export async function searchCoinsFromAPI(query: string): Promise<{ tokens: any[]
     // Extract 'data' field from response object if it exists
     const data = result.data || result
     console.log(`[API Client] Found ${data.tokens.length} tokens and ${data.themes.length} themes from ${result.source}`)
+    
+    // Log debug info if available
+    if (result.debug) {
+      console.log(`[API Client] DEBUG - Sample token:`, result.debug.sampleToken)
+      console.log(`[API Client] DEBUG - Available fields:`, result.debug.availableFields)
+    }
+    
     return data
   } catch (error) {
     console.error("[API Client] Error searching:", error)
