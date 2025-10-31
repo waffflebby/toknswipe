@@ -6,7 +6,17 @@ Meme Coin Tinder is a Next.js application providing a Tinder-style swipe interfa
 ## User Preferences
 None specified yet.
 
-## Recent Changes (October 29, 2025)
+## Recent Changes (October 31, 2025)
+- **Replaced 24h Txns with Top Holder % Metric**: Complete replacement across entire application
+  - Integrated Moralis top-holders API endpoint to fetch percentage of supply held by largest holder
+  - Added `topHolderWeight` property to EnrichedCoin type (replacing deprecated `txns24h`)
+  - Updated all UI components to display "Top Holder %" with proper formatting (toFixed(1) or toFixed(2))
+  - Implemented explicit null/undefined checks to properly display 0% values
+  - Added error handling in `fetchTopHolderWeight` function (try-catch returns undefined on failure) to keep enrichment non-blocking
+  - Updated all mock/fallback data with topHolderWeight values
+  - Components affected: SwipeCard, CoinInsightsSheet, WatchlistSheet, CoinDetailModal, MatchesList
+
+## Previous Changes (October 29, 2025)
 - **Fixed React Hydration Mismatch**: Added `isMounted` state to prevent hydration errors that were blocking UI updates - loading state now only shows after component mounts on client side
 - **New Folder-Based Watchlist System**: Complete redesign of coin organization with proper database schema
   - Created `folders` table (supports system folders like Personal/Matched and custom user folders)
