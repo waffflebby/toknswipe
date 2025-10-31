@@ -1,0 +1,90 @@
+page-bef4526a594868d0.js:1 [SwipeView] Computing coins, fetchedCoins: 0
+page-bef4526a594868d0.js:1 [API Client] Fetching trending coins from: /api/trending
+page-bef4526a594868d0.js:1 [SwipeView] Computing coins, fetchedCoins: 0
+3page-bef4526a594868d0.js:1 [SwipeView] Computing coins, fetchedCoins: 0
+layout-613049797d39172a.js:1  GET https://toknswipe.com/_vercel/insights/script.js net::ERR_ABORTED 404 (Not Found)
+(anonymous) @ layout-613049797d39172a.js:1
+(anonymous) @ layout-613049797d39172a.js:1
+ob @ 4bd1b696-dac212887aebeed4.js:1
+e @ 4bd1b696-dac212887aebeed4.js:1
+e @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+oX @ 4bd1b696-dac212887aebeed4.js:1
+oG @ 4bd1b696-dac212887aebeed4.js:1
+ix @ 4bd1b696-dac212887aebeed4.js:1
+(anonymous) @ 4bd1b696-dac212887aebeed4.js:1
+w @ 684-941640bc0129c793.js:1Understand this error
+layout-613049797d39172a.js:1 [Vercel Web Analytics] Failed to load script from /_vercel/insights/script.js. Be sure to enable Web Analytics for your project and deploy again. See https://vercel.com/docs/analytics/quickstart for more information.
+(index):1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">Understand this warning
+page-bef4526a594868d0.js:1 [API Client] Response status: 200
+page-bef4526a594868d0.js:1 [API Client] Got result: {data: Array(30), source: 'memory-cache', timestamp: 1761927536361}
+page-bef4526a594868d0.js:1 [API Client] Got 30 coins from memory-cache
+page-bef4526a594868d0.js:1 [SwipeView] Computing coins, fetchedCoins: 30
+page-bef4526a594868d0.js:1 [SwipeView] Computed coins: 30
+page-bef4526a594868d0.js:1 [API Client] Searching for: p
+6The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+page-bef4526a594868d0.js:1 [API Client] Searching for: po
+page-bef4526a594868d0.js:1 [API Client] Searching for: pop
+page-bef4526a594868d0.js:1 [API Client] Found 20 tokens and 1 themes from moralis
+page-bef4526a594868d0.js:1 [API Client] Found 20 tokens and 0 themes from moralis
+page-bef4526a594868d0.js:1 [API Client] Searching for: popc
+page-bef4526a594868d0.js:1 [API Client] Found 20 tokens and 0 themes from moralis
+page-bef4526a594868d0.js:1 [API Client] Searching for: popca
+page-bef4526a594868d0.js:1 [API Client] Found 20 tokens and 0 themes from moralis
+page-bef4526a594868d0.js:1 [API Client] Found 0 tokens and 4 themes from cache
+page-bef4526a594868d0.js:1 [API Client] Searching for: popcat
+page-bef4526a594868d0.js:1 [API Client] Found 20 tokens and 0 themes from moralis
