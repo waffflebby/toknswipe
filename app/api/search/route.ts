@@ -73,7 +73,7 @@ export async function GET(request: Request) {
           if (tokens.length > 0) {
             console.log(`[API] Sample token data:`, JSON.stringify(tokens[0], null, 2))
             console.log(`[API] Available fields:`, Object.keys(tokens[0]))
-            console.log(`[API] Token address field:`, token.tokenAddress || token.address)
+            console.log(`[API] Token address field:`, tokens[0].tokenAddress || tokens[0].address)
             console.log(`[API] Token price fields:`, {
               usdPrice: tokens[0].usdPrice,
               price_usd: tokens[0].price_usd,
