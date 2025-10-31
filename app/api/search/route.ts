@@ -72,16 +72,57 @@ export async function GET(request: Request) {
           // Debug: log first token if available
           if (tokens.length > 0) {
             console.log(`[API] Sample token data:`, JSON.stringify(tokens[0], null, 2))
+            console.log(`[API] Available fields:`, Object.keys(tokens[0]))
           }
 
           // Enrich tokens with complete metadata
           const enrichedTokens = tokens.map((token: any) => {
-            const priceUsd = parseFloat(token.usdPrice || token.price_usd || token.priceUsd || "0")
-            const marketCapUsd = parseFloat(token.marketCap || token.market_cap_usd || token.marketCapUsd || "0")
-            const liquidityUsd = parseFloat(token.liquidityUsd || token.liquidity_usd || "0")
-            const volume24hNum = parseFloat(token.totalVolume?.["24h"] || token.volume24h || token["24h_volume"] || "0")
-            const change24hNum = parseFloat(token.pricePercentChange?.["24h"] || token.priceChange24h || "0")
-            const holders = parseInt(token.holders || token.holderCount || "0")
+            // Moralis search returns tokenAddress, not address
+            const address = token.tokenAddress || token.address || ""
+            
+            // Try multiple possible field names for each value
+            const priceUsd = parseFloat(
+              token.usdPrice || 
+              token.price_usd || 
+              token.priceUsd || 
+              token.price || 
+              token.current_price ||
+              "0"
+            )
+            const marketCapUsd = parseFloat(
+              token.marketCap || 
+              token.market_cap_usd || 
+              token.marketCapUsd || 
+              token.market_cap ||
+              token.fdv ||
+              "0"
+            )
+            const liquidityUsd = parseFloat(
+              token.liquidityUsd || 
+              token.liquidity_usd || 
+              token.liquidity ||
+              "0"
+            )
+            const volume24hNum = parseFloat(
+              token.totalVolume?.["24h"] || 
+              token.volume24h || 
+              token["24h_volume"] ||
+              token.volume ||
+              "0"
+            )
+            const change24hNum = parseFloat(
+              token.pricePercentChange?.["24h"] || 
+              token.priceChange24h ||
+              token.price_change_percentage_24h ||
+              token.change_24h ||
+              "0"
+            )
+            const holders = parseInt(
+              token.holders || 
+              token.holderCount || 
+              token.holder_count ||
+              "0"
+            )
             
             // Format helpers
             const formatPrice = (price: number) => {
@@ -101,8 +142,8 @@ export async function GET(request: Request) {
             }
             
             const formatted = {
-              id: token.address || token.tokenAddress,
-              mint: token.address || token.tokenAddress,
+              id: address,
+              mint: address,
               name: token.name || "Unknown",
               symbol: token.symbol || "???",
               image: token.logo || token.image || "/placeholder.svg",
@@ -121,7 +162,7 @@ export async function GET(request: Request) {
               change24h: `${change24hNum >= 0 ? '+' : ''}${change24hNum.toFixed(2)}%`,
               age: "N/A",
               description: `${token.name || "Unknown token"} on Solana${holders > 0 ? `. ${holders.toLocaleString()} holders` : ""}`,
-              creator: (token.address || token.tokenAddress || "").slice(0, 6) + "..." + (token.address || token.tokenAddress || "").slice(-4),
+              creator: address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Unknown",
               createdAt: new Date(),
               isVerified: liquidityUsd > 50000 && marketCapUsd > 1000000,
               riskLevel: liquidityUsd < 10000 ? "high" : liquidityUsd < 100000 ? "medium" : "low",
