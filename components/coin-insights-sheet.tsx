@@ -232,8 +232,8 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
                         <p className="text-xs font-bold font-numbers text-gray-600 dark:text-neutral-400">{coin.holders?.toLocaleString() || "2.8K"}</p>
                       </div>
                       <div className="text-center space-y-1">
-                        <p className="text-[9px] font-semibold uppercase text-black dark:text-white">24h Txns</p>
-                        <p className="text-xs font-bold font-numbers text-gray-600 dark:text-neutral-400">{coin.txns24h?.toLocaleString() || "—"}</p>
+                        <p className="text-[9px] font-semibold uppercase text-black dark:text-white">Top Holder %</p>
+                        <p className="text-xs font-bold font-numbers text-gray-600 dark:text-neutral-400">{coin.topHolderWeight !== undefined && coin.topHolderWeight !== null ? `${coin.topHolderWeight.toFixed(1)}%` : "—"}</p>
                       </div>
                       <div className="text-center space-y-1">
                         <p className="text-[9px] font-semibold uppercase text-black dark:text-white">FDV</p>
@@ -258,10 +258,10 @@ export function CoinInsightsSheet({ coin, open, onOpenChange, viewMode = "full" 
                     <h3 className="text-xs font-semibold uppercase tracking-wide text-black dark:text-white">Advanced</h3>
 
                     <div className="grid grid-cols-2 gap-3">
-                      {coin.txns24h && (
+                      {(coin.topHolderWeight !== undefined && coin.topHolderWeight !== null) && (
                         <div className="space-y-1">
-                          <p className="text-[10px] text-black dark:text-white font-medium">24h Txns</p>
-                          <p className="text-sm font-bold text-gray-500 dark:text-neutral-500">{coin.txns24h.toLocaleString()}</p>
+                          <p className="text-[10px] text-black dark:text-white font-medium">Top Holder %</p>
+                          <p className="text-sm font-bold text-gray-500 dark:text-neutral-500">{coin.topHolderWeight.toFixed(2)}%</p>
                         </div>
                       )}
                       {coin.riskLevel && (

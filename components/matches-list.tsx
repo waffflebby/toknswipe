@@ -52,7 +52,7 @@ interface Match {
   marketCap?: string
   liquidity?: string
   holders?: number
-  txns24h?: number
+  topHolderWeight?: number
   riskLevel?: string
   website?: string
   twitter?: string
@@ -89,7 +89,7 @@ const mockMatches: Match[] = [
     marketCap: "$6.89B",
     liquidity: "$184.86M",
     holders: 629543,
-    txns24h: 47728,
+    topHolderWeight: 3.2,
     riskLevel: "low",
     website: "https://pepe.vip",
     twitter: "https://twitter.com/pepecoineth",
@@ -108,7 +108,7 @@ const mockMatches: Match[] = [
     marketCap: "$2.15B",
     liquidity: "$89.23M",
     holders: 245821,
-    txns24h: 32156,
+    topHolderWeight: 2.8,
     riskLevel: "medium",
     website: "https://bonkcoin.com",
     twitter: "https://twitter.com/bonkcoin",
@@ -127,7 +127,7 @@ const mockMatches: Match[] = [
     marketCap: "$12.34B",
     liquidity: "$567.89M",
     holders: 1234567,
-    txns24h: 89234,
+    topHolderWeight: 1.5,
     riskLevel: "low",
     website: "https://dogecoin.com",
     twitter: "https://twitter.com/dogecoin",
@@ -146,7 +146,7 @@ const mockMatches: Match[] = [
     marketCap: "$890.12M",
     liquidity: "$123.45M",
     holders: 456789,
-    txns24h: 23456,
+    topHolderWeight: 4.1,
     riskLevel: "medium",
     website: "https://floki.io",
     twitter: "https://twitter.com/RealFlokiInu",
@@ -564,10 +564,10 @@ export function MatchesList() {
                 <div className="space-y-3 border-t border-gray-200 dark:border-neutral-800 pt-3">
                   <p className="text-xs font-semibold uppercase text-black dark:text-white">Advanced</p>
                   <div className="grid grid-cols-2 gap-3">
-                    {selectedCoinForDetails.txns24h && (
+                    {(selectedCoinForDetails.topHolderWeight !== undefined && selectedCoinForDetails.topHolderWeight !== null) && (
                       <div className="space-y-1">
-                        <p className="text-[10px] font-semibold uppercase text-black dark:text-white">24h Txns</p>
-                        <p className="text-sm font-bold text-gray-600 dark:text-neutral-400">{selectedCoinForDetails.txns24h.toLocaleString()}</p>
+                        <p className="text-[10px] font-semibold uppercase text-black dark:text-white">Top Holder %</p>
+                        <p className="text-sm font-bold text-gray-600 dark:text-neutral-400">{selectedCoinForDetails.topHolderWeight.toFixed(1)}%</p>
                       </div>
                     )}
                     {selectedCoinForDetails.riskLevel && (

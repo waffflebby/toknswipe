@@ -596,10 +596,10 @@ function CoinCard({
                 <p className="text-[9px] font-semibold uppercase text-black dark:text-white">Holders</p>
                 <p className="text-xs font-bold text-gray-600 dark:text-neutral-400">{coin.holders || "N/A"}</p>
               </div>
-              {coin.txns24h && (
+              {(coin.topHolderWeight !== undefined && coin.topHolderWeight !== null) && (
                 <div className="text-center space-y-0.5">
-                  <p className="text-[9px] font-semibold uppercase text-black dark:text-white">24h Txns</p>
-                  <p className="text-xs font-bold text-gray-600 dark:text-neutral-400">{coin.txns24h.toLocaleString()}</p>
+                  <p className="text-[9px] font-semibold uppercase text-black dark:text-white">Top Holder %</p>
+                  <p className="text-xs font-bold text-gray-600 dark:text-neutral-400">{coin.topHolderWeight.toFixed(1)}%</p>
                 </div>
               )}
               <div className="text-center space-y-0.5">

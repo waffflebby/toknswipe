@@ -484,6 +484,9 @@ async function enrichTokenData(token: any, source: "trending" | "new"): Promise<
   const name = token.token_name || token.name || "Unknown"
   const symbol = token.token_symbol || token.symbol || "???"
 
+  // Fetch top holder weight % (non-blocking)
+  const topHolderWeight = await fetchTopHolderWeight(tokenAddress)
+
   const enrichedCoin = {
     id: tokenAddress,
     mint: tokenAddress,
@@ -513,7 +516,7 @@ async function enrichTokenData(token: any, source: "trending" | "new"): Promise<
     age: calculateAge(token.created_at || token.created_timestamp),
     liquidity: formatMarketCap(liquidityUsd),
     volume24h: formatMarketCap(volume24h),
-    txns24h: token.transactions_24h || 0,
+    topHolderWeight,
     holders,
     isVerified: liquidityUsd > 50000 && marketCapUsd > 1000000,
     riskLevel,
@@ -570,6 +573,9 @@ async function enrichPumpFunToken(token: any): Promise<EnrichedCoin> {
     riskLevel = "medium"
   }
 
+  // Fetch top holder weight % (non-blocking)
+  const topHolderWeight = await fetchTopHolderWeight(token.tokenAddress || token.token_address)
+
   const enrichedCoin = {
     id: token.tokenAddress || token.token_address,
     mint: token.tokenAddress || token.token_address,
@@ -588,7 +594,7 @@ async function enrichPumpFunToken(token: any): Promise<EnrichedCoin> {
     age,
     liquidity: formatMarketCap(liquidityUsd),
     volume24h: formatMarketCap(volume24h),
-    txns24h: 0,
+    topHolderWeight,
     holders,
     website: token.website,
     twitter: token.twitter,
@@ -663,7 +669,7 @@ function getFallbackCoins(): EnrichedCoin[] {
       age: "52w",
       liquidity: "$45.2M",
       volume24h: "$125M",
-      txns24h: 45230,
+      topHolderWeight: 2.4,
       holders: 280000,
       isVerified: true,
       riskLevel: "low",
@@ -686,7 +692,7 @@ function getFallbackCoins(): EnrichedCoin[] {
       age: "26w",
       liquidity: "$78.5M",
       volume24h: "$245M",
-      txns24h: 67890,
+      topHolderWeight: 3.1,
       holders: 156000,
       isVerified: true,
       riskLevel: "low",
@@ -709,7 +715,7 @@ function getFallbackCoins(): EnrichedCoin[] {
       age: "13w",
       liquidity: "$32.1M",
       volume24h: "$89M",
-      txns24h: 34567,
+      topHolderWeight: 5.2,
       holders: 45000,
       isVerified: true,
       riskLevel: "medium",

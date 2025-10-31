@@ -122,9 +122,9 @@ export function CoinDetailModal({ coin, open, onOpenChange }: CoinDetailModalPro
               <div className="rounded-xl border bg-secondary/30 p-4">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium mb-2">
                   <Users className="h-4 w-4" />
-                  <span>Txns 24h</span>
+                  <span>Top Holder %</span>
                 </div>
-                <p className="text-xl font-bold tracking-tight">{coin.txns24h}</p>
+                <p className="text-xl font-bold tracking-tight">{(coin.topHolderWeight !== undefined && coin.topHolderWeight !== null) ? `${coin.topHolderWeight.toFixed(2)}%` : "—"}</p>
               </div>
             </div>
           </div>
