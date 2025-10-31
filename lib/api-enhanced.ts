@@ -153,10 +153,10 @@ export async function fetchTokenMetadata(tokenAddress: string) {
     }
 
     const metadata = await response.json()
-    
+
     // Cache it
     cache.metadata.set(tokenAddress, { data: metadata, timestamp: Date.now() })
-    
+
     return metadata
   } catch (error) {
     console.error(`[Moralis] Error fetching metadata for ${tokenAddress}:`, error)
@@ -207,9 +207,9 @@ export async function fetchTokenChart(
       "1M": 720,
       "ALL": 8760 // 1 year
     }
-    
+
     const hours = hoursMap[timeframe]
-    
+
     // Moralis doesn't support hours parameter, use their default limit
     // We'll request more data points and filter based on timeframe
     const response = await fetch(
@@ -228,12 +228,12 @@ export async function fetchTokenChart(
     }
 
     const data = await response.json()
-    
+
     // Get current price and generate realistic historical data
     if (data && data.usdPrice) {
       const currentPrice = parseFloat(data.usdPrice)
       const now = Date.now()
-      
+
       // Generate data points based on timeframe - optimized for candle visibility
       // Keep counts similar to 1H (60) for consistent candle size
       const pointsMap = {
@@ -243,7 +243,7 @@ export async function fetchTokenChart(
         "1M": 90,    // 1 point per 8 hours (was 720)
         "ALL": 100   // 1 point per ~3.6 days (was 365)
       }
-      
+
       const intervalMap = {
         "1H": 60000,        // 1 minute
         "1D": 1200000,      // 20 minutes (24h / 72 candles)
@@ -251,28 +251,28 @@ export async function fetchTokenChart(
         "1M": 28800000,     // 8 hours (30d / 90 candles)
         "ALL": 315360000    // ~3.65 days (365d / 100 candles)
       }
-      
+
       const points = pointsMap[timeframe]
       const interval = intervalMap[timeframe]
-      
+
       // Generate realistic price movement
       const chartData = []
       let price = currentPrice * 0.85 // Start 15% lower
       const volatility = 0.03 // 3% volatility per point
       const trend = (currentPrice - price) / points // Trend toward current price
-      
+
       for (let i = 0; i < points; i++) {
         const timestamp = new Date(now - (points - i) * interval).toISOString()
         const randomChange = (Math.random() - 0.5) * volatility
         const open = price
         price = price * (1 + randomChange) + trend
         const close = price
-        
+
         // Generate high/low with some variance
         const variance = Math.abs(close - open) * 0.5
         const high = Math.max(open, close) * (1 + Math.random() * 0.01) + variance
         const low = Math.min(open, close) * (1 - Math.random() * 0.01) - variance
-        
+
         chartData.push({
           timestamp,
           open: Math.max(open, 0),
@@ -282,15 +282,15 @@ export async function fetchTokenChart(
           price: Math.max(close, 0)
         })
       }
-      
+
       // Ensure last point matches current price
       chartData[chartData.length - 1].price = currentPrice
       chartData[chartData.length - 1].close = currentPrice
-      
+
       console.log(`[Chart] Generated ${chartData.length} points for ${timeframe}`)
       return { result: chartData }
     }
-    
+
     console.error('[Chart] No price data from Moralis')
     return null
   } catch (error) {
@@ -331,13 +331,13 @@ export async function fetchPriceHistory(tokenAddress: string) {
 function detectLaunchpad(tokenAddress: string): "pumpfun" | "raydium" | "bonk" | undefined {
   if (!tokenAddress) return undefined
   const lower = tokenAddress.toLowerCase()
-  
+
   // Pump.fun addresses typically contain 'pump' or end with specific patterns
   if (lower.includes('pump')) return 'pumpfun'
-  
+
   // Bonk addresses end with 'bonk'
   if (lower.endsWith('bonk')) return 'bonk'
-  
+
   // Default to Raydium for most tokens
   return 'raydium'
 }
@@ -360,7 +360,7 @@ async function fetchTopHolderWeight(tokenAddress: string): Promise<number | unde
     }
 
     const data = await response.json()
-    
+
     if (data?.result && data.result.length > 0) {
       const topHolder = data.result[0]
       return topHolder.percentage_relative_to_total_supply || undefined
@@ -620,10 +620,10 @@ async function enrichPumpFunToken(token: any): Promise<EnrichedCoin> {
 
 function calculateAge(timestamp: number | string | undefined): string {
   if (!timestamp) return "Unknown"
-  
+
   const date = typeof timestamp === "number" ? new Date(timestamp * 1000) : new Date(timestamp)
   const ageInHours = (Date.now() - date.getTime()) / (1000 * 60 * 60)
-  
+
   if (ageInHours < 24) return `${Math.floor(ageInHours)}h`
   if (ageInHours < 24 * 7) return `${Math.floor(ageInHours / 24)}d`
   return `${Math.floor(ageInHours / 24 / 7)}w`
@@ -721,4 +721,15 @@ function getFallbackCoins(): EnrichedCoin[] {
       riskLevel: "medium",
     },
   ]
+}
+
+// Helper function to calculate risk level
+function calculateRiskLevel(marketCap: number, holders: number): "low" | "medium" | "high" {
+  if (marketCap > 1_000_000 && holders > 1000) {
+    return "low"
+  } else if (marketCap > 100_000 && holders > 100) {
+    return "medium"
+  } else {
+    return "high"
+  }
 }
