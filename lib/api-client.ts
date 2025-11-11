@@ -1,6 +1,15 @@
 // Client-side API wrapper - calls Next.js API routes
 import type { EnrichedCoin } from "./types"
 
+export interface MarketOverview {
+  totalMarketCapUsd: number
+  averageChange24h: number
+  topGainers: EnrichedCoin[]
+  topLosers: EnrichedCoin[]
+  sampleSize: number
+  generatedAt: string
+}
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || ""
 
 export async function fetchTrendingCoinsFromAPI(): Promise<EnrichedCoin[]> {
@@ -193,6 +202,23 @@ export async function fetchTokenHoldersFromAPI(tokenAddress: string) {
     return result.data || result
   } catch (error) {
     console.error("[API Client] Error fetching holders:", error)
+    return null
+  }
+}
+
+export async function fetchMarketOverviewFromAPI(): Promise<MarketOverview | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/market/overview`)
+
+    if (!response.ok) {
+      console.error("[API Client] Market overview error:", response.status)
+      return null
+    }
+
+    const result = await response.json()
+    return result.data || result
+  } catch (error) {
+    console.error("[API Client] Error fetching market overview:", error)
     return null
   }
 }
