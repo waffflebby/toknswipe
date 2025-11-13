@@ -3,9 +3,12 @@ import { Moralis, initMoralis } from "./moralis-client"
 import { detectThemes } from "./theme-detector"
 
 // Get API key from environment variable (server-side only)
-const MORALIS_API_KEY = process.env.MORALIS_API_KEY!
-if (!process.env.MORALIS_API_KEY) {
-  throw new Error("MORALIS_API_KEY is required. Please set it in your environment variables.")
+const MORALIS_API_KEY = process.env.MORALIS_API_KEY
+
+if (!MORALIS_API_KEY) {
+  console.warn(
+    "[Moralis] MORALIS_API_KEY is not configured. Falling back to mock data. Add MORALIS_API_KEY to enable live data."
+  )
 }
 
 // Cache configuration
@@ -32,6 +35,10 @@ const cache = {
 
 export async function fetchTrendingCoins(): Promise<EnrichedCoin[]> {
   try {
+    if (!MORALIS_API_KEY) {
+      return getFallbackCoins()
+    }
+
     // Check cache first
     const now = Date.now()
     if (cache.trending && now - cache.trending.timestamp < CACHE_DURATION.TRENDING) {
@@ -79,6 +86,10 @@ export async function fetchTrendingCoins(): Promise<EnrichedCoin[]> {
 
 export async function fetchNewCoins(): Promise<EnrichedCoin[]> {
   try {
+    if (!MORALIS_API_KEY) {
+      return getFallbackCoins()
+    }
+
     // Check cache
     const now = Date.now()
     if (cache.new && now - cache.new.timestamp < CACHE_DURATION.NEW) {
@@ -130,6 +141,10 @@ export async function fetchNewCoins(): Promise<EnrichedCoin[]> {
 
 export async function fetchTokenMetadata(tokenAddress: string) {
   try {
+    if (!MORALIS_API_KEY) {
+      return null
+    }
+
     // Check cache
     const cached = cache.metadata.get(tokenAddress)
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION.METADATA) {
@@ -166,6 +181,10 @@ export async function fetchTokenMetadata(tokenAddress: string) {
 
 export async function fetchTokenHolders(tokenAddress: string) {
   try {
+    if (!MORALIS_API_KEY) {
+      return null
+    }
+
     await initMoralis()
 
     const response = await fetch(
@@ -199,6 +218,10 @@ export async function fetchTokenChart(
   timeframe: "1H" | "1D" | "1W" | "1M" | "ALL" = "1D"
 ) {
   try {
+    if (!MORALIS_API_KEY) {
+      return getFallbackChartData()
+    }
+
     // Map timeframe to hours for Moralis API
     const hoursMap = {
       "1H": 1,
@@ -721,6 +744,29 @@ function getFallbackCoins(): EnrichedCoin[] {
       riskLevel: "medium",
     },
   ]
+}
+
+function getFallbackChartData() {
+  const now = Date.now()
+  const points = Array.from({ length: 60 }).map((_, index) => {
+    const timestamp = new Date(now - (60 - index) * 60_000).toISOString()
+    const basePrice = 1 + Math.sin(index / 10) * 0.1
+    const open = basePrice * (1 + Math.random() * 0.02)
+    const close = basePrice * (1 + Math.random() * 0.02)
+    const high = Math.max(open, close) * (1 + Math.random() * 0.01)
+    const low = Math.min(open, close) * (1 - Math.random() * 0.01)
+
+    return {
+      timestamp,
+      open,
+      high,
+      low,
+      close,
+      price: close,
+    }
+  })
+
+  return { result: points }
 }
 
 // Helper function to calculate risk level
