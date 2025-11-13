@@ -1,7 +1,6 @@
 Toknswipe.com
-
-🪙 Toknswipe — Meme Coin Tinder for Solana
-CoinSwipe is a Tinder-style swipe interface for discovering, analyzing, and tracking meme coins on Solana.
+Toknswipe is a Tinder-style swipe
+Interface for discovering, analyzing, and tracking meme coins on Solana.
 Built with Next.js 15, React 19, TailwindCSS, shadcn/ui, and Moralis Web3 API.
 
 🚀 Features
